@@ -116,7 +116,7 @@ function AnimatedWords({ text, startIndex, keyPrefix }: { text: string; startInd
 // and the .hero-background "ken burns" zoom in Hero.scss are both tuned to
 // this same length, so drifting this value out of sync with the CSS will
 // make the progress bar and the actual slide change visibly disagree.
-const AUTOPLAY_MS = 6500
+const AUTOPLAY_MS = 8500
 
 // One slide's full text block, sourced from hero.slides[i] in the locale
 // files — each slide gets its own eyebrow, headline, and description
@@ -247,11 +247,20 @@ export default function Hero() {
         </div>
       </div>
 
+      {/* Only the active slide's shards are mounted. Rendering all three
+         slides' pieces at once (78 <img> each x3) was the main cause of
+         jank: idle sets still cost layout/paint/clip-path for nothing,
+         since they're invisible anyway. Mounting fresh on activation still
+         replays the shatter animation exactly as before. */}
       <div className="products" aria-hidden="true">
         {slides.map((slide, index) => (
           <div key={index} className={index === current ? 'product-pair active' : 'product-pair'}>
-            <ShatterImage src={slide.bucket} cols={8} rows={6} className="bucket-large" />
-            <ShatterImage src={slide.bucket} cols={6} rows={5} className="bucket-small" />
+            {index === current && (
+              <>
+                <ShatterImage src={slide.bucket} cols={5} rows={4} className="bucket-large" />
+                <ShatterImage src={slide.bucket} cols={4} rows={3} className="bucket-small" />
+              </>
+            )}
           </div>
         ))}
       </div>

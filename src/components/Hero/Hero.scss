@@ -18,7 +18,7 @@
   transform: scale(1);
   transition: opacity 1.2s ease;
 }
-.hero-background.active { opacity: 1; animation: kenBurns 7s ease-out forwards; }
+.hero-background.active { opacity: 1; animation: kenBurns 8.5s ease-out forwards; }
 
 .hero-shade { position: absolute; z-index: -2; inset: 0; background: linear-gradient(90deg, #f4f6fc 0%, rgba(244,246,252,.98) 25%, rgba(244,246,252,.72) 39%, rgba(244,246,252,.05) 65%); }
 .hero::after { content: ''; position: absolute; z-index: -1; inset: auto 0 0; height: 145px; background: linear-gradient(transparent, rgba(244,246,252,.95)); pointer-events: none; }
@@ -44,8 +44,8 @@
 h1 {
   margin: 0;
   max-width: 500px;
-  font-size: clamp(43px, 4.25vw, 70px);
-  letter-spacing: -3.3px;
+  font-size: clamp(36px, 3.6vw, 58px);
+  letter-spacing: -2.6px;
   line-height: 1.13;
   font-weight: 800;
   color: #10203b;
@@ -101,6 +101,10 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   aspect-ratio: 620 / 570;
   right: clamp(0px, 4.5vw, 80px);
   bottom: 34px;
+  /* Tells the browser this subtree's layout/paint never affects anything
+     outside it, so the dozens of animating shards inside can't trigger
+     reflow/repaint checks on the rest of the page every frame. */
+  contain: layout paint;
 }
 .product-pair {
   position: absolute;
@@ -109,10 +113,17 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   transform: translateY(28px) scale(.96);
   transition: opacity .6s ease, transform .6s ease;
   pointer-events: none;
+  contain: layout paint;
 }
 .product-pair.active { opacity: 1; transform: translateY(0) scale(1); }
 
-.bucket-large, .bucket-small { position: absolute; filter: drop-shadow(0 23px 14px rgba(7, 20, 45, .24)); }
+/* No static filter here anymore — see .shadowSettle below. A static
+   filter: drop-shadow on this parent forced the browser to re-rasterize
+   this element's whole subtree (its 20-48 animating .shard children)
+   on every single frame of the entry animation, which was the single
+   biggest cause of jank. The shadow now only switches on once the
+   shards have finished animating and stopped moving. */
+.bucket-large, .bucket-small { position: absolute; }
 .bucket-large { width: 78%; height: 100%; right: 10%; bottom: 0; z-index: 1; }
 .bucket-small { width: 42%; height: 58%; right: -2%; bottom: 0; z-index: 2; }
 
@@ -125,11 +136,18 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   object-position: bottom;
   opacity: 0;
   transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) skew(var(--skew)) scale(.4);
-  will-change: transform, opacity, filter;
 }
-.product-pair.active .shard { animation: shardIn 1.35s var(--delay) cubic-bezier(.13, 1.6, .28, 1) both; }
-.product-pair.active .bucket-large { animation: bucketFloat 4.5s ease-in-out 2s infinite alternate; }
-.product-pair.active .bucket-small { animation: bucketFloat 3.6s ease-in-out 1.8s infinite alternate; }
+/* will-change is scoped to only the currently-animating shards, and drops
+   filter entirely (see shardIn below) — a static will-change on every
+   shard, active or not, permanently promotes each one to its own GPU
+   layer for no reason once it's settled. */
+.product-pair.active .shard { animation: shardIn 1.1s var(--delay) cubic-bezier(.13, 1.6, .28, 1) both; will-change: transform, opacity; }
+/* The shadow (see .bucket-large/.bucket-small above) turns on only after
+   the shards have finished flying in, layered as a second comma-separated
+   animation alongside the existing idle float — combining them in one
+   rule avoids the later rule silently overriding the earlier one. */
+.product-pair.active .bucket-large { animation: shadowSettle .01s linear 1.1s forwards, bucketFloat 4.5s ease-in-out 2s infinite alternate; }
+.product-pair.active .bucket-small { animation: shadowSettle .01s linear 1.1s forwards, bucketFloat 3.6s ease-in-out 1.8s infinite alternate; }
 
 /* ===== Dots become a small animated progress track =====
    Only the active dot renders a fill (.dot-progress); its animation-duration
@@ -187,11 +205,14 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
 @keyframes bucketFloat { from { transform: translateY(0) } to { transform: translateY(-10px) } }
 @keyframes dotFill { from { transform: scaleX(0) } to { transform: scaleX(1) } }
 @keyframes shardIn {
-  0% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) skew(var(--skew)) scale(.4); filter: blur(9px); }
+  0% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) skew(var(--skew)) scale(.4); }
   45% { opacity: 1; }
-  65% { filter: blur(0); }
   80% { transform: translate(0, 0) rotate(0deg) skew(0deg) scale(1.09); }
-  100% { opacity: 1; transform: translate(0, 0) rotate(0deg) skew(0deg) scale(1); filter: blur(0); }
+  100% { opacity: 1; transform: translate(0, 0) rotate(0deg) skew(0deg) scale(1); }
+}
+@keyframes shadowSettle {
+  from { filter: none; }
+  to { filter: drop-shadow(0 23px 14px rgba(7, 20, 45, .24)); }
 }
 
 /* ===== Responsive ladder =====
@@ -223,7 +244,7 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   .hero-shade { background: linear-gradient(180deg, rgba(244,246,252,.98) 0 36%, rgba(244,246,252,.65) 64%, rgba(244,246,252,.96) 92%); }
   .hero-content { max-width: 100%; z-index: 1; }
   .eyebrow { font-size: 13px; margin-bottom: 18px; }
-  h1 { font-size: clamp(38px, 11vw, 51px); letter-spacing: -2.4px; }
+  h1 { font-size: clamp(33px, 9.5vw, 44px); letter-spacing: -2px; }
   .description { max-width: 94%; font-size: 14px; line-height: 1.65; margin: 18px 0 25px; }
   .hero-actions { gap: 12px; }
   .button { min-height: 48px; padding: 0 14px; font-size: 12px; }
@@ -235,7 +256,7 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
 
 @media (max-width: 420px) {
   .hero { padding: 96px 18px 78px; }
-  h1 { font-size: clamp(33px, 12.5vw, 42px); letter-spacing: -2px; }
+  h1 { font-size: clamp(29px, 11vw, 36px); letter-spacing: -1.7px; }
   .description { font-size: 13.5px; margin: 15px 0 22px; }
   .hero-actions { gap: 10px; }
   .button { min-height: 44px; padding: 0 12px; font-size: 11.5px; }
@@ -253,8 +274,8 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
 @media (prefers-reduced-motion: reduce) {
   .hero-background.active { animation: none; }
   .product-pair.active .bucket-large,
-  .product-pair.active .bucket-small { animation: none; }
-  .shard { animation: none !important; opacity: 1; transform: none !important; filter: none; }
+  .product-pair.active .bucket-small { animation: none; filter: drop-shadow(0 23px 14px rgba(7, 20, 45, .24)); }
+  .shard { animation: none !important; opacity: 1; transform: none !important; filter: none; will-change: auto; }
   .eyebrow, .description, .hero-actions .button { animation: none; opacity: 1; transform: none; clip-path: none; filter: none; }
   .word { animation: none; opacity: 1; transform: none; filter: none; }
 }
