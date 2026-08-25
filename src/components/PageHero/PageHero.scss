@@ -1,0 +1,238 @@
+/* ===== PageHero =====
+   The inner-page counterpart to Hero.scss. Same "daytime sky" palette,
+   same two easing curves (--sa-ease-pop / --sa-ease-reveal), same badge
+   -> title -> description reveal order — scaled down to a single static
+   banner instead of a slider, and without the bucket-shatter piece since
+   inner pages don't carry per-slide product art.
+
+   :root tokens are NOT redeclared here — Navbar.scss / Footer.scss already
+   define them, and both mount above/around this component on every page,
+   so PageHero simply consumes --sa-*. If PageHero is ever used somewhere
+   those files aren't guaranteed to load first, hoist the :root block into
+   a shared stylesheet instead of duplicating it a third time. */
+
+.page-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 64vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 210px clamp(24px, 5.3vw, 80px) 100px;
+  background: var(--sa-mist, #f4f7fc);
+}
+
+/* ===== Backdrop: a real per-page photo (see PAGE_IMAGES in PageHero.tsx),
+   with the mist + two drifting color blobs layered on top as a legibility
+   wash — same "daytime sky" tone as the rest of the page, just translucent
+   now instead of solid, so the photo reads through it. */
+.page-hero-backdrop { position: absolute; inset: 0; z-index: -2; }
+.page-hero-photo {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.page-hero-backdrop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(244, 247, 252, .55) 0%, rgba(244, 247, 252, .82) 60%, var(--sa-mist, #f4f7fc) 100%),
+    linear-gradient(90deg, rgba(244, 247, 252, .35), rgba(244, 247, 252, 0) 55%);
+}
+.ph-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: .55;
+  animation: phBlobDrift 14s ease-in-out infinite alternate;
+}
+.ph-blob-sky {
+  width: 420px;
+  height: 420px;
+  top: -160px;
+  right: -80px;
+  background: radial-gradient(circle, rgba(8, 100, 231, .22) 0%, rgba(8, 100, 231, 0) 72%);
+}
+.ph-blob-gold {
+  width: 320px;
+  height: 320px;
+  left: -100px;
+  bottom: -140px;
+  background: radial-gradient(circle, rgba(184, 134, 15, .16) 0%, rgba(184, 134, 15, 0) 72%);
+  animation-duration: 17s;
+  animation-delay: -4s;
+}
+/* Faint dot grid for texture, same trick as a lot of "daytime sky" surfaces:
+   barely-there structure rather than a flat, empty mist field. */
+.ph-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(16, 32, 59, .06) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, .9), transparent 92%);
+}
+.page-hero::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: auto 0 0;
+  height: 90px;
+  background: linear-gradient(transparent, rgba(244, 247, 252, .95));
+  pointer-events: none;
+}
+
+/* Oversized, near-invisible per-page glyph — gives each page its own
+   silhouette without needing photo assets, echoing how the bucket art
+   anchors Hero's right side. Sits behind the text, ignored by a11y. */
+.page-hero-watermark {
+  position: absolute;
+  z-index: -1;
+  right: clamp(-40px, 2vw, 40px);
+  bottom: clamp(-60px, -4vw, -20px);
+  width: clamp(220px, 24vw, 340px);
+  height: clamp(220px, 24vw, 340px);
+  color: var(--sa-sky-600, #0864e7);
+  opacity: .07;
+  transform: rotate(-6deg);
+  animation: phWatermarkIn 1.1s .1s var(--sa-ease-reveal) both;
+}
+.page-hero-watermark svg { width: 100%; height: 100%; }
+
+.page-hero-content { position: relative; z-index: 1; max-width: 640px; }
+
+/* ===== Breadcrumb: same "pop" chip language as Hero's eyebrow, but a
+   plain inline trail rather than a badge — its job is orientation, not
+   emphasis, so it sits quieter than the eyebrow below it. */
+.ph-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 22px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sa-ink-soft, rgba(16, 32, 59, .64));
+  opacity: 0;
+  animation: phFadeUp .6s var(--sa-ease-reveal) both;
+}
+.ph-breadcrumb a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: inherit;
+  transition: color .2s ease;
+}
+.ph-breadcrumb a:hover { color: var(--sa-sky-600, #0864e7); }
+.ph-breadcrumb a svg { font-size: 14px; }
+.ph-breadcrumb a:focus-visible { outline: 2px solid var(--sa-sky-600, #0864e7); outline-offset: 3px; border-radius: 4px; }
+.ph-breadcrumb svg { flex-shrink: 0; opacity: .6; font-size: 12px; }
+.ph-breadcrumb [aria-current='page'] { color: var(--sa-ink, #10203b); }
+
+.ph-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 22px;
+  padding: 7px 16px 7px 12px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--sa-sky-600, #0864e7);
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: .01em;
+  animation: phBadgePop .7s .08s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+.ph-eyebrow span { display: inline-flex; margin-right: 10px; font-size: 15px; color: var(--sa-gold-600, #b8860f); }
+
+.page-hero h1 {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(32px, 3.2vw, 48px);
+  letter-spacing: -2.2px;
+  line-height: 1.14;
+  font-weight: 700;
+  color: var(--sa-ink, #10203b);
+}
+.page-hero h1 em { display: inline; color: var(--sa-sky-600, #0864e7); font-style: normal; }
+.ph-word { display: inline-block; opacity: 0; animation: phWordIn .8s cubic-bezier(.19, 1, .22, 1) both; }
+
+.ph-description {
+  margin: 20px 0 0;
+  max-width: 520px;
+  color: var(--sa-ink-soft, rgba(16, 32, 59, .64));
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.7;
+  animation: phTextReveal .75s .5s cubic-bezier(.22, .8, .24, 1) both;
+}
+
+@keyframes phBadgePop {
+  0% { opacity: 0; transform: translateY(-14px) scale(.5) rotate(-8deg); filter: blur(4px); }
+  65% { opacity: 1; transform: translateY(2px) scale(1.09) rotate(2deg); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+}
+@keyframes phWordIn {
+  0% { opacity: 0; transform: translateY(32px) scale(.82) rotate(-4deg); filter: blur(6px); }
+  55% { opacity: 1; filter: blur(0); }
+  78% { transform: translateY(-3px) scale(1.04) rotate(1deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0); }
+}
+@keyframes phTextReveal {
+  0% { opacity: 0; transform: translateX(-20px); clip-path: inset(0 100% 0 0); filter: blur(3px); }
+  55% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0); clip-path: inset(0 0 0 0); }
+}
+@keyframes phFadeUp {
+  0% { opacity: 0; transform: translateY(-8px); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes phWatermarkIn {
+  0% { opacity: 0; transform: rotate(-6deg) scale(.9) translateY(20px); }
+  100% { opacity: .07; transform: rotate(-6deg) scale(1) translateY(0); }
+}
+@keyframes phBlobDrift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(-18px, 22px) scale(1.08); }
+}
+
+/* ===== Responsive ladder — same breakpoints Hero.scss uses, so the two
+   heroes never disagree about where the layout should shift. ===== */
+@media (max-width: 1180px) {
+  .page-hero { padding: 196px clamp(20px, 4.5vw, 64px) 88px; }
+}
+
+@media (max-width: 900px) {
+  .page-hero { min-height: 52vh; padding: 168px 8vw 64px; align-items: flex-end; }
+  .page-hero-content { max-width: 100%; }
+  .page-hero-watermark { width: clamp(180px, 34vw, 260px); height: clamp(180px, 34vw, 260px); }
+}
+
+@media (max-width: 620px) {
+  .page-hero { min-height: 40vh; padding: 148px 25px 56px; }
+  .ph-breadcrumb { font-size: 12px; margin-bottom: 16px; }
+  .ph-eyebrow { font-size: 12.5px; margin-bottom: 16px; }
+  .page-hero h1 { font-size: clamp(28px, 8.5vw, 36px); letter-spacing: -1.6px; }
+  .ph-description { font-size: 14px; line-height: 1.65; margin-top: 14px; }
+  .page-hero-watermark { opacity: .05; right: -20px; bottom: -30px; width: clamp(160px, 46vw, 220px); height: clamp(160px, 46vw, 220px); }
+}
+
+@media (max-width: 420px) {
+  .page-hero { padding: 132px 18px 44px; }
+  .page-hero h1 { font-size: clamp(25px, 10vw, 32px); letter-spacing: -1.3px; }
+}
+
+/* Same accessibility carve-out as Hero.scss / Navbar.scss: keep everything
+   visible, just drop the pop/blur/stagger/drift motion. */
+@media (prefers-reduced-motion: reduce) {
+  .ph-blob { animation: none; }
+  .page-hero-watermark { animation: none; opacity: .07; transform: rotate(-6deg); }
+  .ph-breadcrumb, .ph-eyebrow, .ph-description { animation: none; opacity: 1; transform: none; clip-path: none; filter: none; }
+  .ph-word { animation: none; opacity: 1; transform: none; filter: none; }
+}

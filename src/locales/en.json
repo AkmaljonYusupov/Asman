@@ -49,6 +49,44 @@
     "menu": "Open menu",
     "language": "Change language"
   },
+  "pageHero": {
+    "breadcrumbHome": "Home",
+    "about": {
+      "eyebrow": "Who we are",
+      "titleStart": "Crafting quality,",
+      "titleAccent": "built",
+      "titleEnd": "on trust",
+      "description": "Get to know Asman — our story, our standards, and the people behind every can of paint."
+    },
+    "products": {
+      "eyebrow": "Our full range",
+      "titleStart": "Paints &",
+      "titleAccent": "coatings",
+      "titleEnd": "for every surface",
+      "description": "Browse our complete catalogue of premium paints, primers, and decorative coatings."
+    },
+    "projects": {
+      "eyebrow": "Work we're proud of",
+      "titleStart": "Projects",
+      "titleAccent": "brought",
+      "titleEnd": "to life",
+      "description": "A look at the spaces, buildings, and businesses we've helped transform with colour."
+    },
+    "news": {
+      "eyebrow": "Latest updates",
+      "titleStart": "News &",
+      "titleAccent": "insights",
+      "titleEnd": "from Asman",
+      "description": "Product launches, company milestones, and everything happening at Asman."
+    },
+    "contact": {
+      "eyebrow": "We'd love to hear from you",
+      "titleStart": "Get in",
+      "titleAccent": "touch",
+      "titleEnd": "with us",
+      "description": "Questions, quotes, or partnership ideas — reach out and our team will respond quickly."
+    }
+  },
   "footer": {
     "about": "Premium paints and coatings — an elegant finish and lasting protection for your home, business, and projects.",
     "heading": {

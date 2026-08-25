@@ -49,6 +49,44 @@
     "menu": "Menyuni ochish",
     "language": "Tilni o'zgartirish"
   },
+  "pageHero": {
+    "breadcrumbHome": "Bosh sahifa",
+    "about": {
+      "eyebrow": "Biz haqimizda",
+      "titleStart": "Ishonchga",
+      "titleAccent": "asoslangan",
+      "titleEnd": "sifat",
+      "description": "Asman bilan tanishing — bizning tariximiz, standartlarimiz va har bir bo'yoq bankasi ortidagi jamoamiz."
+    },
+    "products": {
+      "eyebrow": "To'liq assortiment",
+      "titleStart": "Har qanday sirt uchun",
+      "titleAccent": "bo'yoq va",
+      "titleEnd": "qoplamalar",
+      "description": "Yuqori sifatli bo'yoq, grunt va dekorativ qoplamalarning to'liq katalogi bilan tanishing."
+    },
+    "projects": {
+      "eyebrow": "Biz faxrlanadigan ishlar",
+      "titleStart": "Hayotga tatbiq",
+      "titleAccent": "etilgan",
+      "titleEnd": "loyihalar",
+      "description": "Biz rang yordamida o'zgartirgan makon, bino va korxonalarga bir nazar."
+    },
+    "news": {
+      "eyebrow": "So'nggi yangilanishlar",
+      "titleStart": "Asman",
+      "titleAccent": "yangiliklari",
+      "titleEnd": "va voqealari",
+      "description": "Yangi mahsulotlar, kompaniya yutuqlari va Asmanda sodir bo'layotgan barcha voqealar."
+    },
+    "contact": {
+      "eyebrow": "Sizdan xabar olishdan xursand bo'lamiz",
+      "titleStart": "Biz bilan",
+      "titleAccent": "aloqaga",
+      "titleEnd": "chiqing",
+      "description": "Savollar, narx so'rovlari yoki hamkorlik takliflari — biz bilan bog'laning, jamoamiz tezda javob beradi."
+    }
+  },
   "footer": {
     "about": "Yuqori sifatli bo'yoq va qoplama mahsulotlari — uyingiz, biznesingiz va loyihalaringiz uchun estetik ko'rinish va mustahkam himoya.",
     "heading": {
