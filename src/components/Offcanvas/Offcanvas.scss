@@ -1,8 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@500;600;700&display=swap');
+
+:root {
+  --sa-paper: #ffffff;
+  --sa-mist: #f4f7fc;
+  --sa-ink: #10203b;
+  --sa-ink-soft: rgba(16, 32, 59, .55);
+  --sa-sky-600: #0864e7;
+  --sa-gold-600: #b8860f;
+}
+
 .offcanvas-overlay {
   position: fixed;
   inset: 0;
-  z-index: 32;
-  background: rgba(6,15,32,.55);
+  z-index: 50;
+  background: rgba(16, 32, 59, .45);
   backdrop-filter: blur(3px);
   opacity: 0;
   visibility: hidden;
@@ -10,15 +21,17 @@
 }
 .offcanvas-overlay.active { opacity: 1; visibility: visible; transition: opacity .3s ease, visibility 0s; }
 
+/* Side panel, not a full-screen takeover.
+   z-index sits above .header (40) and its .language-menu (41) so the panel
+   — and the close button inside it — are always reachable once open,
+   instead of the fixed navbar painting on top of it. */
 .offcanvas {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 33;
-  width: min(88vw, 380px);
-  background: #fff;
-  box-shadow: -28px 0 60px rgba(9,23,51,.3);
+  top: 0; right: 0; bottom: 0;
+  z-index: 51;
+  width: min(88vw, 400px);
+  background: var(--sa-paper);
+  box-shadow: -28px 0 60px rgba(16, 32, 59, .18);
   display: flex;
   flex-direction: column;
   /* the panel itself never scrolls as a whole — only .offcanvas-nav does,
@@ -29,19 +42,37 @@
 }
 .offcanvas.active { transform: translateX(0); }
 
+/* Signature: the same horizon hairline as the navbar, run down the left
+   edge of the panel instead of along the bottom of the bar. */
+.offcanvas::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--sa-sky-600), var(--sa-gold-600) 65%, transparent);
+}
+
 .offcanvas-head {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 22px 20px;
-  background: linear-gradient(135deg, #eef4ff 0%, #ffffff 70%);
   border-bottom: 1px solid #e7edf9;
 }
 .offcanvas-brand { display: block; width: 138px; height: 46px; }
 .offcanvas-brand img { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
-.offcanvas-close { width: 40px; height: 40px; flex: 0 0 auto; border-radius: 12px; border: 1px solid rgba(8,100,231,.18); background: #fff; color: #0864e7; font-size: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(8,100,231,.1); transition: background .2s ease, color .2s ease, transform .25s ease; }
-.offcanvas-close:hover { background: #0864e7; color: #fff; transform: rotate(90deg); }
+.offcanvas-close {
+  width: 40px; height: 40px; flex: 0 0 auto;
+  border-radius: 12px;
+  border: 1px solid rgba(8, 100, 231, .18);
+  background: var(--sa-mist);
+  color: var(--sa-sky-600);
+  font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s ease, color .2s ease, transform .25s ease;
+}
+.offcanvas-close:hover { background: var(--sa-sky-600); color: #fff; transform: rotate(90deg); }
 
 /* min-height: 0 is the fix — without it, a flex child can't shrink below its
    content size, which was forcing the whole panel to overflow and scroll. */
@@ -50,7 +81,8 @@
   position: relative;
   padding: 15px 16px 15px 22px;
   border-radius: 14px;
-  color: #16233b;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--sa-ink);
   font-size: 16px;
   font-weight: 700;
   opacity: 0;
@@ -65,21 +97,39 @@
   width: 4px;
   height: 0;
   border-radius: 4px;
-  background: #0864e7;
+  background: var(--sa-sky-600);
   transform: translateY(-50%);
   transition: height .2s ease;
 }
 .offcanvas.active .offcanvas-nav a { opacity: 1; transform: translateX(0); }
-.offcanvas-nav a:hover, .offcanvas-nav a.active { background: #f2f6fd; color: #0864e7; }
+.offcanvas-nav a:hover, .offcanvas-nav a.active { background: var(--sa-mist); color: var(--sa-sky-600); }
 .offcanvas-nav a:hover::before, .offcanvas-nav a.active::before { height: 18px; }
 
 .offcanvas-footer { flex: 0 0 auto; padding: 14px 18px 20px; border-top: 1px solid #eef1f7; }
-.offcanvas-languages-label { display: block; padding: 0 2px 10px; color: #99a6b8; font-size: 10px; font-weight: 800; letter-spacing: .9px; text-transform: uppercase; }
-.offcanvas-languages { display: flex; gap: 8px; }
-.offcanvas-languages button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px; border-radius: 13px; border: 1px solid rgba(20,49,91,.13); background: #f7f9fd; color: #1b2b46; font-size: 11px; font-weight: 800; transition: background .2s ease, border-color .2s ease, color .2s ease; }
-.offcanvas-languages button .flag { width: 24px; height: 17px; }
-.offcanvas-languages button:hover { border-color: rgba(8,100,231,.3); }
-.offcanvas-languages button.selected { background: #0864e7; border-color: #0864e7; color: #fff; }
+.offcanvas-languages-label {
+  display: block; padding: 0 2px 10px;
+  font-family: 'Inter', sans-serif;
+  color: var(--sa-ink-soft);
+  font-size: 10px; font-weight: 800; letter-spacing: .9px; text-transform: uppercase;
+}
+
+/* Languages stacked as a column, not a row of flex tiles */
+.offcanvas-languages { display: flex; flex-direction: column; gap: 6px; }
+.offcanvas-languages button {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 32, 59, .1);
+  background: var(--sa-mist);
+  color: var(--sa-ink);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 700;
+  transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+.offcanvas-languages button .flag { width: 22px; height: 15px; flex: 0 0 auto; }
+.offcanvas-languages button span { flex: 1 1 auto; text-align: left; }
+.offcanvas-languages button:hover { border-color: rgba(8, 100, 231, .3); }
+.offcanvas-languages button.selected { background: var(--sa-sky-600); border-color: var(--sa-sky-600); color: #fff; }
 
 @media (max-width: 620px) {
   .offcanvas { width: 86vw; }

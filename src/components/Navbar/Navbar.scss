@@ -1,87 +1,162 @@
-/* ===== Floating pill navbar ===== */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@500;600;700&display=swap');
+
+/* ===== Asman tokens — light "daytime sky" palette =====
+   Ideally hoist this :root block into a shared stylesheet once; it's
+   duplicated in Offcanvas.scss so each component file stays self-contained. */
+:root {
+  --sa-paper: #ffffff;
+  --sa-mist: #f4f7fc;
+  --sa-ink: #10203b;
+  --sa-ink-soft: rgba(16, 32, 59, .64);
+  --sa-sky-600: #0864e7;
+  --sa-gold-600: #b8860f;
+}
+
+/* ===== Fixed bar that floats over the hero slider =====
+   The wash itself (not a text-shadow) is what keeps things legible: a
+   translucent white layer + blur lightens whatever hero art sits behind
+   it, so the same dark ink text reads cleanly in both states. Scrolling
+   past the hero just turns that wash fully opaque. */
 .header {
   position: fixed;
-  z-index: 30;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(1240px, calc(100% - 32px));
-  height: 78px;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  width: 100%;
+  height: 84px;
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 0 12px 0 24px;
-  background: rgba(255,255,255,.72);
-  border: 1px solid rgba(255,255,255,.75);
-  border-radius: 20px;
-  box-shadow: 0 16px 40px rgba(15,35,80,.14);
-  backdrop-filter: blur(20px) saturate(150%);
+  gap: 32px;
+  padding: 0 40px;
+  background: rgba(255, 255, 255, .5);
+  backdrop-filter: blur(10px);
+  transition: background .3s ease;
+}
+.header.scrolled {
+  background: var(--sa-paper);
 }
 
-.logo { display: flex; align-items: center; width: 168px; height: 54px; flex: 0 0 auto; }
-.logo img { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
-
-.navigation {
-  margin: 0 auto;
+.logo {
   display: flex;
   align-items: center;
-  gap: 2px;
-  background: rgba(8,100,231,.07);
-  padding: 6px;
-  border-radius: 14px;
+  flex: 0 0 auto;
+  width: 168px;
+  height: 54px;
 }
-.navigation a { padding: 10px 17px; border-radius: 10px; color: #16233b; font-size: 14.5px; font-weight: 700; white-space: nowrap; transition: color .2s ease, background .2s ease, box-shadow .2s ease; }
-.navigation a:hover { color: #0864e7; }
-.navigation a.active { color: #0864e7; background: #fff; box-shadow: 0 6px 16px rgba(8,100,231,.18); }
+.logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+.navigation { display: flex; align-items: center; margin: 0 auto 0 8px; }
+.navigation a {
+  position: relative;
+  padding: 10px 2px;
+  margin-left: 26px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--sa-ink-soft);
+  transition: color .2s ease;
+}
+.navigation a:first-child { margin-left: 0; }
+.navigation a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  background: var(--sa-sky-600);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform .25s ease;
+}
+.navigation a:hover { color: var(--sa-ink); }
+.navigation a:hover::after { transform: scaleX(.55); }
+.navigation a.active { color: var(--sa-sky-600); }
+.navigation a.active::after { transform: scaleX(1); }
+.navigation a:focus-visible { outline: 2px solid var(--sa-sky-600); outline-offset: 4px; border-radius: 4px; }
 
 .language { position: relative; flex: 0 0 auto; }
-.language-current { min-width: 78px; height: 46px; padding: 0 13px; border: 1px solid rgba(20, 49, 91, .13); background: #fff; border-radius: 14px; color: #075ed9; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: .2s ease; }
-.language-current:hover, .language-current[aria-expanded='true'] { border-color: rgba(8,100,231,.4); box-shadow: 0 6px 16px rgba(8,100,231,.14); }
-.language-menu { position: absolute; top: calc(100% + 10px); right: 0; display: grid; width: 186px; max-width: calc(100vw - 32px); padding: 7px; background: #fff; border: 1px solid #e7edf9; border-radius: 15px; box-shadow: 0 18px 40px rgba(9, 23, 51, .2); transform-origin: top right; animation: drop .18s ease both; z-index: 31; }
+.language-current {
+  min-width: 78px; height: 46px; padding: 0 13px;
+  border: 1px solid rgba(16, 32, 59, .14);
+  background: rgba(255, 255, 255, .7);
+  border-radius: 12px;
+  color: var(--sa-sky-600);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: border-color .2s ease, background .2s ease;
+}
+.header.scrolled .language-current { background: var(--sa-mist); }
+.language-current:hover, .language-current[aria-expanded='true'] { border-color: rgba(8, 100, 231, .4); background: #eaf1ff; }
+.language-current:focus-visible { outline: 2px solid var(--sa-sky-600); outline-offset: 2px; }
+
+.language-menu {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  display: grid; width: 186px; max-width: calc(100vw - 32px);
+  padding: 7px;
+  background: #fff;
+  border: 1px solid #e7edf9;
+  border-radius: 15px;
+  box-shadow: 0 18px 40px rgba(9, 23, 51, .22);
+  transform-origin: top right;
+  animation: drop .18s ease both;
+  z-index: 41;
+}
 .language-menu::before { content: 'TILNI TANLANG'; padding: 6px 9px 8px; color: #99a6b8; font-size: 9px; font-weight: 800; letter-spacing: .9px; }
 .language-menu button { min-height: 42px; padding: 8px 9px; display: grid; grid-template-columns: 25px 1fr auto; align-items: center; gap: 9px; border: 0; border-radius: 9px; background: transparent; color: #1b2b46; text-align: left; font-size: 13px; font-weight: 700; transition: .15s; }
-.language-menu button b { color: #0864e7; }
+.language-menu button b { color: var(--sa-sky-600); }
 .language-menu button:hover { background: #f2f6fd; }
-.language-menu .selected { background: #eaf2ff; color: #075ed9; }
+.language-menu .selected { background: #eaf2ff; color: var(--sa-sky-600); }
+.language-menu button:focus-visible { outline: 2px solid var(--sa-sky-600); outline-offset: -2px; }
 
-.menu-toggle { display: none; width: 46px; height: 46px; flex: 0 0 auto; border-radius: 14px; border: 1px solid rgba(20,49,91,.13); background: #fff; align-items: center; justify-content: center; flex-direction: column; gap: 5px; transition: background .2s ease, border-color .2s ease; }
-.menu-toggle:hover { background: #f5f8fd; }
-.menu-toggle i { display: block; width: 20px; height: 2px; border-radius: 2px; background: #0c1a30; transition: transform .3s ease, opacity .2s ease; }
-.menu-toggle.active { border-color: rgba(8,100,231,.4); }
+.menu-toggle {
+  display: none;
+  width: 46px; height: 46px; flex: 0 0 auto;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 32, 59, .14);
+  background: rgba(255, 255, 255, .7);
+  align-items: center; justify-content: center; flex-direction: column; gap: 5px;
+  transition: border-color .2s ease, background .2s ease;
+}
+.header.scrolled .menu-toggle { background: var(--sa-mist); }
+.menu-toggle:hover { border-color: rgba(8, 100, 231, .4); }
+.menu-toggle i { display: block; width: 20px; height: 2px; border-radius: 2px; background: var(--sa-ink); transition: transform .3s ease, opacity .2s ease, background .2s ease; }
+.menu-toggle.active { border-color: rgba(8, 100, 231, .4); background: #eaf1ff; }
+.menu-toggle.active i { background: var(--sa-sky-600); }
 .menu-toggle.active i:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .menu-toggle.active i:nth-child(2) { opacity: 0; }
 .menu-toggle.active i:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.menu-toggle:focus-visible { outline: 2px solid var(--sa-sky-600); outline-offset: 2px; }
 
 @keyframes drop { from { opacity: 0; transform: translateY(-7px) scale(.96) } to { opacity: 1; transform: translateY(0) scale(1) } }
 
 /* ===== Tablet & mobile ===== */
 @media (max-width: 900px) {
-  .header {
-    top: 12px;
-    width: calc(100% - 24px);
-    height: 68px;
-    gap: 10px;
-    padding: 0 10px 0 18px;
-    border-radius: 18px;
-  }
-  .logo { width: 112px; height: 40px; }
+  .header { height: 76px; gap: 16px; padding: 0 20px; }
+  /* logo reads small at a distance on phones, so it shrinks less than the
+     rest of the bar rather than scaling down proportionally with it */
+  .logo { width: 148px; height: 48px; }
 
-  /* Desktop pill nav is fully replaced by the offcanvas menu below this width */
+  /* Desktop nav is fully replaced by the offcanvas menu below this width */
   .navigation { display: none; }
 
   /* .navigation used to supply the "margin:0 auto" that pushed everything
      else to the right edge. With it hidden, .language takes over that job
      so the language button + hamburger stay grouped on the right. */
   .language { margin-left: auto; }
-  .language-current { min-width: 0; width: 42px; height: 42px; padding: 0; justify-content: center; border-radius: 12px; }
+  .language-current { min-width: 0; width: 46px; height: 46px; padding: 0; justify-content: center; }
   .language-current span { display: none; }
   .language-menu { right: -4px; }
 
-  .menu-toggle { display: flex; width: 42px; height: 42px; border-radius: 12px; }
+  .menu-toggle { display: flex; width: 46px; height: 46px; }
 }
 
 @media (max-width: 480px) {
-  .header { top: 10px; width: calc(100% - 20px); height: 62px; padding: 0 8px 0 16px; gap: 8px; }
-  .logo { width: 100px; height: 36px; }
-  .language-current, .menu-toggle { width: 40px; height: 40px; }
+  .header { height: 68px; padding: 0 14px; gap: 10px; }
+  .logo { width: 130px; height: 42px; }
+  .language-current, .menu-toggle { width: 42px; height: 42px; }
 }
