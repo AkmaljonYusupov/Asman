@@ -91,12 +91,6 @@ const FacebookIcon = () => (
   </svg>
 )
 
-const DropIcon = () => (
-  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
-    <path d="M12 3.2c2.9 3.6 6.4 8.1 6.4 11.6a6.4 6.4 0 1 1-12.8 0c0-3.5 3.5-8 6.4-11.6Z" fill="currentColor" />
-  </svg>
-)
-
 const CalendarIcon = () => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
     <rect x="3.5" y="4.5" width="17" height="16" rx="2.5" stroke="currentColor" strokeWidth="2" />
@@ -735,10 +729,11 @@ export default function Footer() {
   return (
     <footer ref={sectionRef} className={inView ? 'footer in-view' : 'footer'}>
       <div className="footer-glow" aria-hidden="true" />
-      <div className="footer-drops" aria-hidden="true">
-        <span className="drop drop-a"><DropIcon /></span>
-        <span className="drop drop-b"><DropIcon /></span>
-        <span className="drop drop-c"><DropIcon /></span>
+      {/* Fon bezaklari: tomchilar o'rniga logo suratlari */}
+      <div className="footer-marks" aria-hidden="true">
+        <span className="mark mark-a"><img src={logo} alt="" /></span>
+        <span className="mark mark-b"><img src={logo} alt="" /></span>
+        <span className="mark mark-c"><img src={logo} alt="" /></span>
       </div>
       <div className="footer-shimmer" aria-hidden="true" />
 
