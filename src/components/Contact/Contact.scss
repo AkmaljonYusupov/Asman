@@ -110,26 +110,26 @@
 .cs-info-contact-row {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   min-width: 0;
-  padding: 18px 20px;
+  padding: 24px 26px;
   border-radius: 18px;
-  background: var(--sa-indigo-600, #363391);
+  background: var(--sa-sky-600, #0864e7);
   text-decoration: none;
   transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
 }
 .cs-info-contact-row:hover {
-  background: var(--sa-indigo-700, #2d2a79);
-  box-shadow: 0 14px 28px rgba(54, 51, 145, .3);
+  background: #0554c4;
+  box-shadow: 0 14px 28px rgba(8, 100, 231, .28);
   transform: translateY(-2px);
 }
 .cs-info-contact-icon {
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
-  font-size: 20px;
+  width: 26px;
+  height: 26px;
+  font-size: 23px;
   color: #fff;
 }
 .cs-info-contact-text { display: flex; flex-direction: column; min-width: 0; }
@@ -149,7 +149,7 @@
 }
 .cs-info-contact-value {
   font-family: 'Inter', sans-serif;
-  font-size: 14.5px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.45;
   color: #fff;
