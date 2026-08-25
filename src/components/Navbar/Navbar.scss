@@ -1,43 +1,53 @@
+/* ===== Floating pill navbar ===== */
 .header {
-  height: 104px;
   position: fixed;
   z-index: 30;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1240px, calc(100% - 32px));
+  height: 78px;
   display: flex;
   align-items: center;
-  padding: 0 clamp(24px, 5.3vw, 80px);
-  gap: 34px;
-  background: linear-gradient(105deg, rgba(255,255,255,.7), rgba(255,255,255,.32));
-  border-bottom: 1px solid rgba(255,255,255,.68);
-  box-shadow: 0 8px 26px rgba(36, 70, 122, .09);
-  backdrop-filter: blur(18px) saturate(130%);
+  gap: 24px;
+  padding: 0 12px 0 24px;
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(255,255,255,.75);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(15,35,80,.14);
+  backdrop-filter: blur(20px) saturate(150%);
 }
-.logo { display: flex; align-items: center; width: 190px; height: 66px; flex: 0 0 auto; }
+
+.logo { display: flex; align-items: center; width: 168px; height: 54px; flex: 0 0 auto; }
 .logo img { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
 
-.navigation { margin: 0 auto; display: flex; gap: clamp(6px, 1vw, 14px); align-items: center; }
-.navigation a { position: relative; padding: 11px 17px; border-radius: 11px; color: #111c2d; font-size: 15px; font-weight: 700; white-space: nowrap; transition: color .2s ease, background .2s ease; }
-.navigation a::after { content: ''; position: absolute; left: 17px; right: 17px; bottom: 5px; height: 2px; border-radius: 3px; background: #0864e7; transform: scaleX(0); transition: transform .22s ease; }
-.navigation a:hover { color: #0864e7; background: rgba(8,100,231,.07); }
-.navigation a.active { color: #0864e7; }
-.navigation a:hover::after, .navigation a.active::after { transform: scaleX(1); }
+.navigation {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(8,100,231,.07);
+  padding: 6px;
+  border-radius: 14px;
+}
+.navigation a { padding: 10px 17px; border-radius: 10px; color: #16233b; font-size: 14.5px; font-weight: 700; white-space: nowrap; transition: color .2s ease, background .2s ease, box-shadow .2s ease; }
+.navigation a:hover { color: #0864e7; }
+.navigation a.active { color: #0864e7; background: #fff; box-shadow: 0 6px 16px rgba(8,100,231,.18); }
 
 .language { position: relative; flex: 0 0 auto; }
-.language-current { min-width: 82px; height: 44px; padding: 0 12px; border: 1px solid rgba(20, 49, 91, .15); background: rgba(255,255,255,.48); border-radius: 11px; color: #075ed9; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: none; transition: .2s ease; }
-.language-current:hover, .language-current[aria-expanded='true'] { color: #043f95; background: rgba(255,255,255,.82); border-color: rgba(8,100,231,.3); transform: translateY(-1px); }
-.language-menu { position: absolute; top: calc(100% + 8px); right: 0; display: grid; width: 182px; max-width: calc(100vw - 32px); padding: 7px; background: rgba(255,255,255,.98); border: 1px solid #e2e9f3; border-radius: 13px; box-shadow: 0 16px 35px rgba(9, 23, 51, .18); transform-origin: top right; animation: drop .18s ease both; z-index: 31; }
+.language-current { min-width: 78px; height: 46px; padding: 0 13px; border: 1px solid rgba(20, 49, 91, .13); background: #fff; border-radius: 14px; color: #075ed9; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: .2s ease; }
+.language-current:hover, .language-current[aria-expanded='true'] { border-color: rgba(8,100,231,.4); box-shadow: 0 6px 16px rgba(8,100,231,.14); }
+.language-menu { position: absolute; top: calc(100% + 10px); right: 0; display: grid; width: 186px; max-width: calc(100vw - 32px); padding: 7px; background: #fff; border: 1px solid #e7edf9; border-radius: 15px; box-shadow: 0 18px 40px rgba(9, 23, 51, .2); transform-origin: top right; animation: drop .18s ease both; z-index: 31; }
 .language-menu::before { content: 'TILNI TANLANG'; padding: 6px 9px 8px; color: #99a6b8; font-size: 9px; font-weight: 800; letter-spacing: .9px; }
-.language-menu button { min-height: 42px; padding: 8px 9px; display: grid; grid-template-columns: 25px 1fr auto; align-items: center; gap: 9px; border: 0; border-radius: 8px; background: transparent; color: #1b2b46; text-align: left; font-size: 13px; font-weight: 700; transition: .15s; }
+.language-menu button { min-height: 42px; padding: 8px 9px; display: grid; grid-template-columns: 25px 1fr auto; align-items: center; gap: 9px; border: 0; border-radius: 9px; background: transparent; color: #1b2b46; text-align: left; font-size: 13px; font-weight: 700; transition: .15s; }
 .language-menu button b { color: #0864e7; }
 .language-menu button:hover { background: #f2f6fd; }
 .language-menu .selected { background: #eaf2ff; color: #075ed9; }
 
-.menu-toggle { display: none; width: 46px; height: 46px; flex: 0 0 auto; border-radius: 12px; border: 1px solid rgba(20,49,91,.15); background: rgba(255,255,255,.55); align-items: center; justify-content: center; flex-direction: column; gap: 5px; transition: background .2s ease, border-color .2s ease; }
-.menu-toggle:hover { background: rgba(255,255,255,.88); }
+.menu-toggle { display: none; width: 46px; height: 46px; flex: 0 0 auto; border-radius: 14px; border: 1px solid rgba(20,49,91,.13); background: #fff; align-items: center; justify-content: center; flex-direction: column; gap: 5px; transition: background .2s ease, border-color .2s ease; }
+.menu-toggle:hover { background: #f5f8fd; }
 .menu-toggle i { display: block; width: 20px; height: 2px; border-radius: 2px; background: #0c1a30; transition: transform .3s ease, opacity .2s ease; }
-.menu-toggle.active { background: #fff; border-color: rgba(8,100,231,.35); }
+.menu-toggle.active { border-color: rgba(8,100,231,.4); }
 .menu-toggle.active i:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .menu-toggle.active i:nth-child(2) { opacity: 0; }
 .menu-toggle.active i:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
@@ -47,32 +57,31 @@
 /* ===== Tablet & mobile ===== */
 @media (max-width: 900px) {
   .header {
-    height: 74px;
-    padding: 0 16px;
+    top: 12px;
+    width: calc(100% - 24px);
+    height: 68px;
     gap: 10px;
-    background: rgba(255,255,255,.9);
-    border-bottom: 1px solid rgba(255,255,255,.6);
-    box-shadow: 0 6px 18px rgba(16,33,75,.1);
-    backdrop-filter: blur(14px) saturate(130%);
+    padding: 0 10px 0 18px;
+    border-radius: 18px;
   }
-  .logo { width: 116px; height: 42px; }
+  .logo { width: 112px; height: 40px; }
 
-  /* Desktop nav is fully replaced by the offcanvas menu below this width */
+  /* Desktop pill nav is fully replaced by the offcanvas menu below this width */
   .navigation { display: none; }
 
   /* .navigation used to supply the "margin:0 auto" that pushed everything
      else to the right edge. With it hidden, .language takes over that job
      so the language button + hamburger stay grouped on the right. */
   .language { margin-left: auto; }
-  .language-current { min-width: 0; width: 44px; height: 44px; padding: 0; justify-content: center; border-radius: 12px; }
+  .language-current { min-width: 0; width: 42px; height: 42px; padding: 0; justify-content: center; border-radius: 12px; }
   .language-current span { display: none; }
   .language-menu { right: -4px; }
 
-  .menu-toggle { display: flex; }
+  .menu-toggle { display: flex; width: 42px; height: 42px; border-radius: 12px; }
 }
 
 @media (max-width: 480px) {
-  .header { padding: 0 14px; gap: 8px; height: 68px; }
-  .logo { width: 104px; height: 38px; }
-  .language-current, .menu-toggle { width: 42px; height: 42px; }
+  .header { top: 10px; width: calc(100% - 20px); height: 62px; padding: 0 8px 0 16px; gap: 8px; }
+  .logo { width: 100px; height: 36px; }
+  .language-current, .menu-toggle { width: 40px; height: 40px; }
 }
