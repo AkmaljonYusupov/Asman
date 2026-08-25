@@ -1,0 +1,5 @@
+{
+  "brand": "asman", "nav": { "home": "Home", "about": "About us", "products": "Products", "projects": "Projects", "news": "News", "contact": "Contact" },
+  "hero": { "eyebrow": "Quality and trust — always our priority!", "titleStart": "We create the", "titleAccent": "future", "titleEnd": "with colour!", "description": "Our premium paints and coatings give your home, business, and projects an elegant finish and lasting protection.", "catalog": "Product catalogue", "contact": "Contact us", "product": "Pearl", "slides": ["Reliable protection for every space", "Give your home a fresh colour", "Choose quality, feel the difference"] },
+  "aria": { "previous": "Previous slide", "next": "Next slide", "menu": "Open menu", "language": "Change language" }
+}
