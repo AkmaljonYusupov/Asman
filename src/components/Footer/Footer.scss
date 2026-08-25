@@ -1,6 +1,4 @@
-/* ===== Asman tokens — same "daytime sky" palette as Navbar.scss/Offcanvas.scss =====
-   Duplicated here (not hoisted into a shared file) so this component stays
-   self-contained, same rationale as those two. */
+/* ===== Asman tokens ===== */
 :root {
   --sa-paper: #ffffff;
   --sa-mist: #f4f7fc;
@@ -14,11 +12,6 @@
   --sa-ease-reveal: cubic-bezier(.19, 1, .22, 1);
 }
 
-/* ===== Field =====
-   Where the previous version was a flat ink panel, this one reads closer to
-   the hero's own scene: a deep navy-to-violet gradient with a soft moving
-   glow behind the content, so the footer feels like the same "sky" dimmed
-   down for night rather than an unrelated dark box bolted to the bottom. */
 .footer {
   position: relative;
   overflow: hidden;
@@ -29,11 +22,6 @@
   font-family: Manrope, Arial, sans-serif;
 }
 
-/* ===== Background accents =====
-   A slow-pulsing radial glow (echoes Hero's kenBurns scale-breathing on the
-   active background) plus a few of Hero's own drop-shaped icons drifting
-   at low opacity (echoes .bucketFloat) — decorative only, always animating
-   once mounted, independent of the in-view content reveal below. */
 .footer-glow {
   position: absolute;
   z-index: 0;
@@ -53,10 +41,6 @@
 .drop-b { top: 46%; left: 92%; font-size: 150px; color: rgba(184, 134, 15, .1); animation: dropFloat 11s ease-in-out .6s infinite alternate; }
 .drop-c { top: 78%; left: 22%; font-size: 70px; animation: dropFloat 8s ease-in-out 1.2s infinite alternate; }
 
-/* A thin animated highlight along the top edge, standing in for the
-   previous version's static wave — a moving gradient sweep instead of a
-   fixed shape, closer in spirit to the hero's own continuously-drifting
-   background than a one-off decorative SVG. */
 .footer-shimmer {
   position: absolute;
   z-index: 1;
@@ -72,11 +56,6 @@
 
 .footer-inner { position: relative; z-index: 2; max-width: 1240px; margin: 0 auto; }
 
-/* ===== Big word-revealed heading =====
-   Directly mirrors Hero's h1/.word/em treatment: split into words, each
-   its own staggered span, with the middle phrase kept as an <em> accent.
-   Gated by .in-view (scroll-triggered) rather than mount, since the footer
-   sits below the fold. */
 .footer-heading {
   margin: 0 0 64px;
   max-width: 640px;
@@ -90,14 +69,10 @@
 .fw-word { display: inline-block; opacity: 0; }
 .in-view .fw-word { animation: fwWordIn .8s var(--sa-ease-reveal) both; }
 
-/* ===== Four columns: brand / pages / contact / manzil =====
-   Split from the previous three-column layout — contact (phone/email) and
-   address now get their own column each rather than sharing one "Contact"
-   block, so the physical location reads as its own piece of information. */
 .footer-top {
   position: relative;
   display: grid;
-  grid-template-columns: 1.25fr .85fr .95fr 1fr;
+  grid-template-columns: 1.25fr .8fr 1fr minmax(260px, 1.05fr);
   gap: 40px;
   padding-bottom: 60px;
   border-bottom: 1px solid rgba(255, 255, 255, .1);
@@ -124,10 +99,6 @@
 }
 .in-view .footer-about { animation: colReveal .75s .1s var(--sa-ease-reveal) both; }
 
-/* Social icons switched from plain outlined squares to a filled glass chip
-   that fills solid on hover with a small lift + rotation, echoing the
-   hero buttons' own hover-punch (.primary b translateX) rather than a
-   plain color swap. */
 .footer-social { display: flex; gap: 10px; margin-top: 28px; }
 .footer-social a {
   display: inline-flex;
@@ -164,9 +135,6 @@
 .in-view .footer-col h3 { animation: colReveal .6s var(--sa-ease-reveal) both; }
 
 .footer-col nav { display: flex; flex-direction: column; gap: 15px; }
-/* Links get a small arrow-style underline that draws in from the left on
-   hover — same "give the interaction somewhere to go" idea as Hero's
-   primary button arrow shifting right on hover, adapted to a text link. */
 .footer-col nav a {
   position: relative;
   display: inline-flex;
@@ -194,10 +162,12 @@
 .footer-col nav a:hover::before { transform: translateY(-50%) scaleX(1); }
 .footer-col nav a:focus-visible { outline: 2px solid var(--sa-sky-600); outline-offset: 3px; border-radius: 4px; }
 
-.footer-contact,
-.footer-address { display: flex; flex-direction: column; }
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+}
 .footer-contact a,
-.footer-address span {
+.footer-contact .footer-address-line {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -211,14 +181,318 @@
 }
 .footer-contact a { margin-top: 15px; }
 .footer-contact a:first-of-type { margin-top: 0; }
+.footer-contact .footer-address-line {
+  margin-top: 15px;
+  max-width: 240px;
+  cursor: default;
+}
 .in-view .footer-contact a,
-.in-view .footer-address span { animation: linkIn .6s var(--sa-ease-reveal) both; }
+.in-view .footer-contact .footer-address-line { animation: linkIn .6s var(--sa-ease-reveal) both; }
 .footer-contact a:hover { color: var(--sa-gold-600); }
-.footer-contact svg,
-.footer-address svg { flex: 0 0 auto; font-size: 16px; margin-top: 2px; color: var(--sa-gold-600); }
-.footer-address span { max-width: 240px; }
+.footer-contact svg {
+  flex: 0 0 auto;
+  font-size: 16px;
+  margin-top: 2px;
+  color: var(--sa-gold-600);
+}
 
-/* ===== Bottom bar ===== */
+/* ============================================================
+   CALENDAR (custom — react-calendar kerak emas)
+   ============================================================ */
+.footer-calendar-col { display: flex; flex-direction: column; }
+
+.footer-calendar-wrapper { opacity: 0; }
+.in-view .footer-calendar-wrapper { animation: colReveal .7s .2s var(--sa-ease-reveal) both; }
+
+.fcal {
+  --fcal-gap: 4px;
+  --fcal-body-h: 204px;
+  width: 100%;
+  max-width: 300px;
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .1);
+  backdrop-filter: blur(6px);
+  font-family: 'Space Grotesk', Manrope, sans-serif;
+  color: #fff;
+  transition: border-color .3s ease, box-shadow .3s ease, transform .3s var(--sa-ease-pop);
+}
+.fcal:hover,
+.fcal:focus-within {
+  border-color: rgba(79, 157, 255, .34);
+  box-shadow: 0 10px 34px rgba(8, 100, 231, .16);
+  transform: translateY(-2px);
+}
+
+/* --- Header --- */
+.fcal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.fcal-nav {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .04);
+  color: rgba(255, 255, 255, .78);
+  font-size: 15px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s var(--sa-ease-pop);
+}
+.fcal-nav:hover:not(:disabled) {
+  background: var(--sa-sky-600);
+  border-color: var(--sa-sky-600);
+  color: #fff;
+  transform: scale(1.06);
+}
+.fcal-nav:active:not(:disabled) { transform: scale(.94); }
+.fcal-nav:disabled { opacity: .3; cursor: not-allowed; }
+.fcal-nav:focus-visible { outline: 2px solid var(--sa-sky-400); outline-offset: 2px; }
+
+/* Sarlavha = tugma: kunlar → oylar → yillar */
+.fcal-title {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+.fcal-title:hover { background: rgba(255, 255, 255, .09); border-color: rgba(255, 255, 255, .14); }
+.fcal-title:active { transform: scale(.97); }
+.fcal-title:focus-visible { outline: 2px solid var(--sa-sky-400); outline-offset: 2px; }
+
+.fcal-title-text {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fcal-caret {
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 13px;
+  color: var(--sa-sky-400);
+  transition: transform .25s var(--sa-ease-pop);
+}
+.fcal--months .fcal-caret,
+.fcal--years .fcal-caret { transform: rotate(180deg); }
+
+/* --- Weekdays --- */
+.fcal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--fcal-gap);
+  margin-bottom: 6px;
+}
+.fcal-wd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .46);
+}
+.fcal-wd.is-weekend { color: rgba(184, 134, 15, .78); }
+
+/* --- Body (kunlar / oylar / yillar) --- */
+.fcal-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: var(--fcal-body-h, 200px);
+}
+
+.fcal-grid { display: grid; gap: var(--fcal-gap); }
+.fcal-grid--days { grid-template-columns: repeat(7, 1fr); }
+.fcal-grid--months,
+.fcal-grid--years {
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 8px;
+  animation: fcalFade .26s var(--sa-ease-reveal) both;
+}
+
+/* Oy / yil kataklari */
+.fcal-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 6px 4px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .04);
+  color: rgba(255, 255, 255, .76);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s var(--sa-ease-pop);
+}
+.fcal-cell:hover:not(:disabled) {
+  background: rgba(255, 255, 255, .1);
+  border-color: rgba(79, 157, 255, .4);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.fcal-cell:focus-visible { outline: 2px solid var(--sa-sky-400); outline-offset: 2px; }
+.fcal-cell:disabled { opacity: .28; cursor: not-allowed; }
+.fcal-cell.is-active { border-color: rgba(79, 157, 255, .55); color: #fff; }
+.fcal-cell.is-today { box-shadow: inset 0 0 0 1.5px var(--sa-sky-400); color: #fff; }
+.fcal-cell.is-selected {
+  background: var(--sa-sky-600);
+  border-color: var(--sa-sky-600);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 0 16px rgba(8, 100, 231, .4);
+}
+.fcal-cell.is-selected:hover:not(:disabled) { background: #0a70ff; }
+
+.fcal-day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255, 255, 255, .74);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .18s ease, color .18s ease, transform .18s var(--sa-ease-pop), box-shadow .18s ease;
+}
+.fcal-day > span { pointer-events: none; }
+
+.fcal-day.is-outside { visibility: hidden; pointer-events: none; }
+.fcal-day.is-weekend { color: rgba(255, 255, 255, .42); }
+
+.fcal-day:hover:not(:disabled) {
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  transform: scale(1.08);
+}
+.fcal-day:focus-visible {
+  outline: 2px solid var(--sa-sky-400);
+  outline-offset: 2px;
+}
+.fcal-day:disabled {
+  color: rgba(255, 255, 255, .2);
+  cursor: not-allowed;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+/* Bugun */
+.fcal-day.is-today {
+  color: #fff;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1.5px var(--sa-sky-400);
+}
+.fcal-day.is-today::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--sa-gold-600);
+  transform: translateX(-50%);
+}
+
+/* Tanlangan kun */
+.fcal-day.is-selected {
+  background: var(--sa-sky-600);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 0 18px rgba(8, 100, 231, .45);
+  animation: fcalPick .32s var(--sa-ease-pop);
+}
+.fcal-day.is-selected:hover:not(:disabled) { background: #0a70ff; }
+.fcal-day.is-selected.is-today { box-shadow: 0 0 18px rgba(8, 100, 231, .45), inset 0 0 0 1.5px #fff; }
+.fcal-day.is-selected::after { background: #fff; }
+
+/* --- Footer row --- */
+.fcal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, .09);
+}
+.fcal-today-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .04);
+  color: rgba(255, 255, 255, .8);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+.fcal-today-btn:hover { background: rgba(8, 100, 231, .3); border-color: var(--sa-sky-400); color: #fff; }
+.fcal-today-btn:focus-visible { outline: 2px solid var(--sa-sky-400); outline-offset: 2px; }
+.fcal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sa-sky-400);
+  box-shadow: 0 0 8px var(--sa-sky-400);
+}
+.fcal-readout {
+  min-width: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, .5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== Bottom ===== */
 .footer-bottom {
   position: relative;
   z-index: 1;
@@ -244,11 +518,7 @@
 }
 .in-view .footer-bottom p { animation: colReveal .6s .54s var(--sa-ease-reveal) both; }
 
-/* ===== Scroll-to-top =====
-   Reshaped from a plain circle to a rounded pill-square with the hero's
-   own bounce-forward pop on appear (buttonPop), rather than a flat slide —
-   governed entirely by live scroll position (see Footer.tsx), not by
-   .in-view, so it can appear long before the footer itself is on screen. */
+/* Scroll-top */
 .scroll-top {
   position: fixed;
   right: clamp(16px, 3vw, 32px);
@@ -268,6 +538,7 @@
   opacity: 0;
   transform: translateY(18px) scale(.7);
   pointer-events: none;
+  cursor: pointer;
   transition: background .2s ease;
 }
 .scroll-top.visible { opacity: 1; pointer-events: auto; animation: scrollTopPop .5s var(--sa-ease-pop) forwards; }
@@ -275,6 +546,7 @@
 .scroll-top:active { transform: scale(.92); }
 .scroll-top:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
+/* ===== Keyframes ===== */
 @keyframes chipPop {
   0% { opacity: 0; transform: translateY(-10px) scale(.82); filter: brightness(0) invert(1) blur(3px); }
   60% { opacity: 1; transform: translateY(2px) scale(1.06); filter: brightness(0) invert(1) blur(0); }
@@ -298,6 +570,15 @@
   55% { opacity: 1; filter: blur(0); }
   100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0); }
 }
+@keyframes fcalFade {
+  0% { opacity: 0; transform: translateY(6px) scale(.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes fcalPick {
+  0% { transform: scale(.72); }
+  60% { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
 @keyframes glowPulse {
   from { transform: scale(1); opacity: .75; }
   to { transform: scale(1.18); opacity: 1; }
@@ -316,11 +597,12 @@
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ===== Responsive ladder =====
-   Mirrors Hero.scss's own breakpoints (900/620/420) so the two sections
-   change shape at the same points. */
+/* ===== Responsive ===== */
 @media (max-width: 1180px) {
-  .footer-top { grid-template-columns: 1.15fr .85fr 1fr 1fr; gap: 32px; }
+  .footer-top { grid-template-columns: 1.1fr .8fr 1fr minmax(240px, 1fr); gap: 32px; }
+  .fcal { --fcal-gap: 3px; --fcal-body-h: 186px; padding: 12px 12px 10px; }
+  .fcal-day { font-size: 12px; }
+  .fcal-cell { min-height: 36px; font-size: 12.5px; }
 }
 
 @media (max-width: 900px) {
@@ -328,6 +610,9 @@
   .footer-heading { margin-bottom: 48px; }
   .footer-top { grid-template-columns: 1fr 1fr; gap: 40px 32px; padding-bottom: 48px; }
   .footer-brand { max-width: none; grid-column: 1 / -1; }
+  .footer-calendar-col { grid-column: 1 / -1; }
+  .fcal { --fcal-gap: 5px; --fcal-body-h: 250px; max-width: 380px; }
+  .fcal-cell { min-height: 46px; font-size: 13.5px; }
 }
 
 @media (max-width: 620px) {
@@ -337,11 +622,30 @@
   .footer-about { font-size: 14px; }
   .footer-glow { width: 420px; height: 420px; top: -140px; right: -120px; }
   .scroll-top { width: 46px; height: 46px; font-size: 17px; border-radius: 14px; }
+  .footer-contact .footer-address-line { max-width: 100%; }
+  .fcal { max-width: 100%; --fcal-gap: 6px; --fcal-body-h: 272px; padding: 16px 14px 12px; }
+  .fcal-day { font-size: 14px; }
+  .fcal-nav { width: 34px; height: 34px; }
+  .fcal-title-text { font-size: 15.5px; }
+  .fcal-cell { min-height: 50px; font-size: 14px; }
+  .fcal-foot { flex-wrap: wrap; row-gap: 6px; }
 }
 
 @media (max-width: 420px) {
   .footer { padding-top: 72px; }
   .footer-col h3 { margin-bottom: 18px; }
+  .fcal { --fcal-gap: 4px; --fcal-body-h: 240px; }
+  .fcal-wd { font-size: 10px; }
+  .fcal-cell { min-height: 44px; }
+}
+
+/* Touch qurilmalarda hover "yopishib qolmasin" */
+@media (hover: none) {
+  .fcal:hover { transform: none; box-shadow: none; }
+  .fcal-day:hover:not(:disabled) { transform: none; background: transparent; }
+  .fcal-day.is-selected:hover:not(:disabled) { background: var(--sa-sky-600); }
+  .fcal-cell:hover:not(:disabled) { transform: none; background: rgba(255, 255, 255, .04); border-color: rgba(255, 255, 255, .1); }
+  .fcal-cell.is-selected:hover:not(:disabled) { background: var(--sa-sky-600); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -352,10 +656,14 @@
   .footer-col h3,
   .footer-col nav a,
   .footer-contact a,
-  .footer-address span,
+  .footer-contact .footer-address-line,
+  .footer-calendar-wrapper,
   .footer-bottom-dot,
   .footer-bottom p,
   .fw-word { animation: none; opacity: 1; transform: none; filter: none; }
+  .fcal, .fcal-day, .fcal-cell, .fcal-nav, .fcal-title, .fcal-caret { transition: none; animation: none; }
+  .fcal-grid--months, .fcal-grid--years { animation: none; }
+  .fcal:hover, .fcal-day:hover:not(:disabled), .fcal-cell:hover:not(:disabled) { transform: none; }
   .scroll-top { transition: opacity .2s ease; }
   .scroll-top.visible { transform: none; }
 }
