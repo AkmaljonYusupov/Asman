@@ -1,0 +1,314 @@
+/* ===== Contact =====
+   PageHero -> contact form -> map, in the "daytime sky" language PageHero
+   already established. Nothing is redeclared from Navbar/Footer's :root
+   tokens, only consumed via var(--sa-*, fallback). */
+
+/* ===== Form ===== */
+.cs-form-section {
+  position: relative;
+  padding: 88px clamp(20px, 5vw, 80px) 96px;
+  background: var(--sa-mist, #f4f7fc);
+}
+
+.cs-form-card {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: clamp(28px, 3.4vw, 44px);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 20px 44px rgba(16, 32, 59, .08);
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .7s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)), transform .7s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1));
+}
+.cs-form-card.in-view { opacity: 1; transform: translateY(0); }
+
+.cs-form-heading { text-align: center; margin-bottom: 28px; }
+.cs-form-heading h2 {
+  margin: 0 0 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(24px, 2.4vw, 32px);
+  letter-spacing: -1.2px;
+  font-weight: 700;
+  color: var(--sa-ink, #10203b);
+}
+.cs-form-heading p {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--sa-ink-soft, rgba(16, 32, 59, .64));
+}
+
+.cs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 18px;
+  font-family: 'Inter', sans-serif;
+}
+.cs-field > span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sa-ink, #10203b);
+}
+.cs-field input,
+.cs-field textarea {
+  padding: 13px 15px;
+  border: 1.5px solid rgba(16, 32, 59, .12);
+  border-radius: 12px;
+  background: var(--sa-mist, #f4f7fc);
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--sa-ink, #10203b);
+  resize: vertical;
+  transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.cs-field input::placeholder,
+.cs-field textarea::placeholder { color: rgba(16, 32, 59, .35); font-weight: 500; }
+.cs-field input:focus,
+.cs-field textarea:focus {
+  outline: none;
+  border-color: var(--sa-sky-600, #0864e7);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(8, 100, 231, .1);
+}
+.cs-field input:disabled,
+.cs-field textarea:disabled { opacity: .6; cursor: not-allowed; }
+
+.cs-field-error {
+  font-style: normal;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #d0463c;
+}
+
+.cs-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: 6px;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 12px;
+  background: var(--sa-sky-600, #0864e7);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .01em;
+  cursor: pointer;
+  transition: transform .2s var(--sa-ease-pop, cubic-bezier(.34, 1.56, .64, 1)), box-shadow .2s ease;
+}
+.cs-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(8, 100, 231, .28);
+}
+.cs-submit:active:not(:disabled) { transform: translateY(0); }
+.cs-submit:disabled { cursor: not-allowed; opacity: .75; }
+
+/* ===== Sending status overlay =====
+   .cs-form-body wraps the fields and the status panel so one can sit
+   directly on top of the other, in the same spot inside the card:
+   - .cs-form-fields stays in normal flow (so it keeps defining the
+     card's height) but fades + scales down and stops accepting clicks
+     once a submission starts.
+   - .cs-status-panel is absolutely positioned over that same area,
+     starting invisible, and fades + scales in slightly *after* the
+     fields have started leaving (transition-delay below) — so the
+     inputs visibly clear out first, then the spinner/checkmark takes
+     their place. Plain fade/scale only: no bounce, no native
+     alert()/prompt(), no fixed corner popup. */
+.cs-form-body { position: relative; }
+
+.cs-form-fields {
+  transition: opacity .35s ease, transform .35s ease, filter .35s ease;
+}
+.cs-form-fields.is-hidden {
+  opacity: 0;
+  transform: scale(.97);
+  filter: blur(3px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.cs-status-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+  opacity: 0;
+  transform: scale(.94);
+  pointer-events: none;
+  transition: opacity .4s ease .18s, transform .4s var(--sa-ease-pop, cubic-bezier(.34, 1.56, .64, 1)) .18s;
+}
+.cs-status-panel.show { opacity: 1; transform: scale(1); pointer-events: auto; }
+
+.cs-status-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(8, 100, 231, .1);
+  color: var(--sa-sky-600, #0864e7);
+  font-size: 26px;
+}
+.cs-status-panel.is-success .cs-status-icon { background: rgba(30, 158, 99, .12); color: #1e9e63; }
+
+.cs-status-spinner {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 3px solid rgba(8, 100, 231, .22);
+  border-top-color: var(--sa-sky-600, #0864e7);
+  animation: csSpin .7s linear infinite;
+}
+
+.cs-status-panel strong {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--sa-ink, #10203b);
+}
+.cs-status-panel p {
+  max-width: 320px;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--sa-ink-soft, rgba(16, 32, 59, .64));
+}
+
+.cs-status-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: var(--sa-mist, #f4f7fc);
+  color: var(--sa-ink-soft, rgba(16, 32, 59, .64));
+  font-size: 12px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.cs-status-close:hover { background: rgba(16, 32, 59, .1); color: var(--sa-ink, #10203b); }
+.cs-status-close:focus-visible { outline: 2px solid var(--sa-sky-600, #0864e7); outline-offset: 2px; }
+
+@keyframes csSpin { to { transform: rotate(360deg); } }
+
+/* ===== Map ===== */
+.cs-map-section {
+  padding: 0 0 0;
+  overflow-x: hidden;
+  background: #fff;
+}
+
+.cs-map-heading {
+  max-width: 640px;
+  margin: 0 auto 28px;
+  padding: 96px clamp(20px, 4vw, 48px) 0;
+  text-align: center;
+}
+
+.cs-map-heading h2 {
+  margin: 0 0 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(26px, 2.6vw, 36px);
+  letter-spacing: -1.5px;
+  font-weight: 700;
+  color: var(--sa-ink, #10203b);
+}
+
+.cs-word {
+  display: inline-block;
+  opacity: 0;
+}
+.cs-word.in-view { animation: csWordIn .8s cubic-bezier(.19, 1, .22, 1) both; }
+
+.cs-map-lead {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--sa-ink-soft, rgba(16, 32, 59, .64));
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .6s .4s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)), transform .6s .4s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1));
+}
+.cs-map-lead.in-view { opacity: 1; transform: translateY(0); }
+
+/* Full-bleed: breaks out of the section's own max-width/padding to touch
+   the browser's left/right edges, and sits with zero bottom margin so it
+   meets the footer directly below — no shadow, no rounded corners, since
+   an edge-to-edge strip reads cleaner flush than framed. */
+.cs-map-frame {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  height: 450px;
+  border-radius: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .7s .1s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)), transform .7s .1s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1));
+}
+.cs-map-frame.in-view { opacity: 1; transform: translateY(0); }
+
+.cs-map-iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@keyframes csWordIn {
+  0% { opacity: 0; transform: translateY(24px) scale(.85) rotate(-3deg); filter: blur(5px); }
+  55% { opacity: 1; filter: blur(0); }
+  78% { transform: translateY(-2px) scale(1.03) rotate(1deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0); }
+}
+
+/* ===== Responsive ladder ===== */
+@media (max-width: 900px) {
+  .cs-form-section { padding: 72px 6vw 80px; }
+  .cs-map-heading { padding-top: 72px; }
+  .cs-map-frame { height: 380px; }
+}
+
+@media (max-width: 620px) {
+  .cs-form-card { padding: 24px; }
+  .cs-map-heading h2 { font-size: 24px; }
+  .cs-map-frame { height: 300px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-form-card, .cs-map-lead, .cs-map-frame, .cs-form-fields, .cs-status-panel {
+    transition: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .cs-form-fields.is-hidden { display: none; }
+  .cs-status-panel:not(.show) { display: none; }
+  .cs-word { animation: none; opacity: 1; transform: none; filter: none; }
+  .cs-status-spinner { animation: none; }
+}

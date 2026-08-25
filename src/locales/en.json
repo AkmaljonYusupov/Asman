@@ -119,6 +119,32 @@
       "keywords": "contact asman, asman phone number, asman email, asman address, paint quote uzbekistan"
     }
   },
+  "contactMap": {
+    "title": "Visit our location",
+    "description": "We're located in the \"Kokand\" Free Economic Zone, Fergana region."
+  },
+  "contactForm": {
+    "heading": "Contact form",
+    "description": "Leave your name, phone number, and message. We'll get back to you shortly.",
+    "fields": {
+      "fullName": { "label": "Full name", "placeholder": "e.g. John Smith" },
+      "phone": { "label": "Phone number", "placeholder": "+998 __ ___ __ __" },
+      "message": { "label": "Message", "placeholder": "Write your message here..." }
+    },
+    "errors": {
+      "fullName": "Please enter your full name",
+      "phone": "Please enter a valid phone number",
+      "message": "Message should be at least 10 characters"
+    },
+    "submit": "Send message",
+    "close": "Close",
+    "status": {
+      "sendingTitle": "Sending\u2026",
+      "sendingDescription": "Your message is being sent, please wait a moment.",
+      "successTitle": "Thank you!",
+      "successDescription": "Your message has been received. We'll get back to you shortly."
+    }
+  },
   "footer": {
     "about": "Premium paints and coatings — an elegant finish and lasting protection for your home, business, and projects.",
     "heading": {

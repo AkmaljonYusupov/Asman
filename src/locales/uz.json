@@ -119,6 +119,32 @@
       "keywords": "asman bilan bog'lanish, asman telefon raqami, asman email, asman manzili, o'zbekistonda bo'yoq narxi"
     }
   },
+  "contactMap": {
+    "title": "Manzilimizga tashrif buyuring",
+    "description": "Farg'ona viloyati, \"Qo'qon\" erkin iqtisodiy zonasida joylashganmiz."
+  },
+  "contactForm": {
+    "heading": "Murojaat formasi",
+    "description": "Ism, telefon raqam va xabaringizni qoldiring. Biz sizga qisqa vaqt ichida javob beramiz.",
+    "fields": {
+      "fullName": { "label": "Ism va familiya", "placeholder": "Masalan: Aziz Karimov" },
+      "phone": { "label": "Telefon raqami", "placeholder": "+998 __ ___ __ __" },
+      "message": { "label": "Xabar matni", "placeholder": "Fikringizni shu yerga yozing..." }
+    },
+    "errors": {
+      "fullName": "Ism va familiyangizni to'liq kiriting",
+      "phone": "Telefon raqamingizni to'g'ri kiriting",
+      "message": "Xabar kamida 10 ta belgidan iborat bo'lsin"
+    },
+    "submit": "Xabarni yuborish",
+    "close": "Yopish",
+    "status": {
+      "sendingTitle": "Yuborilmoqda\u2026",
+      "sendingDescription": "Xabaringiz yuborilmoqda, iltimos biroz kuting.",
+      "successTitle": "Rahmat!",
+      "successDescription": "Xabaringiz qabul qilindi, tez orada sizga javob beramiz."
+    }
+  },
   "footer": {
     "about": "Yuqori sifatli bo'yoq va qoplama mahsulotlari — uyingiz, biznesingiz va loyihalaringiz uchun estetik ko'rinish va mustahkam himoya.",
     "heading": {
