@@ -6,8 +6,13 @@ import PageHero from '../PageHero/PageHero'
 import './Contact.scss'
 
 /**
- * Contact — PageHero, a contact form, and a live map of Asman's location
- * ("Qo'qon" Free Economic Zone, Fergana region).
+ * Contact — PageHero, a two-column "get in touch" frame (info panel +
+ * contact form), and a live map of Asman's location ("Qo'qon" Free
+ * Economic Zone, Fergana region).
+ *
+ * The frame's left column (ContactInfoPanel) carries the eyebrow,
+ * heading, description, phone/email/address rows, and social links;
+ * the right column is the form card, unchanged in its own behaviour.
  *
  * Sending status is shown as a panel that fades in *over the fields
  * themselves*, inside the same form card: submitting first fades the
@@ -47,6 +52,75 @@ const CheckCircleIcon: IconFn = () => (
 const CloseIcon: IconFn = () => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
     <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+)
+
+const ArrowRightIcon: IconFn = () => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
+    <path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+// ===== Social icons — flat, white glyphs; each sits on its own coloured
+// rounded-square badge (background colour set via .cs-social-icon-* in
+// Contact.scss), matching the reference design's Instagram/Facebook/
+// Telegram tiles. =====
+const InstagramGlyph: IconFn = () => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
+    <rect x="3.5" y="3.5" width="17" height="17" rx="5" stroke="white" strokeWidth="1.7" />
+    <circle cx="12" cy="12" r="4.2" stroke="white" strokeWidth="1.7" />
+    <circle cx="17.1" cy="6.9" r="1.1" fill="white" />
+  </svg>
+)
+
+const FacebookGlyph: IconFn = () => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
+    <path
+      d="M14 9.2h2.2V6.4h-2.2c-2 0-3.4 1.5-3.4 3.5v1.7H8.7v2.8h1.9V19h2.8v-4.6h2l.5-2.8h-2.5v-1.4c0-.6.4-1 1-1Z"
+      fill="white"
+    />
+  </svg>
+)
+
+const TelegramGlyph: IconFn = () => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
+    <path
+      d="m5 12.4 13.7-5.6c.6-.25 1.2.2 1 .85l-2.3 10.9c-.15.7-.85 1-1.4.6l-3.5-2.7-1.8 1.8c-.25.25-.65.2-.8-.15l-1.2-3.1-3-1.1c-.6-.2-.65-1.05-.5-1.5Z"
+      fill="white"
+    />
+    <path d="m9.7 14.1 8.3-6.6-7 7.3" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+// Phone/email/address glyphs for the left panel's contact rows — same
+// flat, currentColor approach as the other icons in this file (not a
+// white-on-badge social glyph: these rows share one plain brand-colour
+// tile rather than a per-platform colour).
+const PhoneGlyph: IconFn = () => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
+    <path
+      d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.9 21 3 13.1 3 3.9c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.3 0 .7-.2 1L6.6 10.8Z"
+      fill="white"
+    />
+  </svg>
+)
+
+const EmailGlyph: IconFn = () => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
+    <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" stroke="white" strokeWidth="1.7" />
+    <path d="m4.5 7 7.5 6 7.5-6" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+const MapPinGlyph: IconFn = () => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
+    <path
+      d="M12 21.5c4.2-4.6 7-8.3 7-12A7 7 0 0 0 5 9.5c0 3.7 2.8 7.4 7 12Z"
+      stroke="white"
+      strokeWidth="1.7"
+      strokeLinejoin="round"
+    />
+    <circle cx="12" cy="9.5" r="2.4" stroke="white" strokeWidth="1.7" />
   </svg>
 )
 
@@ -129,6 +203,99 @@ function StatusPanel({ status, onClose }: { status: SendStatus; onClose: () => v
   )
 }
 
+// Social profile links for the left "get in touch" panel. Names come
+// from `footer.social.*` (already used the same way in Footer), so the
+// label can never drift out of sync between the two places.
+const SOCIAL_LINKS: { key: 'instagram' | 'facebook' | 'telegram'; href: string; Icon: IconFn }[] = [
+  { key: 'instagram', href: 'https://www.instagram.com/asman.uz/', Icon: InstagramGlyph },
+  { key: 'facebook', href: 'https://www.facebook.com/asmanuzbekistan/', Icon: FacebookGlyph },
+  { key: 'telegram', href: 'https://t.me/asman_uzb', Icon: TelegramGlyph },
+]
+
+// Phone/email/address rows shown on the left "get in touch" panel, above
+// the divider and social list. `footer.phone`/`footer.phoneHref` and
+// `footer.address` are reused here (same numbers Footer already shows),
+// so there's a single source of truth for them; only the row's own
+// label copy comes from `contactForm.info.*` (kept for screen readers —
+// see .cs-info-contact-label in Contact.scss). The address row links out
+// to the real Google Maps place rather than a tel:/mailto: scheme.
+const CONTACT_ROWS: {
+  key: 'phone' | 'email' | 'address'
+  href: string
+  external?: boolean
+  Icon: IconFn
+}[] = [
+  { key: 'phone', href: 'tel:+998954041100', Icon: PhoneGlyph },
+  { key: 'email', href: 'mailto:info@asman.uz', Icon: EmailGlyph },
+  { key: 'address', href: 'https://maps.app.goo.gl/fVzbMBR7J6tJeCo59', external: true, Icon: MapPinGlyph },
+]
+
+// ===== Quick-info strip — phone/email/address as solid pills, sitting
+// in the gap ABOVE the bordered frame (not inside it, and not inside
+// the info panel either): its own full-width row between PageHero's
+// text and the frame, matching the reference design where this strip
+// reads as a separate element from the "get in touch" card below it. =====
+function ContactQuickInfo() {
+  const { t } = useTranslation()
+  return (
+    <div className="cs-quick-info">
+      {CONTACT_ROWS.map(({ key, href, external, Icon }) => (
+        <a
+          key={key}
+          className="cs-info-contact-row"
+          href={href}
+          {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        >
+          <span className="cs-info-contact-icon">
+            <Icon />
+          </span>
+          <span className="cs-info-contact-text">
+            <span className="cs-info-contact-label">{t(`contactForm.info.${key}Label`)}</span>
+            <span className="cs-info-contact-value">{t(`footer.${key}`)}</span>
+          </span>
+        </a>
+      ))}
+    </div>
+  )
+}
+
+// ===== Left "get in touch" panel — eyebrow, heading, description, a
+// thin divider, then a list of social links, each with a coloured icon
+// tile, the platform name, and a "Follow" call to action. Sits beside
+// the form card inside the same bordered outer frame. =====
+function ContactInfoPanel() {
+  const { t } = useTranslation()
+  return (
+    <div className="cs-info-panel">
+      <p className="cs-info-eyebrow">
+        <span className="cs-info-eyebrow-dash" aria-hidden="true" />
+        {t('contactForm.info.eyebrow')}
+      </p>
+      <h2>{t('contactForm.info.heading')}</h2>
+      <p className="cs-info-description">{t('contactForm.info.description')}</p>
+
+      <div className="cs-info-divider" />
+
+      <p className="cs-info-follow-label">{t('contactForm.info.followLabel')}</p>
+      <ul className="cs-social-list">
+        {SOCIAL_LINKS.map(({ key, href, Icon }) => (
+          <li key={key}>
+            <a className="cs-social-row" href={href} target="_blank" rel="noopener noreferrer">
+              <span className={`cs-social-icon cs-social-icon-${key}`}>
+                <Icon />
+              </span>
+              <span className="cs-social-name">{t(`footer.social.${key}`)}</span>
+              <span className="cs-social-cta">
+                {t('contactForm.info.followCta')} <ArrowRightIcon />
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 // ===== Form =====
 type FormState = { fullName: string; phone: string; message: string }
 const EMPTY_FORM: FormState = { fullName: '', phone: '', message: '' }
@@ -182,63 +349,69 @@ function FormSection() {
 
   return (
     <section className="cs-form-section" ref={ref}>
-      <div className={`cs-form-card${inView ? ' in-view' : ''}`}>
-        <div className="cs-form-heading">
-          <h2>{t('contactForm.heading')}</h2>
-          <p>{t('contactForm.description')}</p>
-        </div>
+      <ContactQuickInfo />
 
-        <div className="cs-form-body">
-          <form
-            className={`cs-form-fields${status !== 'idle' ? ' is-hidden' : ''}`}
-            onSubmit={handleSubmit}
-            noValidate
-            aria-hidden={status !== 'idle'}
-          >
-            <label className="cs-field">
-              <span>{t('contactForm.fields.fullName.label')}</span>
-              <input
-                type="text"
-                value={form.fullName}
-                onChange={handleChange('fullName')}
-                onBlur={handleBlur('fullName')}
-                placeholder={t('contactForm.fields.fullName.placeholder')}
-                autoComplete="name"
-              />
-              {touched.fullName && errors.fullName && <em className="cs-field-error">{errors.fullName}</em>}
-            </label>
+      <div className={`cs-contact-frame${inView ? ' in-view' : ''}`}>
+        <ContactInfoPanel />
 
-            <label className="cs-field">
-              <span>{t('contactForm.fields.phone.label')}</span>
-              <input
-                type="tel"
-                value={form.phone}
-                onChange={handleChange('phone')}
-                onBlur={handleBlur('phone')}
-                placeholder={t('contactForm.fields.phone.placeholder')}
-                autoComplete="tel"
-              />
-              {touched.phone && errors.phone && <em className="cs-field-error">{errors.phone}</em>}
-            </label>
+        <div className="cs-form-card">
+          <div className="cs-form-heading">
+            <h2>{t('contactForm.heading')}</h2>
+            <p>{t('contactForm.description')}</p>
+          </div>
 
-            <label className="cs-field">
-              <span>{t('contactForm.fields.message.label')}</span>
-              <textarea
-                rows={5}
-                value={form.message}
-                onChange={handleChange('message')}
-                onBlur={handleBlur('message')}
-                placeholder={t('contactForm.fields.message.placeholder')}
-              />
-              {touched.message && errors.message && <em className="cs-field-error">{errors.message}</em>}
-            </label>
+          <div className="cs-form-body">
+            <form
+              className={`cs-form-fields${status !== 'idle' ? ' is-hidden' : ''}`}
+              onSubmit={handleSubmit}
+              noValidate
+              aria-hidden={status !== 'idle'}
+            >
+              <label className="cs-field">
+                <span>{t('contactForm.fields.fullName.label')}</span>
+                <input
+                  type="text"
+                  value={form.fullName}
+                  onChange={handleChange('fullName')}
+                  onBlur={handleBlur('fullName')}
+                  placeholder={t('contactForm.fields.fullName.placeholder')}
+                  autoComplete="name"
+                />
+                {touched.fullName && errors.fullName && <em className="cs-field-error">{errors.fullName}</em>}
+              </label>
 
-            <button type="submit" className="cs-submit">
-              <SendIcon /> {t('contactForm.submit')}
-            </button>
-          </form>
+              <label className="cs-field">
+                <span>{t('contactForm.fields.phone.label')}</span>
+                <input
+                  type="tel"
+                  value={form.phone}
+                  onChange={handleChange('phone')}
+                  onBlur={handleBlur('phone')}
+                  placeholder={t('contactForm.fields.phone.placeholder')}
+                  autoComplete="tel"
+                />
+                {touched.phone && errors.phone && <em className="cs-field-error">{errors.phone}</em>}
+              </label>
 
-          <StatusPanel status={status} onClose={closeStatus} />
+              <label className="cs-field">
+                <span>{t('contactForm.fields.message.label')}</span>
+                <textarea
+                  rows={5}
+                  value={form.message}
+                  onChange={handleChange('message')}
+                  onBlur={handleBlur('message')}
+                  placeholder={t('contactForm.fields.message.placeholder')}
+                />
+                {touched.message && errors.message && <em className="cs-field-error">{errors.message}</em>}
+              </label>
+
+              <button type="submit" className="cs-submit">
+                <SendIcon /> {t('contactForm.submit')}
+              </button>
+            </form>
+
+            <StatusPanel status={status} onClose={closeStatus} />
+          </div>
         </div>
       </div>
     </section>

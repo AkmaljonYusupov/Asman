@@ -126,6 +126,16 @@
   "contactForm": {
     "heading": "Murojaat formasi",
     "description": "Ism, telefon raqam va xabaringizni qoldiring. Biz sizga qisqa vaqt ichida javob beramiz.",
+    "info": {
+      "eyebrow": "Biz bilan bog'laning",
+      "heading": "Bizga xabar yuboring",
+      "description": "Quyidagi formani to'ldiring. Xabaringizni ko'rib chiqib, tez orada siz bilan bog'lanamiz.",
+      "phoneLabel": "Qo'ng'iroq qiling",
+      "emailLabel": "Email yozing",
+      "addressLabel": "Manzilimiz",
+      "followLabel": "Kuzatish",
+      "followCta": "Kuzatish"
+    },
     "fields": {
       "fullName": { "label": "Ism va familiya", "placeholder": "Masalan: Aziz Karimov" },
       "phone": { "label": "Telefon raqami", "placeholder": "+998 __ ___ __ __" },

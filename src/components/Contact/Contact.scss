@@ -10,32 +10,254 @@
   background: var(--sa-mist, #f4f7fc);
 }
 
-.cs-form-card {
-  max-width: 640px;
+/* Outer bordered frame holding the "get in touch" info panel and the
+   form card side by side, per the reference design: a plain, thin-
+   bordered box (not a heavy card) with a soft gold glow bleeding past
+   its top-left corner, and the form card floating inside it on the
+   right with its own subtle shadow. */
+.cs-contact-frame {
+  position: relative;
+  isolation: isolate;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: clamp(28px, 3.4vw, 44px);
-  border-radius: 22px;
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.15fr);
+  gap: clamp(20px, 3vw, 44px);
+  padding: clamp(28px, 3.6vw, 48px);
+  border: 1px solid rgba(16, 32, 59, .1);
+  border-radius: 26px;
   background: #fff;
-  box-shadow: 0 20px 44px rgba(16, 32, 59, .08);
   opacity: 0;
   transform: translateY(26px);
   transition: opacity .7s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)), transform .7s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1));
 }
-.cs-form-card.in-view { opacity: 1; transform: translateY(0); }
+.cs-contact-frame.in-view { opacity: 1; transform: translateY(0); }
 
-.cs-form-heading { text-align: center; margin-bottom: 28px; }
-.cs-form-heading h2 {
-  margin: 0 0 10px;
+.cs-contact-frame::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(245, 185, 66, .28), transparent 70%);
+  filter: blur(18px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ----- Left: info panel ----- */
+.cs-info-panel { display: flex; flex-direction: column; }
+
+.cs-info-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--sa-ink-soft, rgba(16, 32, 59, .64));
+}
+.cs-info-eyebrow-dash {
+  display: inline-block;
+  width: 22px;
+  height: 2.5px;
+  border-radius: 2px;
+  background: var(--sa-gold, #f5b942);
+}
+
+.cs-info-panel h2 {
+  margin: 0 0 12px;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(24px, 2.4vw, 32px);
-  letter-spacing: -1.2px;
+  font-size: clamp(24px, 2.2vw, 29px);
+  letter-spacing: -1.1px;
+  font-weight: 700;
+  color: var(--sa-ink, #10203b);
+}
+
+.cs-info-description {
+  margin: 0 0 26px;
+  max-width: 42ch;
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.7;
+  color: var(--sa-ink-soft, rgba(16, 32, 59, .64));
+}
+
+/* Quick-info strip — sits in the gap above .cs-contact-frame, sharing
+   its max-width/centering so the two read as aligned, but deliberately
+   NOT inside the frame's own border: this is its own element, one step
+   above the "get in touch" card, not a part of it. auto-fit means the
+   grid collapses to fewer columns on its own as space runs out, so no
+   extra breakpoint is needed for narrow screens; address's longer text
+   simply wraps onto more lines within its own cell rather than
+   truncating or needing a wider spanning cell. */
+.cs-quick-info {
+  max-width: 1180px;
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+/* Phone/email/address rows — solid-fill pills, each a plain block of
+   the same brand indigo with a white icon and value. */
+
+.cs-info-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: var(--sa-indigo-600, #363391);
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.cs-info-contact-row:hover {
+  background: var(--sa-indigo-700, #2d2a79);
+  box-shadow: 0 14px 28px rgba(54, 51, 145, .3);
+  transform: translateY(-2px);
+}
+.cs-info-contact-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  font-size: 20px;
+  color: #fff;
+}
+.cs-info-contact-text { display: flex; flex-direction: column; min-width: 0; }
+/* Visually hidden — kept in the DOM so screen readers still announce
+   "Call us" / "Email us" / "Our location" before the value, matching
+   the reference design which shows only the value itself on screen. */
+.cs-info-contact-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.cs-info-contact-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #fff;
+}
+
+.cs-info-divider {
+  height: 1px;
+  margin-bottom: 22px;
+  background: rgba(16, 32, 59, .08);
+}
+
+.cs-info-follow-label {
+  margin: 0 0 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--sa-ink-soft, rgba(16, 32, 59, .55));
+}
+
+.cs-social-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cs-social-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  border: 1px solid rgba(16, 32, 59, .1);
+  border-radius: 13px;
+  text-decoration: none;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.cs-social-row:hover {
+  border-color: rgba(16, 32, 59, .18);
+  background: var(--sa-mist, #f4f7fc);
+  transform: translateY(-1px);
+}
+
+.cs-social-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 13px;
+  font-size: 24px;
+  transition: transform .35s var(--sa-ease-pop, cubic-bezier(.34, 1.56, .64, 1)), box-shadow .3s ease;
+}
+.cs-social-row:hover .cs-social-icon {
+  transform: scale(1.1) rotate(-6deg);
+  box-shadow: 0 10px 20px rgba(16, 32, 59, .18);
+}
+.cs-social-icon-instagram { background: radial-gradient(circle at 30% 110%, #fdf497, #fd5949 40%, #d6249f 70%, #285aeb); }
+.cs-social-icon-facebook { background: #1877f2; }
+.cs-social-icon-telegram { background: #29a9eb; }
+
+.cs-social-name {
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--sa-ink, #10203b);
+}
+
+.cs-social-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--sa-ink-soft, rgba(16, 32, 59, .5));
+  white-space: nowrap;
+}
+.cs-social-cta svg { transition: transform .25s ease; }
+.cs-social-row:hover .cs-social-cta { color: var(--sa-ink, #10203b); }
+.cs-social-row:hover .cs-social-cta svg { transform: translateX(3px); }
+
+/* ----- Right: form card ----- */
+.cs-form-card {
+  padding: clamp(22px, 2.6vw, 32px);
+  border: 1px solid rgba(16, 32, 59, .08);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 20px 44px rgba(16, 32, 59, .08);
+}
+
+.cs-form-heading { margin-bottom: 22px; }
+.cs-form-heading h2 {
+  margin: 0 0 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(22px, 2.2vw, 27px);
+  letter-spacing: -1.1px;
   font-weight: 700;
   color: var(--sa-ink, #10203b);
 }
 .cs-form-heading p {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1.6;
   color: var(--sa-ink-soft, rgba(16, 32, 59, .64));
@@ -57,7 +279,7 @@
 .cs-field textarea {
   padding: 13px 15px;
   border: 1.5px solid rgba(16, 32, 59, .12);
-  border-radius: 12px;
+  border-radius: 13px;
   background: var(--sa-mist, #f4f7fc);
   font-family: 'Inter', sans-serif;
   font-size: 14.5px;
@@ -94,7 +316,7 @@
   margin-top: 6px;
   padding: 15px 20px;
   border: none;
-  border-radius: 12px;
+  border-radius: 13px;
   background: var(--sa-sky-600, #0864e7);
   color: #fff;
   font-family: 'Inter', sans-serif;
@@ -290,18 +512,20 @@
 /* ===== Responsive ladder ===== */
 @media (max-width: 900px) {
   .cs-form-section { padding: 72px 6vw 80px; }
+  .cs-contact-frame { grid-template-columns: 1fr; }
   .cs-map-heading { padding-top: 72px; }
   .cs-map-frame { height: 380px; }
 }
 
 @media (max-width: 620px) {
-  .cs-form-card { padding: 24px; }
+  .cs-contact-frame { padding: 22px; border-radius: 20px; }
+  .cs-form-card { padding: 22px; }
   .cs-map-heading h2 { font-size: 24px; }
   .cs-map-frame { height: 300px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cs-form-card, .cs-map-lead, .cs-map-frame, .cs-form-fields, .cs-status-panel {
+  .cs-contact-frame, .cs-map-lead, .cs-map-frame, .cs-form-fields, .cs-status-panel {
     transition: none;
     opacity: 1;
     transform: none;

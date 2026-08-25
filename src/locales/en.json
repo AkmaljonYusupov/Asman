@@ -126,6 +126,16 @@
   "contactForm": {
     "heading": "Contact form",
     "description": "Leave your name, phone number, and message. We'll get back to you shortly.",
+    "info": {
+      "eyebrow": "Get in touch with us",
+      "heading": "Send us a message",
+      "description": "Fill out the form below. We'll review your message and get back to you shortly.",
+      "phoneLabel": "Call us",
+      "emailLabel": "Email us",
+      "addressLabel": "Our location",
+      "followLabel": "Follow us",
+      "followCta": "Follow"
+    },
     "fields": {
       "fullName": { "label": "Full name", "placeholder": "e.g. John Smith" },
       "phone": { "label": "Phone number", "placeholder": "+998 __ ___ __ __" },
