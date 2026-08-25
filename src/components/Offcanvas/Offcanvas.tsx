@@ -68,8 +68,13 @@ export default function Offcanvas({ open, onClose }: OffcanvasProps) {
         <div className="offcanvas-footer">
           <span className="offcanvas-languages-label">{t('aria.language')}</span>
           <div className="offcanvas-languages">
-            {languages.map(([lang, label]) => (
-              <button key={lang} className={i18n.language === lang ? 'selected' : ''} onClick={() => changeLanguage(lang)}>
+            {languages.map(([lang, label], index) => (
+              <button
+                key={lang}
+                className={i18n.language === lang ? 'selected' : ''}
+                onClick={() => changeLanguage(lang)}
+                style={{ transitionDelay: open ? `${(menuKeys.length + index) * 45}ms` : '0ms' }}
+              >
                 <Flag lang={lang} />
                 <span>{label}</span>
               </button>

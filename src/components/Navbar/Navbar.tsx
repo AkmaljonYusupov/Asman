@@ -55,8 +55,12 @@ export default function Navbar() {
         </NavLink>
 
         <nav className="navigation" aria-label="Primary">
-          {menuKeys.map((key) => (
-            <NavLink key={key} to={key === 'home' ? '/' : `/${key}`}>
+          {menuKeys.map((key, index) => (
+            <NavLink
+              key={key}
+              to={key === 'home' ? '/' : `/${key}`}
+              style={{ animationDelay: `${0.15 + index * 0.07}s` }}
+            >
               {t(`nav.${key}`)}
             </NavLink>
           ))}

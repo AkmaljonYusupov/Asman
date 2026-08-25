@@ -62,9 +62,10 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   animation: textReveal .8s .55s cubic-bezier(.22, .8, .24, 1) both;
 }
 .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+/* animation-delay is set inline per button from Hero.tsx (see actionsDelay),
+   not fixed here — title length varies by slide and language, so a static
+   delay would let the buttons pop in before longer titles finish revealing. */
 .hero-actions .button { opacity: 0; animation: buttonPop .6s cubic-bezier(.34, 1.56, .64, 1) both; }
-.hero-actions .primary { animation-delay: .68s; }
-.hero-actions .secondary { animation-delay: .78s; }
 .button {
   min-height: 54px;
   border-radius: 13px;

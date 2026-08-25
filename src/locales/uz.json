@@ -1,5 +1,45 @@
 {
-  "brand": "asman", "nav": { "home": "Bosh sahifa", "about": "Biz haqimizda", "products": "Mahsulotlar", "projects": "Loyihalar", "news": "Yangiliklar", "contact": "Kontaktlar" },
-  "hero": { "eyebrow": "Sifat va ishonch — har doim ustuvor!", "titleStart": "Ranglar bilan", "titleAccent": "kelajakni", "titleEnd": "yaratamiz!", "description": "Yuqori sifatli bo‘yoq va qoplama mahsulotlarimiz uyingiz, biznesingiz va loyihalaringizga estetik ko‘rinish va mustahkam himoya beradi.", "catalog": "Mahsulotlar katalogi", "contact": "Biz bilan bog‘lanish", "product": "Jemchug‘", "slides": ["Har bir makon uchun ishonchli himoya", "Uyingizga yangi ranglar bering", "Sifatni tanlang, farqni his qiling"] },
-  "aria": { "previous": "Oldingi slayd", "next": "Keyingi slayd", "menu": "Menyuni ochish", "language": "Tilni o'zgartirish" }
+  "brand": "asman",
+  "nav": {
+    "home": "Bosh sahifa",
+    "about": "Biz haqimizda",
+    "products": "Mahsulotlar",
+    "projects": "Loyihalar",
+    "news": "Yangiliklar",
+    "contact": "Kontaktlar"
+  },
+  "hero": {
+    "catalog": "Mahsulotlar katalogi",
+    "contact": "Biz bilan bog‘lanish",
+    "product": "Jemchug‘",
+    "slides": [
+      {
+        "eyebrow": "Har bir makon uchun ishonchli himoya",
+        "titleStart": "Ranglar bilan",
+        "titleAccent": "kelajakni",
+        "titleEnd": "yaratamiz!",
+        "description": "Yuqori sifatli bo‘yoq va qoplama mahsulotlarimiz uyingiz, biznesingiz va loyihalaringizga estetik ko‘rinish va mustahkam himoya beradi."
+      },
+      {
+        "eyebrow": "Har qanday ob-havoga chidamli bo‘yoq",
+        "titleStart": "Har qanday ob-havoga",
+        "titleAccent": "chidamli",
+        "titleEnd": "yorqin rang!",
+        "description": "Yuqori oqlik, mustahkam yopishqoqlik va ob-havo hamda harorat o‘zgarishlariga chidamli, yuqori sifatli akril bo‘yoq — dekorativ suvoq uchun maxsus."
+      },
+      {
+        "eyebrow": "Nuqsonlarni yashiruvchi mustahkam qoplama",
+        "titleStart": "Nuqsonlarni yashiruvchi",
+        "titleAccent": "mustahkam",
+        "titleEnd": "tekstura!",
+        "description": "Ishlatishga tayyor, akril kopolimer va minerallarga asoslangan strukturaviy qoplama — mikro yoriq va sirt nuqsonlarini yashiradi, shikastlanish, sovuq, ishqor va yuvishga chidamli."
+      }
+    ]
+  },
+  "aria": {
+    "previous": "Oldingi slayd",
+    "next": "Keyingi slayd",
+    "menu": "Menyuni ochish",
+    "language": "Tilni o'zgartirish"
+  }
 }

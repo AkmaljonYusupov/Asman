@@ -118,6 +118,17 @@ function AnimatedWords({ text, startIndex, keyPrefix }: { text: string; startInd
 // make the progress bar and the actual slide change visibly disagree.
 const AUTOPLAY_MS = 6500
 
+// One slide's full text block, sourced from hero.slides[i] in the locale
+// files — each slide gets its own eyebrow, headline, and description
+// instead of sharing one static block across all three images.
+type HeroSlideContent = {
+  eyebrow: string
+  titleStart: string
+  titleAccent: string
+  titleEnd: string
+  description: string
+}
+
 const slides = [
   { image: slider01, bucket: bucket01 },
   { image: slider02, bucket: bucket02 },
@@ -139,12 +150,31 @@ export default function Hero() {
 
   const select = (index: number) => setCurrent((index + slides.length) % slides.length)
 
-  // One short line per slide (hero.slides[i] in the locale files), shown as
-  // the eyebrow badge so each slide reads as its own moment instead of
-  // repeating the same headline. Falls back to the old static eyebrow if a
-  // locale is missing an entry or hasn't been updated to the array shape yet.
-  const slideEyebrows = t('hero.slides', { returnObjects: true }) as string[]
-  const eyebrow = Array.isArray(slideEyebrows) && slideEyebrows[current] ? slideEyebrows[current] : t('hero.eyebrow')
+  // Each slide now carries its own full text block (see hero.slides[i] in
+  // the locale files: eyebrow, titleStart/titleAccent/titleEnd, description)
+  // instead of one headline shared across all three images.
+  const slidesContent = t('hero.slides', { returnObjects: true }) as HeroSlideContent[]
+  const content: HeroSlideContent = slidesContent?.[current] ?? slidesContent?.[0]
+
+  // Buttons should always appear after the text has finished animating in —
+  // but title length now varies per slide/language, so a fixed CSS delay
+  // isn't safe (a long title would still be mid-word when the buttons
+  // popped). These constants mirror the timings in Hero.scss (.word's
+  // per-word delay/duration, .description's textReveal delay/duration);
+  // keep them in sync if those change.
+  const WORD_DELAY_BASE = 0.1
+  const WORD_DELAY_STEP = 0.07
+  const WORD_ANIM_DURATION = 0.85
+  const DESCRIPTION_DELAY = 0.55
+  const DESCRIPTION_DURATION = 0.8
+  const BUTTONS_BUFFER = 0.15
+  const BUTTONS_STAGGER = 0.12
+
+  const titleWordCount =
+    content.titleStart.split(' ').length + content.titleAccent.split(' ').length + content.titleEnd.split(' ').length
+  const titleFinish = WORD_DELAY_BASE + (titleWordCount - 1) * WORD_DELAY_STEP + WORD_ANIM_DURATION
+  const descriptionFinish = DESCRIPTION_DELAY + DESCRIPTION_DURATION
+  const actionsDelay = Math.max(titleFinish, descriptionFinish) + BUTTONS_BUFFER
 
   // Drag-to-swipe: works with touch, mouse, and pen via the Pointer Events
   // API. Only the horizontal distance between pointerdown and pointerup
@@ -196,20 +226,24 @@ export default function Hero() {
       <div className="hero-shade"></div>
 
       <div className="hero-content" key={current}>
-        <p className="eyebrow"><span><DropIcon /></span>{eyebrow}</p>
+        <p className="eyebrow"><span><DropIcon /></span>{content.eyebrow}</p>
         <h1>
-          <AnimatedWords text={t('hero.titleStart')} startIndex={0} keyPrefix="s" />{' '}
-          <em><AnimatedWords text={t('hero.titleAccent')} startIndex={t('hero.titleStart').split(' ').length} keyPrefix="a" /></em>{' '}
+          <AnimatedWords text={content.titleStart} startIndex={0} keyPrefix="s" />{' '}
+          <em><AnimatedWords text={content.titleAccent} startIndex={content.titleStart.split(' ').length} keyPrefix="a" /></em>{' '}
           <AnimatedWords
-            text={t('hero.titleEnd')}
-            startIndex={t('hero.titleStart').split(' ').length + t('hero.titleAccent').split(' ').length}
+            text={content.titleEnd}
+            startIndex={content.titleStart.split(' ').length + content.titleAccent.split(' ').length}
             keyPrefix="e"
           />
         </h1>
-        <p className="description">{t('hero.description')}</p>
+        <p className="description">{content.description}</p>
         <div className="hero-actions">
-          <a className="button primary" href="#catalog">{t('hero.catalog')} <b><ArrowRightIcon /></b></a>
-          <a className="button secondary" href="#contact"><SearchIcon /> {t('hero.contact')}</a>
+          <a className="button primary" href="#catalog" style={{ animationDelay: `${actionsDelay}s` }}>
+            {t('hero.catalog')} <b><ArrowRightIcon /></b>
+          </a>
+          <a className="button secondary" href="#contact" style={{ animationDelay: `${actionsDelay + BUTTONS_STAGGER}s` }}>
+            <SearchIcon /> {t('hero.contact')}
+          </a>
         </div>
       </div>
 
