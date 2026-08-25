@@ -25,8 +25,14 @@
 
 /* ===== Staggered content reveal =====
    .hero-content remounts on every slide (key={current} in Hero.tsx), so
-   each child's own delayed animation replays in sequence every time. */
-.hero-content { max-width: 505px; }
+   each child's own delayed animation replays in sequence every time.
+   It's also given a fixed, guaranteed stacking position above .products
+   (z-index: 1) — not left to rely on each slide's bucket photo happening
+   to have empty space where the text sits. Different slides' source
+   images bleed into this area by different amounts, so without this the
+   paint order could silently flip per slide/breakpoint and bury the
+   buttons under the bucket on some slides but not others. */
+.hero-content { max-width: 505px; position: relative; z-index: 2; }
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -98,13 +104,24 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   position: absolute;
   z-index: 1;
   width: clamp(360px, 56vw, 720px);
-  aspect-ratio: 620 / 570;
+  max-width: 100%;
+  /* Set from Hero.tsx via --bucket-ratio, measured from each slide's real
+     bucket photo (naturalWidth / naturalHeight) — not guessed — so the box
+     always matches the actual asset. 620/570 only covers the brief moment
+     before that measurement lands. */
+  aspect-ratio: var(--bucket-ratio, 620 / 570);
   right: clamp(0px, 4.5vw, 80px);
   bottom: 34px;
-  /* Tells the browser this subtree's layout/paint never affects anything
+  /* Tells the browser this subtree's layout never affects anything
      outside it, so the dozens of animating shards inside can't trigger
-     reflow/repaint checks on the rest of the page every frame. */
-  contain: layout paint;
+     reflow checks on the rest of the page every frame. Paint containment
+     is deliberately NOT included here (or on .product-pair below): it
+     clips anything that paints outside the box, including the bucket's
+     drop-shadow from shadowSettle, which sits flush against this box's
+     bottom edge — with paint containment the shadow's blur got sliced
+     off flat instead of fading out, showing up as a hard line under the
+     bucket. */
+  contain: layout;
 }
 .product-pair {
   position: absolute;
@@ -113,7 +130,7 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   transform: translateY(28px) scale(.96);
   transition: opacity .6s ease, transform .6s ease;
   pointer-events: none;
-  contain: layout paint;
+  contain: layout;
 }
 .product-pair.active { opacity: 1; transform: translateY(0) scale(1); }
 
@@ -132,8 +149,13 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   inset: 0;
   width: 100%;
   height: 100%;
+  /* contain, not cover: now that .products' aspect-ratio genuinely
+     matches the photo (see --bucket-ratio above), contain and cover
+     render identically — but contain can never crop the photo if the
+     measured ratio is ever slightly off (e.g. the brief window before
+     it loads, or a future asset swap), where cover would zoom and crop. */
   object-fit: contain;
-  object-position: bottom;
+  object-position: center bottom;
   opacity: 0;
   transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) skew(var(--skew)) scale(.4);
 }
@@ -220,53 +242,70 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
    rule above, so it never needs a fixed width/height per breakpoint — only
    its position shifts as the layout changes shape:
    1180: laptop — content gives up a little width before anything reflows.
-   900: side-by-side stops working; content takes a fixed share of the
-   width and the art tucks off to the side instead of being centered.
-   620: phones — background repositions to keep the subject in frame, type
-   drops to a single comfortable size.
+   900 and below: side-by-side overlap stops being safe — 60% content width
+   plus a 56vw-wide product image no longer sums to under 100%, so instead
+   of shrinking the overlap with more offset tweaks (which only ever moves
+   the collision, never removes it — buttons kept ending up over or under
+   the bucket depending on DOM order), the bucket is taken out of absolute
+   positioning entirely and stacked below the content in normal flow. Two
+   things that never share the same box on screen can't hide each other,
+   z-index or not.
+   620: phones — a touch tighter still.
    420: small phones — one more trim so nothing clips or wraps awkwardly.
-   Short viewports (landscape phones, small laptop windows) get their own
-   query so the fixed 100svh hero never forces a scrollbar to appear. */
+   Short viewports (landscape phones, small laptop windows) get a lighter
+   vertical rhythm so the stacked layout doesn't force excess scrolling. */
 @media (max-width: 1180px) {
   .hero { padding: 118px clamp(20px, 4.5vw, 64px) 70px; }
   .hero-content { max-width: 460px; }
 }
 
 @media (max-width: 900px) {
-  .hero { padding: 108px 8vw 110px; align-items: flex-start; }
-  .hero-content { max-width: 60%; }
-  .products { right: -30px; bottom: 20px; }
+  .hero { flex-direction: column; align-items: stretch; justify-content: flex-start; min-height: auto; padding: 108px 8vw 56px; }
+  .hero-content { max-width: 560px; }
+  /* Now that .products sits in normal flow below the content instead of
+     overlapping it, there's nothing left competing for horizontal space —
+     so on mobile/tablet it's sized bigger relative to the viewport than
+     on desktop, not just "whatever's left over" from the base clamp. */
+  .products {
+    position: relative;
+    inset: auto;
+    right: auto;
+    bottom: auto;
+    width: clamp(420px, 90vw, 640px);
+    margin: 36px auto 0 auto;
+  }
+  .dots { position: relative; left: auto; bottom: auto; transform: none; justify-content: center; margin-top: 28px; }
 }
 
 @media (max-width: 620px) {
-  .hero { min-height: 760px; padding: 106px 25px 85px; background: #f4f6fc; }
+  .hero { min-height: auto; padding: 106px 25px 44px; background: #f4f6fc; }
   .hero-background { object-position: 63% center; }
   .hero-shade { background: linear-gradient(180deg, rgba(244,246,252,.98) 0 36%, rgba(244,246,252,.65) 64%, rgba(244,246,252,.96) 92%); }
-  .hero-content { max-width: 100%; z-index: 1; }
+  .hero-content { max-width: 100%; }
   .eyebrow { font-size: 13px; margin-bottom: 18px; }
   h1 { font-size: clamp(33px, 9.5vw, 44px); letter-spacing: -2px; }
   .description { max-width: 94%; font-size: 14px; line-height: 1.65; margin: 18px 0 25px; }
   .hero-actions { gap: 12px; }
   .button { min-height: 48px; padding: 0 14px; font-size: 12px; }
-  .products { bottom: 40px; right: -8px; }
-  .dots { bottom: 15px; }
+  .products { width: clamp(320px, 92vw, 460px); margin-top: 28px; }
+  .dots { margin-top: 20px; }
   .dots button { height: 5px; }
   .dots button.active { width: 34px; }
 }
 
 @media (max-width: 420px) {
-  .hero { padding: 96px 18px 78px; }
+  .hero { padding: 96px 18px 36px; }
   h1 { font-size: clamp(29px, 11vw, 36px); letter-spacing: -1.7px; }
   .description { font-size: 13.5px; margin: 15px 0 22px; }
   .hero-actions { gap: 10px; }
   .button { min-height: 44px; padding: 0 12px; font-size: 11.5px; }
-  .products { bottom: 34px; right: -14px; }
+  .products { width: clamp(260px, 94vw, 340px); margin-top: 22px; }
 }
 
 @media (max-width: 900px) and (max-height: 620px) {
-  .hero { min-height: auto; padding-top: 92px; padding-bottom: 56px; }
-  .products { position: relative; width: clamp(320px, 50vw, 420px); right: auto; bottom: auto; margin: 22px 0 0 auto; }
-  .dots { position: relative; bottom: auto; margin-top: 18px; left: auto; transform: none; }
+  .hero { padding-top: 92px; padding-bottom: 40px; }
+  .products { margin-top: 20px; }
+  .dots { margin-top: 16px; }
 }
 
 /* Respect users who've asked for less motion: keep the crossfade (it reads

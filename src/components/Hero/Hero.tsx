@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import slider01 from '../../assets/slider/slider01/slider01.png'
 import slider02 from '../../assets/slider/slider02/slider02.png'
@@ -135,9 +136,37 @@ const slides = [
   { image: slider03, bucket: bucket03 },
 ]
 
+// Fallback used only for the first paint, before any bucket photo has
+// finished loading and reported its real size.
+const DEFAULT_BUCKET_RATIO = 620 / 570
+
 export default function Hero() {
   const { t } = useTranslation()
   const [current, setCurrent] = useState(0)
+
+  // The .products box needs an aspect-ratio that matches the actual bucket
+  // photo, or ShatterImage's object-fit ends up either letterboxing (gap)
+  // or, with object-fit: cover, zooming/cropping the photo to fill a box
+  // shaped wrong for it. Rather than hardcoding a guessed ratio (which only
+  // ever matches one photo, if any), each bucket image is loaded once here
+  // and its real naturalWidth/naturalHeight is used instead — so the box
+  // always matches whatever the actual asset's proportions are, per slide.
+  const [bucketRatios, setBucketRatios] = useState<Record<number, number>>({})
+
+  useEffect(() => {
+    let cancelled = false
+    slides.forEach((slide, index) => {
+      const img = new window.Image()
+      img.onload = () => {
+        if (cancelled || !img.naturalWidth || !img.naturalHeight) return
+        setBucketRatios((prev) => ({ ...prev, [index]: img.naturalWidth / img.naturalHeight }))
+      }
+      img.src = slide.bucket
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     const timer = window.setInterval(() => setCurrent((index) => (index + 1) % slides.length), AUTOPLAY_MS)
@@ -238,12 +267,12 @@ export default function Hero() {
         </h1>
         <p className="description">{content.description}</p>
         <div className="hero-actions">
-          <a className="button primary" href="#catalog" style={{ animationDelay: `${actionsDelay}s` }}>
+          <Link className="button primary" to="/products" style={{ animationDelay: `${actionsDelay}s` }}>
             {t('hero.catalog')} <b><ArrowRightIcon /></b>
-          </a>
-          <a className="button secondary" href="#contact" style={{ animationDelay: `${actionsDelay + BUTTONS_STAGGER}s` }}>
+          </Link>
+          <Link className="button secondary" to="/contact" style={{ animationDelay: `${actionsDelay + BUTTONS_STAGGER}s` }}>
             <SearchIcon /> {t('hero.contact')}
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -252,7 +281,11 @@ export default function Hero() {
          jank: idle sets still cost layout/paint/clip-path for nothing,
          since they're invisible anyway. Mounting fresh on activation still
          replays the shatter animation exactly as before. */}
-      <div className="products" aria-hidden="true">
+      <div
+        className="products"
+        aria-hidden="true"
+        style={{ ['--bucket-ratio' as string]: bucketRatios[current] ?? DEFAULT_BUCKET_RATIO }}
+      >
         {slides.map((slide, index) => (
           <div key={index} className={index === current ? 'product-pair active' : 'product-pair'}>
             {index === current && (
