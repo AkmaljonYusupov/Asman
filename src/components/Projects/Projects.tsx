@@ -1,6 +1,12 @@
+import SEO from '../shared/SEO'
 import PageHero from '../PageHero/PageHero'
 import './Projects.scss'
 
 export default function Projects() {
-  return <PageHero pageKey="projects" />
+  return (
+    <>
+      <SEO pageKey="projects" />
+      <PageHero pageKey="projects" />
+    </>
+  )
 }

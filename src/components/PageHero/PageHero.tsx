@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { menuKeys } from '../shared/navigation'
@@ -91,7 +92,7 @@ const PAGE_IMAGES: Record<PageHeroKey, string> = {
 // One faint, oversized watermark icon per page — gives each page its own
 // visual flavor without needing a photo asset, while staying within the
 // same "single reusable component" build. Purely decorative (aria-hidden).
-const WATERMARK_ICONS: Record<PageHeroKey, () => JSX.Element> = {
+const WATERMARK_ICONS: Record<PageHeroKey, () => ReactElement> = {
   about: () => (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path

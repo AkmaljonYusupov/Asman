@@ -87,6 +87,38 @@
       "description": "Savollar, narx so'rovlari yoki hamkorlik takliflari — biz bilan bog'laning, jamoamiz tezda javob beradi."
     }
   },
+  "seo": {
+    "home": {
+      "title": "Asman — O'zbekistonda yuqori sifatli bo'yoq va dekorativ qoplamalar",
+      "description": "Asman O'zbekistonda yuqori sifatli bo'yoq, grunt va dekorativ qoplamalar ishlab chiqaradi — uyingiz, biznesingiz va loyihalaringiz uchun estetik ko'rinish va mustahkam himoya.",
+      "keywords": "asman, asman bo'yoq, bo'yoq o'zbekiston, akril bo'yoq, dekorativ qoplama, fasad bo'yog'i, suvoq, Qo'qon erkin iqtisodiy zonasi, Farg'ona bo'yoq zavodi"
+    },
+    "about": {
+      "title": "Asman haqida — tarix, standartlar va jamoa",
+      "description": "Asman bilan tanishing: bizning tariximiz, sifat standartlarimiz va Qo'qon erkin iqtisodiy zonasida har bir bo'yoq bankasini ishlab chiqaruvchi jamoamiz.",
+      "keywords": "asman haqida, asman kompaniya, o'zbekiston bo'yoq ishlab chiqaruvchisi, asman tarixi, asman zavodi Qo'qon"
+    },
+    "products": {
+      "title": "Mahsulotlar — bo'yoq, grunt va dekorativ qoplamalar",
+      "description": "Asmanning to'liq katalogi bilan tanishing: har qanday sirt uchun yuqori sifatli akril bo'yoq, grunt va dekorativ qoplamalar.",
+      "keywords": "asman mahsulotlari, akril bo'yoq katalogi, dekorativ suvoq, fasad qoplamasi, grunt o'zbekiston, ichki bo'yoq, tashqi bo'yoq"
+    },
+    "projects": {
+      "title": "Loyihalar — Asman o'zgartirgan makonlar",
+      "description": "Asman yuqori sifatli bo'yoq va dekorativ qoplamalar yordamida o'zgartirishga ko'maklashgan bino, korxona va uylarga bir nazar.",
+      "keywords": "asman loyihalari, bo'yoq bilan bajarilgan ishlar, o'zbekistonda fasad renovatsiyasi, dekorativ qoplama loyihalari"
+    },
+    "news": {
+      "title": "Asman yangiliklari va voqealari",
+      "description": "Yangi mahsulotlar, kompaniya yutuqlari va Asmanning bo'yoq hamda qoplamalar sohasidagi so'nggi yangiliklari.",
+      "keywords": "asman yangiliklari, o'zbekiston bo'yoq sohasi yangiliklari, asman yangilanishlari, asman e'lonlari"
+    },
+    "contact": {
+      "title": "Asman bilan bog'lanish — narx so'rash",
+      "description": "Savolingiz bormi yoki narx kerakmi? Qo'qon erkin iqtisodiy zonasidagi Asman jamoasi bilan bog'laning — tez javob beramiz.",
+      "keywords": "asman bilan bog'lanish, asman telefon raqami, asman email, asman manzili, o'zbekistonda bo'yoq narxi"
+    }
+  },
   "footer": {
     "about": "Yuqori sifatli bo'yoq va qoplama mahsulotlari — uyingiz, biznesingiz va loyihalaringiz uchun estetik ko'rinish va mustahkam himoya.",
     "heading": {

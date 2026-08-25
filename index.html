@@ -5,13 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/src/assets/logo/title_logo.png" />
     <meta name="theme-color" content="#075ee7" />
+
+    <!--
+      Bu yerdagi teglar faqat sahifa hali JS bilan yuklanmagan paytdagi
+      (yoki JS'ni bajarmaydigan bot/crawler uchun) STANDART (o'zbekcha)
+      fallback qiymatlar. Har bir sahifa (Home/About/Products/...) o'zi
+      ochilganda src/components/shared/SEO.tsx orqali bu qiymatlarni
+      o'sha sahifaga va tanlangan tilga mos ravishda qayta yozadi
+      (react-helmet-async). Shuning uchun bu yerda title/description/og
+      faqat bitta - eng umumiy (bosh sahifa, uz) variantda turadi;
+      ularni SEO.tsx dagi seo.home tarjimasi bilan mos holda saqlang. -->
+
+    <link rel="canonical" href="https://asman.uz/" />
     <meta name="description" content="Asman — uy, biznes va loyihalar uchun yuqori sifatli bo‘yoq va qoplama mahsulotlari." />
+    <meta name="keywords" content="asman, asman bo'yoq, bo'yoq o'zbekiston, akril bo'yoq, dekorativ qoplama, fasad bo'yog'i" />
     <meta name="robots" content="index, follow" />
+
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Asman" />
     <meta property="og:title" content="Asman | Ranglar bilan kelajakni yaratamiz" />
     <meta property="og:description" content="Yuqori sifatli bo‘yoq va qoplama mahsulotlari." />
+    <meta property="og:url" content="https://asman.uz/" />
+    <meta property="og:locale" content="uz_UZ" />
+    <meta property="og:image" content="https://asman.uz/og-image.jpg" />
+
     <meta name="twitter:card" content="summary_large_image" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Asman","description":"Premium bo‘yoq va qoplama mahsulotlari","url":"/"}</script>
+    <meta name="twitter:title" content="Asman | Ranglar bilan kelajakni yaratamiz" />
+    <meta name="twitter:description" content="Yuqori sifatli bo‘yoq va qoplama mahsulotlari." />
+    <meta name="twitter:image" content="https://asman.uz/og-image.jpg" />
+
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Asman","description":"Premium bo‘yoq va qoplama mahsulotlari","url":"https://asman.uz"}</script>
+
     <title>Asman | Ranglar bilan kelajakni yaratamiz</title>
   </head>
   <body>

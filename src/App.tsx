@@ -2,6 +2,7 @@ import { Outlet, Route, Routes } from 'react-router-dom'
 import Navbar from './components/Navbar/Navbar'
 import Hero from './components/Hero/Hero'
 import Footer from './components/Footer/Footer'
+import SEO from './components/shared/SEO'
 import { menuKeys } from './components/shared/navigation'
 import About from './components/About/About'
 import Products from './components/Products/Products'
@@ -14,7 +15,12 @@ function Layout() {
 }
 
 function Home() {
-  return <main><Hero /></main>
+  return (
+    <main>
+      <SEO pageKey="home" />
+      <Hero />
+    </main>
+  )
 }
 
 function Placeholder() {

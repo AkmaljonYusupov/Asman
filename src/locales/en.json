@@ -87,6 +87,38 @@
       "description": "Questions, quotes, or partnership ideas — reach out and our team will respond quickly."
     }
   },
+  "seo": {
+    "home": {
+      "title": "Asman — Premium Paints & Decorative Coatings in Uzbekistan",
+      "description": "Asman manufactures premium paints, primers, and decorative coatings in Uzbekistan, giving homes, businesses, and projects a lasting, elegant finish.",
+      "keywords": "asman, asman paint, paint uzbekistan, acrylic paint, decorative coatings, facade paint, plaster, Kokand free economic zone, Fergana paint factory"
+    },
+    "about": {
+      "title": "About Asman — Our Story, Standards & Team",
+      "description": "Learn about Asman: our history, quality standards, and the people behind every can of paint we produce in the Kokand Free Economic Zone.",
+      "keywords": "about asman, asman company, paint manufacturer uzbekistan, asman history, asman factory Kokand"
+    },
+    "products": {
+      "title": "Products — Paints, Primers & Decorative Coatings",
+      "description": "Explore Asman's full catalogue of premium acrylic paints, primers, and decorative coatings engineered for durability, whiteness, and every surface type.",
+      "keywords": "asman products, acrylic paint catalogue, decorative plaster, facade coating, primer uzbekistan, interior paint, exterior paint"
+    },
+    "projects": {
+      "title": "Projects — Spaces Transformed by Asman",
+      "description": "See the buildings, businesses, and homes Asman has helped bring to life with premium paint and decorative coatings.",
+      "keywords": "asman projects, paint case studies, facade renovation uzbekistan, decorative coating projects"
+    },
+    "news": {
+      "title": "News & Insights from Asman",
+      "description": "Product launches, company milestones, and the latest updates from Asman's paint and coatings business.",
+      "keywords": "asman news, paint industry news uzbekistan, asman updates, asman announcements"
+    },
+    "contact": {
+      "title": "Contact Asman — Get a Quote",
+      "description": "Have a question or need a quote? Reach out to Asman's team in the Kokand Free Economic Zone and we'll respond quickly.",
+      "keywords": "contact asman, asman phone number, asman email, asman address, paint quote uzbekistan"
+    }
+  },
   "footer": {
     "about": "Premium paints and coatings — an elegant finish and lasting protection for your home, business, and projects.",
     "heading": {
