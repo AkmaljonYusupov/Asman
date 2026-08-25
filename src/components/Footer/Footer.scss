@@ -5,62 +5,105 @@
   --sa-paper: #ffffff;
   --sa-mist: #f4f7fc;
   --sa-ink: #10203b;
+  --sa-ink-deep: #0a1730;
   --sa-ink-soft: rgba(16, 32, 59, .64);
   --sa-sky-600: #0864e7;
+  --sa-sky-400: #4f9dff;
   --sa-gold-600: #b8860f;
   --sa-ease-pop: cubic-bezier(.34, 1.56, .64, 1);
   --sa-ease-reveal: cubic-bezier(.19, 1, .22, 1);
 }
 
 /* ===== Field =====
-   The hero/nav run light ("daytime sky"); the footer flips to the same ink
-   tone used for their text, so it reads as the floor the whole page rests
-   on rather than just another light section stacked underneath. */
+   Where the previous version was a flat ink panel, this one reads closer to
+   the hero's own scene: a deep navy-to-violet gradient with a soft moving
+   glow behind the content, so the footer feels like the same "sky" dimmed
+   down for night rather than an unrelated dark box bolted to the bottom. */
 .footer {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  padding: 108px clamp(24px, 5.3vw, 80px) 0;
-  background: var(--sa-ink);
+  padding: 120px clamp(24px, 5.3vw, 80px) 0;
+  background: radial-gradient(120% 160% at 85% -10%, #16294e 0%, var(--sa-ink) 45%, var(--sa-ink-deep) 100%);
   color: rgba(255, 255, 255, .72);
   font-family: Manrope, Arial, sans-serif;
 }
 
-/* ===== Top wave =====
-   Decorative only, independent of the scroll-triggered reveal below —
-   it's always drifting once mounted, gently, so the seam between the page
-   above and the dark footer field doesn't read as a hard cut. */
-.footer-wave {
+/* ===== Background accents =====
+   A slow-pulsing radial glow (echoes Hero's kenBurns scale-breathing on the
+   active background) plus a few of Hero's own drop-shaped icons drifting
+   at low opacity (echoes .bucketFloat) — decorative only, always animating
+   once mounted, independent of the in-view content reveal below. */
+.footer-glow {
   position: absolute;
   z-index: 0;
-  top: 0;
-  left: -10%;
-  width: 120%;
-  height: 90px;
-  animation: waveDrift 16s ease-in-out infinite alternate;
+  top: -220px;
+  right: -160px;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(8, 100, 231, .38) 0%, rgba(8, 100, 231, 0) 70%);
+  filter: blur(10px);
+  animation: glowPulse 7s ease-in-out infinite alternate;
+  pointer-events: none;
 }
-.footer-wave svg { display: block; width: 100%; height: 100%; }
-.footer-wave path { fill: var(--sa-mist); }
+.footer-drops { position: absolute; z-index: 0; inset: 0; pointer-events: none; }
+.drop { position: absolute; color: rgba(79, 157, 255, .12); font-size: 120px; display: inline-flex; }
+.drop-a { top: 8%; left: 6%; font-size: 90px; animation: dropFloat 9s ease-in-out infinite alternate; }
+.drop-b { top: 46%; left: 92%; font-size: 150px; color: rgba(184, 134, 15, .1); animation: dropFloat 11s ease-in-out .6s infinite alternate; }
+.drop-c { top: 78%; left: 22%; font-size: 70px; animation: dropFloat 8s ease-in-out 1.2s infinite alternate; }
 
-/* ===== Top area: brand / menu / contact =====
-   Three columns on desktop, collapsing to a stack on narrow screens (see
-   the responsive ladder at the bottom). Each column's own children carry
-   their entrance animation and delay — driven by .in-view below, not by
-   mount — so nothing plays until the footer has actually scrolled up into
-   view. */
+/* A thin animated highlight along the top edge, standing in for the
+   previous version's static wave — a moving gradient sweep instead of a
+   fixed shape, closer in spirit to the hero's own continuously-drifting
+   background than a one-off decorative SVG. */
+.footer-shimmer {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--sa-sky-400), var(--sa-gold-600), transparent);
+  background-size: 200% 100%;
+  animation: shimmerSweep 6s linear infinite;
+  opacity: .8;
+}
+
+.footer-inner { position: relative; z-index: 2; max-width: 1240px; margin: 0 auto; }
+
+/* ===== Big word-revealed heading =====
+   Directly mirrors Hero's h1/.word/em treatment: split into words, each
+   its own staggered span, with the middle phrase kept as an <em> accent.
+   Gated by .in-view (scroll-triggered) rather than mount, since the footer
+   sits below the fold. */
+.footer-heading {
+  margin: 0 0 64px;
+  max-width: 640px;
+  font-size: clamp(28px, 3.2vw, 46px);
+  letter-spacing: -1.6px;
+  line-height: 1.18;
+  font-weight: 800;
+  color: #fff;
+}
+.footer-heading em { display: inline; color: var(--sa-sky-400); font-style: normal; }
+.fw-word { display: inline-block; opacity: 0; }
+.in-view .fw-word { animation: fwWordIn .8s var(--sa-ease-reveal) both; }
+
+/* ===== Four columns: brand / pages / contact / manzil =====
+   Split from the previous three-column layout — contact (phone/email) and
+   address now get their own column each rather than sharing one "Contact"
+   block, so the physical location reads as its own piece of information. */
 .footer-top {
   position: relative;
-  z-index: 1;
   display: grid;
-  grid-template-columns: 1.3fr 1fr 1.2fr;
-  gap: 56px;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding-bottom: 64px;
+  grid-template-columns: 1.25fr .85fr .95fr 1fr;
+  gap: 40px;
+  padding-bottom: 60px;
   border-bottom: 1px solid rgba(255, 255, 255, .1);
 }
 
-.footer-brand { max-width: 340px; }
+.footer-brand { max-width: 320px; }
 .footer-logo {
   display: inline-flex;
   width: 148px;
@@ -79,9 +122,13 @@
   color: rgba(255, 255, 255, .58);
   opacity: 0;
 }
-.in-view .footer-about { animation: colReveal .75s .12s var(--sa-ease-reveal) both; }
+.in-view .footer-about { animation: colReveal .75s .1s var(--sa-ease-reveal) both; }
 
-.footer-social { display: flex; gap: 10px; margin-top: 26px; }
+/* Social icons switched from plain outlined squares to a filled glass chip
+   that fills solid on hover with a small lift + rotation, echoing the
+   hero buttons' own hover-punch (.primary b translateX) rather than a
+   plain color swap. */
+.footer-social { display: flex; gap: 10px; margin-top: 28px; }
 .footer-social a {
   display: inline-flex;
   align-items: center;
@@ -89,18 +136,22 @@
   width: 42px;
   height: 42px;
   border-radius: 12px;
+  background: rgba(255, 255, 255, .06);
   border: 1px solid rgba(255, 255, 255, .14);
   color: #fff;
   font-size: 17px;
   opacity: 0;
-  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+  transition: background .2s ease, border-color .2s ease, transform .25s var(--sa-ease-pop);
 }
 .in-view .footer-social a { animation: socialPop .6s var(--sa-ease-pop) both; }
-.footer-social a:hover { background: var(--sa-sky-600); border-color: var(--sa-sky-600); transform: translateY(-3px); }
+.footer-social a:hover { background: var(--sa-sky-600); border-color: var(--sa-sky-600); transform: translateY(-3px) rotate(-6deg); }
 .footer-social a:focus-visible { outline: 2px solid var(--sa-sky-600); outline-offset: 3px; }
 
 .footer-col h3 {
   margin: 0 0 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: 'Space Grotesk', sans-serif;
   font-size: 13px;
   font-weight: 700;
@@ -109,44 +160,81 @@
   color: #fff;
   opacity: 0;
 }
+.footer-col h3 svg { font-size: 15px; color: var(--sa-gold-600); }
 .in-view .footer-col h3 { animation: colReveal .6s var(--sa-ease-reveal) both; }
 
 .footer-col nav { display: flex; flex-direction: column; gap: 15px; }
-.footer-col nav a,
-.footer-contact a,
-.footer-contact span {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Links get a small arrow-style underline that draws in from the left on
+   hover — same "give the interaction somewhere to go" idea as Hero's
+   primary button arrow shifting right on hover, adapted to a text link. */
+.footer-col nav a {
+  position: relative;
+  display: inline-flex;
   width: fit-content;
   font-size: 14.5px;
   font-weight: 600;
   color: rgba(255, 255, 255, .68);
   opacity: 0;
+  transition: color .2s ease, padding-left .25s var(--sa-ease-pop);
+}
+.in-view .footer-col nav a { animation: linkIn .6s var(--sa-ease-reveal) both; }
+.footer-col nav a::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  width: 8px;
+  height: 1.5px;
+  background: var(--sa-sky-400);
+  transform: translateY(-50%) scaleX(0);
+  transform-origin: left;
+  transition: transform .25s var(--sa-ease-pop);
+}
+.footer-col nav a:hover { color: #fff; padding-left: 16px; }
+.footer-col nav a:hover::before { transform: translateY(-50%) scaleX(1); }
+.footer-col nav a:focus-visible { outline: 2px solid var(--sa-sky-600); outline-offset: 3px; border-radius: 4px; }
+
+.footer-contact,
+.footer-address { display: flex; flex-direction: column; }
+.footer-contact a,
+.footer-address span {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: fit-content;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, .68);
+  opacity: 0;
   transition: color .2s ease;
 }
-.in-view .footer-col nav a,
-.in-view .footer-contact a,
-.in-view .footer-contact span { animation: linkIn .6s var(--sa-ease-reveal) both; }
-.footer-col nav a:hover { color: #fff; }
-.footer-col nav a:focus-visible,
-.footer-contact a:focus-visible { outline: 2px solid var(--sa-sky-600); outline-offset: 3px; border-radius: 4px; }
-
-.footer-contact { display: flex; flex-direction: column; }
-.footer-contact a,
-.footer-contact span { margin-top: 15px; }
+.footer-contact a { margin-top: 15px; }
 .footer-contact a:first-of-type { margin-top: 0; }
+.in-view .footer-contact a,
+.in-view .footer-address span { animation: linkIn .6s var(--sa-ease-reveal) both; }
 .footer-contact a:hover { color: var(--sa-gold-600); }
-.footer-contact svg { flex: 0 0 auto; font-size: 16px; color: var(--sa-gold-600); }
+.footer-contact svg,
+.footer-address svg { flex: 0 0 auto; font-size: 16px; margin-top: 2px; color: var(--sa-gold-600); }
+.footer-address span { max-width: 240px; }
 
 /* ===== Bottom bar ===== */
 .footer-bottom {
   position: relative;
   z-index: 1;
-  max-width: 1240px;
-  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 26px 0;
 }
+.footer-bottom-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sa-sky-400);
+  opacity: 0;
+}
+.in-view .footer-bottom-dot { animation: colReveal .5s .5s var(--sa-ease-reveal) both; }
 .footer-bottom p {
   margin: 0;
   font-size: 12.5px;
@@ -154,20 +242,21 @@
   color: rgba(255, 255, 255, .42);
   opacity: 0;
 }
-.in-view .footer-bottom p { animation: colReveal .6s .5s var(--sa-ease-reveal) both; }
+.in-view .footer-bottom p { animation: colReveal .6s .54s var(--sa-ease-reveal) both; }
 
 /* ===== Scroll-to-top =====
-   Governed entirely by live scroll position (see Footer.tsx), not by
-   .in-view — it can appear the moment the user scrolls down, long before
-   the footer itself is on screen. */
+   Reshaped from a plain circle to a rounded pill-square with the hero's
+   own bounce-forward pop on appear (buttonPop), rather than a flat slide —
+   governed entirely by live scroll position (see Footer.tsx), not by
+   .in-view, so it can appear long before the footer itself is on screen. */
 .scroll-top {
   position: fixed;
   right: clamp(16px, 3vw, 32px);
   bottom: clamp(16px, 3vw, 32px);
   z-index: 45;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   border: 0;
   background: var(--sa-sky-600);
   color: #fff;
@@ -177,11 +266,11 @@
   justify-content: center;
   box-shadow: 0 12px 26px rgba(8, 100, 231, .35);
   opacity: 0;
-  transform: translateY(14px) scale(.8);
+  transform: translateY(18px) scale(.7);
   pointer-events: none;
-  transition: opacity .3s ease, transform .3s var(--sa-ease-pop), background .2s ease;
+  transition: background .2s ease;
 }
-.scroll-top.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.scroll-top.visible { opacity: 1; pointer-events: auto; animation: scrollTopPop .5s var(--sa-ease-pop) forwards; }
 .scroll-top:hover { background: #0554c4; }
 .scroll-top:active { transform: scale(.92); }
 .scroll-top:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
@@ -204,41 +293,69 @@
   0% { opacity: 0; transform: translateX(-10px); }
   100% { opacity: 1; transform: translateX(0); }
 }
-@keyframes waveDrift {
-  from { transform: translateX(0) translateY(0); }
-  to { transform: translateX(-2.5%) translateY(4px); }
+@keyframes fwWordIn {
+  0% { opacity: 0; transform: translateY(30px) scale(.85) rotate(-4deg); filter: blur(6px); }
+  55% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0); }
+}
+@keyframes glowPulse {
+  from { transform: scale(1); opacity: .75; }
+  to { transform: scale(1.18); opacity: 1; }
+}
+@keyframes dropFloat {
+  from { transform: translateY(0) rotate(0deg); }
+  to { transform: translateY(-22px) rotate(6deg); }
+}
+@keyframes shimmerSweep {
+  from { background-position: 0% 0; }
+  to { background-position: -200% 0; }
+}
+@keyframes scrollTopPop {
+  0% { opacity: 0; transform: translateY(18px) scale(.7); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.08); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* ===== Responsive ladder =====
    Mirrors Hero.scss's own breakpoints (900/620/420) so the two sections
    change shape at the same points. */
+@media (max-width: 1180px) {
+  .footer-top { grid-template-columns: 1.15fr .85fr 1fr 1fr; gap: 32px; }
+}
+
 @media (max-width: 900px) {
-  .footer { padding-top: 84px; }
-  .footer-top { grid-template-columns: 1fr; gap: 44px; padding-bottom: 48px; }
-  .footer-brand { max-width: none; }
+  .footer { padding-top: 96px; }
+  .footer-heading { margin-bottom: 48px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 40px 32px; padding-bottom: 48px; }
+  .footer-brand { max-width: none; grid-column: 1 / -1; }
 }
 
 @media (max-width: 620px) {
-  .footer { padding: 72px 25px 0; }
-  .footer-top { gap: 38px; padding-bottom: 40px; }
+  .footer { padding: 80px 25px 0; }
+  .footer-heading { font-size: clamp(26px, 8vw, 34px); margin-bottom: 40px; }
+  .footer-top { grid-template-columns: 1fr; gap: 34px; padding-bottom: 40px; }
   .footer-about { font-size: 14px; }
-  .scroll-top { width: 44px; height: 44px; font-size: 17px; }
+  .footer-glow { width: 420px; height: 420px; top: -140px; right: -120px; }
+  .scroll-top { width: 46px; height: 46px; font-size: 17px; border-radius: 14px; }
 }
 
 @media (max-width: 420px) {
-  .footer { padding-top: 64px; }
+  .footer { padding-top: 72px; }
   .footer-col h3 { margin-bottom: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .footer-wave { animation: none; }
+  .footer-glow, .drop, .footer-shimmer { animation: none; }
   .footer-logo,
   .footer-about,
   .footer-social a,
   .footer-col h3,
   .footer-col nav a,
   .footer-contact a,
-  .footer-contact span,
-  .footer-bottom p { animation: none; opacity: 1; transform: none; filter: none; }
+  .footer-address span,
+  .footer-bottom-dot,
+  .footer-bottom p,
+  .fw-word { animation: none; opacity: 1; transform: none; filter: none; }
   .scroll-top { transition: opacity .2s ease; }
+  .scroll-top.visible { transform: none; }
 }

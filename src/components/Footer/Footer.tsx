@@ -39,6 +39,23 @@ const PinIcon = () => (
   </svg>
 )
 
+// Used for the new "Manzil / Address" column heading — an industrial-zone
+// mark (distinct from PinIcon, which stays on the address line itself) so
+// the column reads as its own topic rather than a repeat of the pin above.
+const ZoneIcon = () => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
+    <path
+      d="M3.5 20.5v-8.2l4-2.9v2.6l4-2.9v2.6l4-2.9v11.7M3.5 20.5h17"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path d="M15.5 20.5V8.6l4.6-3.1v15" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M7 15.2h1.4M7 17.8h1.4M11 15.2h1.4M11 17.8h1.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+  </svg>
+)
+
 const ArrowUpIcon = () => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
     <path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" />
@@ -74,6 +91,18 @@ const FacebookIcon = () => (
   </svg>
 )
 
+// Drop motif carried over from Hero's eyebrow badge — used here purely as a
+// drifting background accent so the footer echoes the hero's visual
+// language instead of introducing an unrelated shape system.
+const DropIcon = () => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
+    <path
+      d="M12 3.2c2.9 3.6 6.4 8.1 6.4 11.6a6.4 6.4 0 1 1-12.8 0c0-3.5 3.5-8 6.4-11.6Z"
+      fill="currentColor"
+    />
+  </svg>
+)
+
 // href goes to the real destination (tel:/mailto:/https:), aria comes from
 // footer.social.<key> in the locale files.
 const socialLinks = [
@@ -81,6 +110,25 @@ const socialLinks = [
   { key: 'instagram', href: 'https://instagram.com/asman', Icon: InstagramIcon },
   { key: 'facebook', href: 'https://facebook.com/asman', Icon: FacebookIcon },
 ]
+
+// Mirrors Hero's AnimatedWords, but reveal is gated by the footer's own
+// scroll-triggered .in-view class (see below) rather than by mount — words
+// stay invisible (see .fw-word in Footer.scss) until in-view flips true,
+// at which point each plays its own delayed entrance, same stagger math
+// as Hero's title.
+function FooterHeadingWords({ text, startIndex, keyPrefix }: { text: string; startIndex: number; keyPrefix: string }) {
+  const words = text.split(' ')
+  return (
+    <>
+      {words.map((word, i) => (
+        <span key={`${keyPrefix}${i}`} className="fw-word" style={{ animationDelay: `${(startIndex + i) * 0.08}s` }}>
+          {word}
+          {i < words.length - 1 ? '\u00A0' : ''}
+        </span>
+      ))}
+    </>
+  )
+}
 
 export default function Footer() {
   const { t } = useTranslation()
@@ -130,67 +178,100 @@ export default function Footer() {
 
   const year = new Date().getFullYear()
 
+  // footer.heading in the locale files carries its own titleStart /
+  // titleAccent / titleEnd, same shape as hero.slides[i] — so the accent
+  // word can keep its own colour/em treatment while the whole phrase still
+  // shares one continuous word-index stagger.
+  const heading = t('footer.heading', { returnObjects: true }) as {
+    titleStart: string
+    titleAccent: string
+    titleEnd: string
+  }
+  const startCount = heading.titleStart.split(' ').length
+  const accentCount = heading.titleAccent.split(' ').length
+
   return (
     <footer ref={sectionRef} className={inView ? 'footer in-view' : 'footer'}>
-      {/* Decorative only — a slow, continuously-drifting gradient wave
-         along the top edge, independent of the in-view reveal below. */}
-      <div className="footer-wave" aria-hidden="true">
-        <svg viewBox="0 0 1440 90" preserveAspectRatio="none">
-          <path d="M0,46 C240,96 480,4 720,34 C960,64 1200,10 1440,42 L1440,0 L0,0 Z" />
-        </svg>
+      {/* Decorative glow field: a soft radial accent drifting behind the
+         content, plus a handful of the hero's drop motif floating slowly
+         in the background — always animating once mounted, independent of
+         the in-view content reveal below. */}
+      <div className="footer-glow" aria-hidden="true" />
+      <div className="footer-drops" aria-hidden="true">
+        <span className="drop drop-a"><DropIcon /></span>
+        <span className="drop drop-b"><DropIcon /></span>
+        <span className="drop drop-c"><DropIcon /></span>
       </div>
+      <div className="footer-shimmer" aria-hidden="true" />
 
-      <div className="footer-top">
-        <div className="footer-brand">
-          <Link to="/" className="footer-logo" aria-label="Asman home">
-            <img src={logo} alt="Asman" />
-          </Link>
-          <p className="footer-about">{t('footer.about')}</p>
-          <div className="footer-social">
-            {socialLinks.map(({ key, href, Icon }, index) => (
-              <a
-                key={key}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={t(`footer.social.${key}`)}
-                style={{ animationDelay: `${0.55 + index * 0.08}s` }}
-              >
-                <Icon />
-              </a>
-            ))}
+      <div className="footer-inner">
+        <h2 className="footer-heading">
+          <FooterHeadingWords text={heading.titleStart} startIndex={0} keyPrefix="fs" />{' '}
+          <em>
+            <FooterHeadingWords text={heading.titleAccent} startIndex={startCount} keyPrefix="fa" />
+          </em>{' '}
+          <FooterHeadingWords text={heading.titleEnd} startIndex={startCount + accentCount} keyPrefix="fe" />
+        </h2>
+
+        <div className="footer-top">
+          <div className="footer-brand">
+            <Link to="/" className="footer-logo" aria-label="Asman home">
+              <img src={logo} alt="Asman" />
+            </Link>
+            <p className="footer-about">{t('footer.about')}</p>
+            <div className="footer-social">
+              {socialLinks.map(({ key, href, Icon }, index) => (
+                <a
+                  key={key}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={t(`footer.social.${key}`)}
+                  style={{ animationDelay: `${0.5 + index * 0.08}s` }}
+                >
+                  <Icon />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="footer-col">
+            <h3>{t('footer.menuTitle')}</h3>
+            <nav aria-label="Footer">
+              {menuKeys.map((key, index) => (
+                <Link key={key} to={key === 'home' ? '/' : `/${key}`} style={{ animationDelay: `${0.2 + index * 0.06}s` }}>
+                  {t(`nav.${key}`)}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="footer-col footer-contact">
+            <h3>{t('footer.contactTitle')}</h3>
+            <a href={`tel:${t('footer.phoneHref')}`} style={{ animationDelay: '.4s' }}>
+              <PhoneIcon /> {t('footer.phone')}
+            </a>
+            <a href={`mailto:${t('footer.email')}`} style={{ animationDelay: '.47s' }}>
+              <MailIcon /> {t('footer.email')}
+            </a>
+          </div>
+
+          <div className="footer-col footer-address">
+            <h3>
+              <ZoneIcon /> {t('footer.addressTitle')}
+            </h3>
+            <span style={{ animationDelay: '.54s' }}>
+              <PinIcon /> {t('footer.address')}
+            </span>
           </div>
         </div>
 
-        <div className="footer-col">
-          <h3>{t('footer.menuTitle')}</h3>
-          <nav aria-label="Footer">
-            {menuKeys.map((key, index) => (
-              <Link key={key} to={key === 'home' ? '/' : `/${key}`} style={{ animationDelay: `${0.25 + index * 0.06}s` }}>
-                {t(`nav.${key}`)}
-              </Link>
-            ))}
-          </nav>
+        <div className="footer-bottom">
+          <span className="footer-bottom-dot" aria-hidden="true" />
+          <p>
+            © {year} {t('brand')}. {t('footer.rights')}
+          </p>
         </div>
-
-        <div className="footer-col footer-contact">
-          <h3>{t('footer.contactTitle')}</h3>
-          <a href={`tel:${t('footer.phoneHref')}`} style={{ animationDelay: '.55s' }}>
-            <PhoneIcon /> {t('footer.phone')}
-          </a>
-          <a href={`mailto:${t('footer.email')}`} style={{ animationDelay: '.62s' }}>
-            <MailIcon /> {t('footer.email')}
-          </a>
-          <span style={{ animationDelay: '.69s' }}>
-            <PinIcon /> {t('footer.address')}
-          </span>
-        </div>
-      </div>
-
-      <div className="footer-bottom">
-        <p>
-          © {year} {t('brand')}. {t('footer.rights')}
-        </p>
       </div>
 
       <button
