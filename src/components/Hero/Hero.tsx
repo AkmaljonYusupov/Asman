@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import slider01 from '../../assets/slider/slider01/slider01.png'
 import slider02 from '../../assets/slider/slider02/slider02.png'
@@ -33,17 +33,84 @@ const SearchIcon = () => (
   </svg>
 )
 
-const ChevronIcon = ({ direction }: { direction: 'left' | 'right' }) => (
-  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
-    <path
-      d={direction === 'left' ? 'M15 5l-7 7 7 7' : 'M9 5l7 7-7 7'}
-      stroke="currentColor"
-      strokeWidth="2.3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
+// Deterministic 0..1 "random" from an integer seed (no Math.random, so
+// server-rendered and client-rendered markup can never disagree).
+const pseudoRandom = (seed: number) => {
+  const x = Math.sin(seed * 999.9) * 10000
+  return x - Math.floor(x)
+}
+
+// Renders one bucket photo as a grid of clipped duplicates of the same <img>
+// (so object-fit/aspect ratio always matches the real image, nothing is
+// pre-sliced). At rest the pieces sit exactly edge-to-edge and read as the
+// normal photo; .product-pair.active drives shardIn (see Hero.scss), which
+// throws every piece outward/upward on entry and lets it fall back into
+// place, staggered by distance from the image's center.
+function ShatterImage({ src, cols, rows, className }: { src: string; cols: number; rows: number; className: string }) {
+  const centerCol = (cols - 1) / 2 || 1
+  const centerRow = (rows - 1) / 2 || 1
+  const pieces = []
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const i = row * cols + col
+      const nx = (col - centerCol) / centerCol
+      const ny = (row - centerRow) / centerRow
+      const jitter = (seed: number, spread: number) => pseudoRandom(i + seed) * spread - spread / 2
+      const dx = nx * 210 + jitter(1, 90)
+      const dy = ny * 160 - 190 + jitter(2, 90)
+      const rot = nx * 150 + jitter(3, 130)
+      const skew = jitter(4, 24)
+      const delay = (Math.abs(nx) + Math.abs(ny)) * 0.22 + i * 0.008
+      pieces.push({ row, col, dx, dy, rot, skew, delay })
+    }
+  }
+
+  return (
+    <div className={className}>
+      {pieces.map(({ row, col, dx, dy, rot, skew, delay }, i) => {
+        const left = (col / cols) * 100
+        const right = ((col + 1) / cols) * 100
+        const top = (row / rows) * 100
+        const bottom = ((row + 1) / rows) * 100
+        return (
+          <img
+            key={i}
+            src={src}
+            alt=""
+            className="shard"
+            draggable={false}
+            style={{
+              clipPath: `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`,
+              ['--dx' as string]: `${dx}px`,
+              ['--dy' as string]: `${dy}px`,
+              ['--rot' as string]: `${rot}deg`,
+              ['--skew' as string]: `${skew}deg`,
+              ['--delay' as string]: `${delay}s`,
+            } as React.CSSProperties}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
+// Splits a translated phrase into words, each wrapped so it can animate in
+// on its own delay (see .word / wordIn in Hero.scss). startIndex lets several
+// phrases (plain text, then the <em> accent, then more plain text) share one
+// continuous left-to-right stagger instead of each restarting from zero.
+function AnimatedWords({ text, startIndex, keyPrefix }: { text: string; startIndex: number; keyPrefix: string }) {
+  const words = text.split(' ')
+  return (
+    <>
+      {words.map((word, i) => (
+        <span key={`${keyPrefix}${i}`} className="word" style={{ animationDelay: `${0.1 + (startIndex + i) * 0.07}s` }}>
+          {word}
+          {i < words.length - 1 ? '\u00A0' : ''}
+        </span>
+      ))}
+    </>
+  )
+}
 
 // Kept as a single source of truth: the dot progress bar's animation-duration
 // and the .hero-background "ken burns" zoom in Hero.scss are both tuned to
@@ -72,8 +139,46 @@ export default function Hero() {
 
   const select = (index: number) => setCurrent((index + slides.length) % slides.length)
 
+  // One short line per slide (hero.slides[i] in the locale files), shown as
+  // the eyebrow badge so each slide reads as its own moment instead of
+  // repeating the same headline. Falls back to the old static eyebrow if a
+  // locale is missing an entry or hasn't been updated to the array shape yet.
+  const slideEyebrows = t('hero.slides', { returnObjects: true }) as string[]
+  const eyebrow = Array.isArray(slideEyebrows) && slideEyebrows[current] ? slideEyebrows[current] : t('hero.eyebrow')
+
+  // Drag-to-swipe: works with touch, mouse, and pen via the Pointer Events
+  // API. Only the horizontal distance between pointerdown and pointerup
+  // decides the swipe, so a tap/click (near-zero delta) never triggers a
+  // slide change and buttons/dots underneath keep working normally.
+  const SWIPE_THRESHOLD_PX = 50
+  const dragStartX = useRef<number | null>(null)
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLElement>) => {
+    dragStartX.current = e.clientX
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLElement>) => {
+    if (dragStartX.current === null) return
+    const deltaX = e.clientX - dragStartX.current
+    dragStartX.current = null
+    if (deltaX > SWIPE_THRESHOLD_PX) select(current - 1)
+    else if (deltaX < -SWIPE_THRESHOLD_PX) select(current + 1)
+  }
+
+  const handlePointerCancel = () => {
+    dragStartX.current = null
+  }
+
   return (
-    <section className="hero" aria-roledescription="carousel">
+    <section
+      className="hero"
+      aria-roledescription="carousel"
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      onPointerLeave={handlePointerCancel}
+    >
       {/* All backgrounds stay mounted; only the active one is opaque, so
          swapping the "active" class crossfades between them instead of
          hard-cutting on src change. */}
@@ -84,14 +189,23 @@ export default function Hero() {
             className={index === current ? 'hero-background active' : 'hero-background'}
             src={slide.image}
             alt=""
+            draggable={false}
           />
         ))}
       </div>
       <div className="hero-shade"></div>
 
       <div className="hero-content" key={current}>
-        <p className="eyebrow"><span><DropIcon /></span>{t('hero.eyebrow')}</p>
-        <h1>{t('hero.titleStart')} <em>{t('hero.titleAccent')}</em> {t('hero.titleEnd')}</h1>
+        <p className="eyebrow"><span><DropIcon /></span>{eyebrow}</p>
+        <h1>
+          <AnimatedWords text={t('hero.titleStart')} startIndex={0} keyPrefix="s" />{' '}
+          <em><AnimatedWords text={t('hero.titleAccent')} startIndex={t('hero.titleStart').split(' ').length} keyPrefix="a" /></em>{' '}
+          <AnimatedWords
+            text={t('hero.titleEnd')}
+            startIndex={t('hero.titleStart').split(' ').length + t('hero.titleAccent').split(' ').length}
+            keyPrefix="e"
+          />
+        </h1>
         <p className="description">{t('hero.description')}</p>
         <div className="hero-actions">
           <a className="button primary" href="#catalog">{t('hero.catalog')} <b><ArrowRightIcon /></b></a>
@@ -102,18 +216,11 @@ export default function Hero() {
       <div className="products" aria-hidden="true">
         {slides.map((slide, index) => (
           <div key={index} className={index === current ? 'product-pair active' : 'product-pair'}>
-            <img className="bucket-large" src={slide.bucket} alt="" />
-            <img className="bucket-small" src={slide.bucket} alt="" />
+            <ShatterImage src={slide.bucket} cols={8} rows={6} className="bucket-large" />
+            <ShatterImage src={slide.bucket} cols={6} rows={5} className="bucket-small" />
           </div>
         ))}
       </div>
-
-      <button className="nav-arrow prev" onClick={() => select(current - 1)} aria-label={t('hero.prevSlide')}>
-        <ChevronIcon direction="left" />
-      </button>
-      <button className="nav-arrow next" onClick={() => select(current + 1)} aria-label={t('hero.nextSlide')}>
-        <ChevronIcon direction="right" />
-      </button>
 
       <div className="dots">
         {slides.map((_, index) => (

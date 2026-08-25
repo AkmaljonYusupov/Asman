@@ -1,4 +1,5 @@
-.hero { min-height: 100svh; position: relative; overflow: hidden; display: flex; align-items: center; padding: 125px clamp(24px, 5.3vw, 80px) 75px; isolation: isolate; background: #eff2f9; }
+.hero { min-height: 100svh; position: relative; overflow: hidden; display: flex; align-items: center; padding: 125px clamp(24px, 5.3vw, 80px) 75px; isolation: isolate; background: #eff2f9; cursor: grab; touch-action: pan-y; user-select: none; }
+.hero:active { cursor: grabbing; }
 
 /* ===== Crossfading, slowly-zooming backgrounds =====
    All three slides stay mounted and stacked; only .active is opaque, so the
@@ -37,7 +38,7 @@
   font-size: 13.5px;
   font-weight: 800;
   letter-spacing: .01em;
-  animation: heroItem .6s .05s cubic-bezier(.22,.8,.24,1) both;
+  animation: badgePop .7s .05s cubic-bezier(.34, 1.56, .64, 1) both;
 }
 .eyebrow span { display: inline-flex; margin-right: 10px; font-size: 16px; color: #b8860f; }
 h1 {
@@ -48,9 +49,9 @@ h1 {
   line-height: 1.13;
   font-weight: 800;
   color: #10203b;
-  animation: heroItem .6s .15s cubic-bezier(.22,.8,.24,1) both;
 }
 h1 em { display: inline; color: #0864ed; font-style: normal; }
+.word { display: inline-block; opacity: 0; animation: wordIn .85s cubic-bezier(.19, 1, .22, 1) both; }
 .description {
   margin: 23px 0 36px;
   color: #354154;
@@ -58,9 +59,12 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   font-weight: 600;
   line-height: 1.75;
   max-width: 470px;
-  animation: heroItem .6s .25s cubic-bezier(.22,.8,.24,1) both;
+  animation: textReveal .8s .55s cubic-bezier(.22, .8, .24, 1) both;
 }
-.hero-actions { display: flex; gap: 16px; flex-wrap: wrap; animation: heroItem .6s .35s cubic-bezier(.22,.8,.24,1) both; }
+.hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+.hero-actions .button { opacity: 0; animation: buttonPop .6s cubic-bezier(.34, 1.56, .64, 1) both; }
+.hero-actions .primary { animation-delay: .68s; }
+.hero-actions .secondary { animation-delay: .78s; }
 .button {
   min-height: 54px;
   border-radius: 13px;
@@ -83,8 +87,20 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
 .secondary:hover { background: #fff; border-color: #0554c4; color: #0554c4; }
 .secondary svg { font-size: 17px; flex-shrink: 0; }
 
-/* ===== Product buckets: crossfade + rise on slide change, gentle idle float while shown ===== */
-.products { position: absolute; z-index: 1; width: min(43vw, 620px); height: min(53vw, 570px); right: clamp(0px, 4.5vw, 80px); bottom: 34px; }
+/* ===== Product buckets: shatter into place on slide change, gentle idle float once assembled =====
+   Each bucket photo is rendered (see ShatterImage in Hero.tsx) as several
+   clipped duplicates of the same <img>, so at rest they sit pixel-perfect
+   edge to edge and read as one normal photo. Going active runs shardIn on
+   every piece, staggered by distance from the image's own center (--delay),
+   so the photo reads as fragments flying together rather than a fade. */
+.products {
+  position: absolute;
+  z-index: 1;
+  width: clamp(360px, 56vw, 720px);
+  aspect-ratio: 620 / 570;
+  right: clamp(0px, 4.5vw, 80px);
+  bottom: 34px;
+}
 .product-pair {
   position: absolute;
   inset: 0;
@@ -94,39 +110,25 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   pointer-events: none;
 }
 .product-pair.active { opacity: 1; transform: translateY(0) scale(1); }
-.product-pair img { position: absolute; display: block; object-fit: contain; object-position: bottom; filter: drop-shadow(0 23px 14px rgba(7, 20, 45, .24)); }
-.bucket-large { width: 78%; max-height: 100%; right: 10%; bottom: 0; z-index: 1; }
-.bucket-small { width: 42%; max-height: 58%; right: -2%; bottom: 0; z-index: 2; }
-.product-pair.active .bucket-large { animation: bucketFloat 4.5s ease-in-out .6s infinite alternate; }
-.product-pair.active .bucket-small { animation: bucketFloat 3.6s ease-in-out .6s infinite alternate; }
 
-/* ===== Manual prev/next controls =====
-   Sit on top of the crossfading backgrounds, vertically centered, and share
-   the dots' translucent-white-on-photo language so they read as one system. */
-.nav-arrow {
+.bucket-large, .bucket-small { position: absolute; filter: drop-shadow(0 23px 14px rgba(7, 20, 45, .24)); }
+.bucket-large { width: 78%; height: 100%; right: 10%; bottom: 0; z-index: 1; }
+.bucket-small { width: 42%; height: 58%; right: -2%; bottom: 0; z-index: 2; }
+
+.shard {
   position: absolute;
-  z-index: 2;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  border: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 19px;
-  color: #10203b;
-  background: #ffffffb8;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 8px 20px rgba(7, 20, 45, .12);
-  transition: background .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+  opacity: 0;
+  transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) skew(var(--skew)) scale(.4);
+  will-change: transform, opacity, filter;
 }
-.nav-arrow:hover { background: #0764ed; color: #fff; box-shadow: 0 10px 24px rgba(7, 100, 237, .28); }
-.nav-arrow:active { transform: translateY(-50%) scale(.94); }
-.nav-arrow:focus-visible { outline: 2px solid #0864e7; outline-offset: 3px; }
-.nav-arrow.prev { left: clamp(12px, 2.4vw, 36px); }
-.nav-arrow.next { right: clamp(12px, 2.4vw, 36px); }
+.product-pair.active .shard { animation: shardIn 1.35s var(--delay) cubic-bezier(.13, 1.6, .28, 1) both; }
+.product-pair.active .bucket-large { animation: bucketFloat 4.5s ease-in-out 2s infinite alternate; }
+.product-pair.active .bucket-small { animation: bucketFloat 3.6s ease-in-out 1.8s infinite alternate; }
 
 /* ===== Dots become a small animated progress track =====
    Only the active dot renders a fill (.dot-progress); its animation-duration
@@ -159,16 +161,59 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   animation-fill-mode: forwards;
 }
 
-@keyframes heroItem { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes badgePop {
+  0% { opacity: 0; transform: translateY(-14px) scale(.5) rotate(-8deg); filter: blur(4px); }
+  65% { opacity: 1; transform: translateY(2px) scale(1.09) rotate(2deg); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+}
+@keyframes wordIn {
+  0% { opacity: 0; transform: translateY(38px) scale(.8) rotate(-5deg); filter: blur(7px); }
+  55% { opacity: 1; filter: blur(0); }
+  78% { transform: translateY(-4px) scale(1.05) rotate(1deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0); }
+}
+@keyframes textReveal {
+  0% { opacity: 0; transform: translateX(-24px); clip-path: inset(0 100% 0 0); filter: blur(3px); }
+  55% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0); clip-path: inset(0 0 0 0); }
+}
+@keyframes buttonPop {
+  0% { opacity: 0; transform: translateY(18px) scale(.7); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.06); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
 @keyframes kenBurns { from { transform: scale(1) } to { transform: scale(1.07) } }
 @keyframes bucketFloat { from { transform: translateY(0) } to { transform: translateY(-10px) } }
 @keyframes dotFill { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+@keyframes shardIn {
+  0% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) skew(var(--skew)) scale(.4); filter: blur(9px); }
+  45% { opacity: 1; }
+  65% { filter: blur(0); }
+  80% { transform: translate(0, 0) rotate(0deg) skew(0deg) scale(1.09); }
+  100% { opacity: 1; transform: translate(0, 0) rotate(0deg) skew(0deg) scale(1); filter: blur(0); }
+}
+
+/* ===== Responsive ladder =====
+   .products itself scales continuously via a fluid clamp()+aspect-ratio
+   rule above, so it never needs a fixed width/height per breakpoint — only
+   its position shifts as the layout changes shape:
+   1180: laptop — content gives up a little width before anything reflows.
+   900: side-by-side stops working; content takes a fixed share of the
+   width and the art tucks off to the side instead of being centered.
+   620: phones — background repositions to keep the subject in frame, type
+   drops to a single comfortable size.
+   420: small phones — one more trim so nothing clips or wraps awkwardly.
+   Short viewports (landscape phones, small laptop windows) get their own
+   query so the fixed 100svh hero never forces a scrollbar to appear. */
+@media (max-width: 1180px) {
+  .hero { padding: 118px clamp(20px, 4.5vw, 64px) 70px; }
+  .hero-content { max-width: 460px; }
+}
 
 @media (max-width: 900px) {
   .hero { padding: 108px 8vw 110px; align-items: flex-start; }
   .hero-content { max-width: 60%; }
-  .products { width: 390px; height: 360px; right: -30px; bottom: 20px; }
-  .nav-arrow { width: 40px; height: 40px; font-size: 16px; }
+  .products { right: -30px; bottom: 20px; }
 }
 
 @media (max-width: 620px) {
@@ -179,12 +224,27 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   .eyebrow { font-size: 13px; margin-bottom: 18px; }
   h1 { font-size: clamp(38px, 11vw, 51px); letter-spacing: -2.4px; }
   .description { max-width: 94%; font-size: 14px; line-height: 1.65; margin: 18px 0 25px; }
+  .hero-actions { gap: 12px; }
   .button { min-height: 48px; padding: 0 14px; font-size: 12px; }
-  .products { width: 270px; height: 250px; bottom: 46px; right: -5px; }
-  .nav-arrow { display: none; }
+  .products { bottom: 40px; right: -8px; }
   .dots { bottom: 15px; }
   .dots button { height: 5px; }
   .dots button.active { width: 34px; }
+}
+
+@media (max-width: 420px) {
+  .hero { padding: 96px 18px 78px; }
+  h1 { font-size: clamp(33px, 12.5vw, 42px); letter-spacing: -2px; }
+  .description { font-size: 13.5px; margin: 15px 0 22px; }
+  .hero-actions { gap: 10px; }
+  .button { min-height: 44px; padding: 0 12px; font-size: 11.5px; }
+  .products { bottom: 34px; right: -14px; }
+}
+
+@media (max-width: 900px) and (max-height: 620px) {
+  .hero { min-height: auto; padding-top: 92px; padding-bottom: 56px; }
+  .products { position: relative; width: clamp(320px, 50vw, 420px); right: auto; bottom: auto; margin: 22px 0 0 auto; }
+  .dots { position: relative; bottom: auto; margin-top: 18px; left: auto; transform: none; }
 }
 
 /* Respect users who've asked for less motion: keep the crossfade (it reads
@@ -193,5 +253,7 @@ h1 em { display: inline; color: #0864ed; font-style: normal; }
   .hero-background.active { animation: none; }
   .product-pair.active .bucket-large,
   .product-pair.active .bucket-small { animation: none; }
-  .eyebrow, h1, .description, .hero-actions { animation: none; }
+  .shard { animation: none !important; opacity: 1; transform: none !important; filter: none; }
+  .eyebrow, .description, .hero-actions .button { animation: none; opacity: 1; transform: none; clip-path: none; filter: none; }
+  .word { animation: none; opacity: 1; transform: none; filter: none; }
 }
