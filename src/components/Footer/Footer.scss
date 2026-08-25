@@ -1,0 +1,244 @@
+/* ===== Asman tokens — same "daytime sky" palette as Navbar.scss/Offcanvas.scss =====
+   Duplicated here (not hoisted into a shared file) so this component stays
+   self-contained, same rationale as those two. */
+:root {
+  --sa-paper: #ffffff;
+  --sa-mist: #f4f7fc;
+  --sa-ink: #10203b;
+  --sa-ink-soft: rgba(16, 32, 59, .64);
+  --sa-sky-600: #0864e7;
+  --sa-gold-600: #b8860f;
+  --sa-ease-pop: cubic-bezier(.34, 1.56, .64, 1);
+  --sa-ease-reveal: cubic-bezier(.19, 1, .22, 1);
+}
+
+/* ===== Field =====
+   The hero/nav run light ("daytime sky"); the footer flips to the same ink
+   tone used for their text, so it reads as the floor the whole page rests
+   on rather than just another light section stacked underneath. */
+.footer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 108px clamp(24px, 5.3vw, 80px) 0;
+  background: var(--sa-ink);
+  color: rgba(255, 255, 255, .72);
+  font-family: Manrope, Arial, sans-serif;
+}
+
+/* ===== Top wave =====
+   Decorative only, independent of the scroll-triggered reveal below —
+   it's always drifting once mounted, gently, so the seam between the page
+   above and the dark footer field doesn't read as a hard cut. */
+.footer-wave {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: -10%;
+  width: 120%;
+  height: 90px;
+  animation: waveDrift 16s ease-in-out infinite alternate;
+}
+.footer-wave svg { display: block; width: 100%; height: 100%; }
+.footer-wave path { fill: var(--sa-mist); }
+
+/* ===== Top area: brand / menu / contact =====
+   Three columns on desktop, collapsing to a stack on narrow screens (see
+   the responsive ladder at the bottom). Each column's own children carry
+   their entrance animation and delay — driven by .in-view below, not by
+   mount — so nothing plays until the footer has actually scrolled up into
+   view. */
+.footer-top {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1.2fr;
+  gap: 56px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-bottom: 64px;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.footer-brand { max-width: 340px; }
+.footer-logo {
+  display: inline-flex;
+  width: 148px;
+  height: 48px;
+  opacity: 0;
+  filter: brightness(0) invert(1);
+}
+.in-view .footer-logo { animation: chipPop .7s var(--sa-ease-pop) both; }
+.footer-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+.footer-about {
+  margin: 22px 0 0;
+  font-size: 14.5px;
+  line-height: 1.75;
+  font-weight: 500;
+  color: rgba(255, 255, 255, .58);
+  opacity: 0;
+}
+.in-view .footer-about { animation: colReveal .75s .12s var(--sa-ease-reveal) both; }
+
+.footer-social { display: flex; gap: 10px; margin-top: 26px; }
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  color: #fff;
+  font-size: 17px;
+  opacity: 0;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.in-view .footer-social a { animation: socialPop .6s var(--sa-ease-pop) both; }
+.footer-social a:hover { background: var(--sa-sky-600); border-color: var(--sa-sky-600); transform: translateY(-3px); }
+.footer-social a:focus-visible { outline: 2px solid var(--sa-sky-600); outline-offset: 3px; }
+
+.footer-col h3 {
+  margin: 0 0 22px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0;
+}
+.in-view .footer-col h3 { animation: colReveal .6s var(--sa-ease-reveal) both; }
+
+.footer-col nav { display: flex; flex-direction: column; gap: 15px; }
+.footer-col nav a,
+.footer-contact a,
+.footer-contact span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, .68);
+  opacity: 0;
+  transition: color .2s ease;
+}
+.in-view .footer-col nav a,
+.in-view .footer-contact a,
+.in-view .footer-contact span { animation: linkIn .6s var(--sa-ease-reveal) both; }
+.footer-col nav a:hover { color: #fff; }
+.footer-col nav a:focus-visible,
+.footer-contact a:focus-visible { outline: 2px solid var(--sa-sky-600); outline-offset: 3px; border-radius: 4px; }
+
+.footer-contact { display: flex; flex-direction: column; }
+.footer-contact a,
+.footer-contact span { margin-top: 15px; }
+.footer-contact a:first-of-type { margin-top: 0; }
+.footer-contact a:hover { color: var(--sa-gold-600); }
+.footer-contact svg { flex: 0 0 auto; font-size: 16px; color: var(--sa-gold-600); }
+
+/* ===== Bottom bar ===== */
+.footer-bottom {
+  position: relative;
+  z-index: 1;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 26px 0;
+}
+.footer-bottom p {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, .42);
+  opacity: 0;
+}
+.in-view .footer-bottom p { animation: colReveal .6s .5s var(--sa-ease-reveal) both; }
+
+/* ===== Scroll-to-top =====
+   Governed entirely by live scroll position (see Footer.tsx), not by
+   .in-view — it can appear the moment the user scrolls down, long before
+   the footer itself is on screen. */
+.scroll-top {
+  position: fixed;
+  right: clamp(16px, 3vw, 32px);
+  bottom: clamp(16px, 3vw, 32px);
+  z-index: 45;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--sa-sky-600);
+  color: #fff;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 26px rgba(8, 100, 231, .35);
+  opacity: 0;
+  transform: translateY(14px) scale(.8);
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s var(--sa-ease-pop), background .2s ease;
+}
+.scroll-top.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.scroll-top:hover { background: #0554c4; }
+.scroll-top:active { transform: scale(.92); }
+.scroll-top:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+@keyframes chipPop {
+  0% { opacity: 0; transform: translateY(-10px) scale(.82); filter: brightness(0) invert(1) blur(3px); }
+  60% { opacity: 1; transform: translateY(2px) scale(1.06); filter: brightness(0) invert(1) blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(0) invert(1); }
+}
+@keyframes socialPop {
+  0% { opacity: 0; transform: translateY(-10px) scale(.82); }
+  60% { opacity: 1; transform: translateY(2px) scale(1.06); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes colReveal {
+  0% { opacity: 0; transform: translateY(16px); filter: blur(3px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes linkIn {
+  0% { opacity: 0; transform: translateX(-10px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes waveDrift {
+  from { transform: translateX(0) translateY(0); }
+  to { transform: translateX(-2.5%) translateY(4px); }
+}
+
+/* ===== Responsive ladder =====
+   Mirrors Hero.scss's own breakpoints (900/620/420) so the two sections
+   change shape at the same points. */
+@media (max-width: 900px) {
+  .footer { padding-top: 84px; }
+  .footer-top { grid-template-columns: 1fr; gap: 44px; padding-bottom: 48px; }
+  .footer-brand { max-width: none; }
+}
+
+@media (max-width: 620px) {
+  .footer { padding: 72px 25px 0; }
+  .footer-top { gap: 38px; padding-bottom: 40px; }
+  .footer-about { font-size: 14px; }
+  .scroll-top { width: 44px; height: 44px; font-size: 17px; }
+}
+
+@media (max-width: 420px) {
+  .footer { padding-top: 64px; }
+  .footer-col h3 { margin-bottom: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-wave { animation: none; }
+  .footer-logo,
+  .footer-about,
+  .footer-social a,
+  .footer-col h3,
+  .footer-col nav a,
+  .footer-contact a,
+  .footer-contact span,
+  .footer-bottom p { animation: none; opacity: 1; transform: none; filter: none; }
+  .scroll-top { transition: opacity .2s ease; }
+}

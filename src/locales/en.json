@@ -48,5 +48,21 @@
     "next": "Next slide",
     "menu": "Open menu",
     "language": "Change language"
+  },
+  "footer": {
+    "about": "Premium paints and coatings — an elegant finish and lasting protection for your home, business, and projects.",
+    "menuTitle": "Pages",
+    "contactTitle": "Contact",
+    "phone": "+998 71 200 00 00",
+    "phoneHref": "+998712000000",
+    "email": "info@asman.uz",
+    "address": "Tashkent, Uzbekistan",
+    "rights": "All rights reserved.",
+    "scrollTop": "Back to top",
+    "social": {
+      "telegram": "Telegram",
+      "instagram": "Instagram",
+      "facebook": "Facebook"
+    }
   }
 }

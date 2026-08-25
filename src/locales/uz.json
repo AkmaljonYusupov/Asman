@@ -48,5 +48,21 @@
     "next": "Keyingi slayd",
     "menu": "Menyuni ochish",
     "language": "Tilni o'zgartirish"
+  },
+  "footer": {
+    "about": "Yuqori sifatli bo'yoq va qoplama mahsulotlari — uyingiz, biznesingiz va loyihalaringiz uchun estetik ko'rinish va mustahkam himoya.",
+    "menuTitle": "Sahifalar",
+    "contactTitle": "Aloqa",
+    "phone": "+998 71 200 00 00",
+    "phoneHref": "+998712000000",
+    "email": "info@asman.uz",
+    "address": "Toshkent sh., O'zbekiston",
+    "rights": "Barcha huquqlar himoyalangan.",
+    "scrollTop": "Yuqoriga qaytish",
+    "social": {
+      "telegram": "Telegram",
+      "instagram": "Instagram",
+      "facebook": "Facebook"
+    }
   }
 }

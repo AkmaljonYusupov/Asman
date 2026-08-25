@@ -1,10 +1,11 @@
 import { Outlet, Route, Routes } from 'react-router-dom'
 import Navbar from './components/Navbar/Navbar'
 import Hero from './components/Hero/Hero'
+import Footer from './components/Footer/Footer'
 import { menuKeys } from './components/shared/navigation'
 
 function Layout() {
-  return <><Navbar /><Outlet /></>
+  return <><Navbar /><Outlet /><Footer /></>
 }
 
 function Home() {
