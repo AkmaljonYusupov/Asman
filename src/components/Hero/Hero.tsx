@@ -4,9 +4,11 @@ import { useTranslation } from 'react-i18next'
 import slider01 from '../../assets/slider/slider01/slider01.png'
 import slider02 from '../../assets/slider/slider02/slider02.png'
 import slider03 from '../../assets/slider/slider03/slider03.png'
+import slider04 from '../../assets/slider/slider04/slider04.png'
 import bucket01 from '../../assets/slider/slider01/slider_chelak01.png'
 import bucket02 from '../../assets/slider/slider02/slider_chelak02.png'
 import bucket03 from '../../assets/slider/slider03/slider_chelak03.png'
+import bucket04 from '../../assets/slider/slider04/slider_chelak04.png'
 import './Hero.scss'
 
 // Small inline icon set, styled to the hero's own palette (currentColor, so
@@ -27,10 +29,15 @@ const ArrowRightIcon = () => (
   </svg>
 )
 
-const SearchIcon = () => (
+const PhoneIcon = () => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
-    <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="2.2" />
-    <path d="M20 20l-4.3-4.3" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+    <path
+      d="M5.3 4.2h3.1l1.4 3.8-2 1.6a12.4 12.4 0 0 0 5.8 5.8l1.6-2 3.8 1.4v3.1c0 1-.86 1.77-1.85 1.63A16.9 16.9 0 0 1 3.67 6.05C3.53 5.06 4.3 4.2 5.3 4.2Z"
+      stroke="currentColor"
+      strokeWidth="2.1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 )
 
@@ -134,6 +141,7 @@ const slides = [
   { image: slider01, bucket: bucket01 },
   { image: slider02, bucket: bucket02 },
   { image: slider03, bucket: bucket03 },
+  { image: slider04, bucket: bucket04 },
 ]
 
 // Fallback used only for the first paint, before any bucket photo has
@@ -208,11 +216,16 @@ export default function Hero() {
   // Drag-to-swipe: works with touch, mouse, and pen via the Pointer Events
   // API. Only the horizontal distance between pointerdown and pointerup
   // decides the swipe, so a tap/click (near-zero delta) never triggers a
-  // slide change and buttons/dots underneath keep working normally.
+  // slide change. setPointerCapture reroutes all subsequent pointer (and,
+  // on touch, the synthesized click) events to the element it's called on
+  // — so it must never fire for a press that started on a link or button,
+  // or that control's own click would be swallowed by the swipe handler
+  // instead of navigating/activating.
   const SWIPE_THRESHOLD_PX = 50
   const dragStartX = useRef<number | null>(null)
 
   const handlePointerDown = (e: React.PointerEvent<HTMLElement>) => {
+    if ((e.target as HTMLElement).closest('a, button')) return
     dragStartX.current = e.clientX
     e.currentTarget.setPointerCapture(e.pointerId)
   }
@@ -271,7 +284,7 @@ export default function Hero() {
             {t('hero.catalog')} <b><ArrowRightIcon /></b>
           </Link>
           <Link className="button secondary" to="/contact" style={{ animationDelay: `${actionsDelay + BUTTONS_STAGGER}s` }}>
-            <SearchIcon /> {t('hero.contact')}
+            <PhoneIcon /> {t('hero.contact')}
           </Link>
         </div>
       </div>
