@@ -8,7 +8,14 @@
   position: relative;
   overflow: clip; // fon shakllarini kesib turadi + har qanday qoldiq gorizontal overflow'ning oldini oladi
   padding: 88px clamp(20px, 5vw, 80px) 96px;
-  background: var(--sa-mist, #f4f7fc);
+  // PageHero pastda o'zining fon suratini oq/tuman rangga xiralashtirib
+  // tugatadi (fade-to-white). Bu yerda to'g'ridan-to'g'ri qattiq
+  // --sa-mist rangidan boshlasak, ikki bo'lim orasida ko'zga tashlanadigan
+  // tekis chiziq (seam) hosil bo'ladi — screenshotda "ajralib qolgan"
+  // ko'ringan joy aynan shu. Shuning uchun bo'limning o'zi ham yuqorida
+  // oqdan boshlanib, pastga tushgan sari asta --sa-mist'ga o'tadi —
+  // PageHero'ning xiralashuvi bilan uzluksiz davom etadi.
+  background: linear-gradient(180deg, #fff 0, var(--sa-mist, #f4f7fc) 260px);
 }
 
 /* =====================================================================
@@ -25,6 +32,27 @@
   pointer-events: none;
 }
 
+/* To'r (mesh) fon — nuqtalar o'rniga, bloblar ustiga qo'shimcha, juda
+   past kontrastli romb shaklidagi chizg'ich to'ri; butun bo'lim bo'ylab
+   sekin diagonal siljib turadi (background-position animatsiyasi, hech
+   qanday og'ir JS/SVG shart emas). Faqat oq kartalar ortidagi bo'sh
+   joyda ko'rinadi va matn bilan hech qachon to'qnashmaydi (z-index 0,
+   pointer-events none). Bloblar qanday to'xtasa, bu ham
+   prefers-reduced-motion'da xuddi shunday to'xtaydi. */
+.cs-form-mesh {
+  position: absolute;
+  inset: -20px;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(135deg, rgba(16, 32, 59, .08) 0 1.5px, transparent 1.5px 46px),
+    repeating-linear-gradient(45deg, rgba(16, 32, 59, .06) 0 1.5px, transparent 1.5px 46px);
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, #000 55%, transparent 92%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, #000 55%, transparent 92%);
+  animation: csMeshDrift 42s linear infinite;
+  will-change: background-position;
+}
+
 .cs-shape {
   position: absolute;
   border-radius: 50%;
@@ -36,12 +64,12 @@
 }
 
 .cs-shape-form-a {
-  top: -100px;
+  top: 30px;
   left: -80px;
   width: 320px;
   height: 320px;
   background: radial-gradient(circle at 35% 35%, var(--sa-sky-600, #0864e7), transparent 72%);
-  opacity: .22;
+  opacity: .16;
   animation-duration: 16s;
 }
 .cs-shape-form-b {
@@ -64,6 +92,161 @@
   opacity: .16;
   animation-duration: 18s;
   animation-delay: 1.4s;
+}
+.cs-shape-form-d {
+  top: 46%;
+  left: 42%;
+  width: 190px;
+  height: 190px;
+  background: radial-gradient(circle at 45% 55%, #8b5cf6, transparent 72%);
+  opacity: .14;
+  animation-duration: 15s;
+  animation-delay: .5s;
+  animation-direction: reverse;
+}
+.cs-shape-form-e {
+  bottom: 6%;
+  right: 6%;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle at 55% 45%, var(--sa-sky-600, #0864e7), transparent 72%);
+  opacity: .13;
+  animation-duration: 20s;
+  animation-delay: 2.2s;
+}
+
+/* ===== Geometrik shakllar — xira doiralarga qo'shimcha, aniqroq
+   konturli uchburchak/kvadrat/olti burchak, sekin aylanadi va biroz
+   tepa-past suzadi. Faqat currentColor bilan chiziladi (fon rangi
+   emas), shuning uchun brend ranglariga (--sa-sky-600 / --sa-gold /
+   yashil) ega bo'lish uchun rangni shu yerda, wrapper'da beramiz. ===== */
+.cs-geo {
+  position: absolute;
+  display: block;
+  will-change: transform;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.cs-geo-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.cs-geo-square {
+  top: 12%;
+  right: 11%;
+  width: 46px;
+  height: 46px;
+  color: var(--sa-sky-600, #0864e7);
+  opacity: .2;
+  animation-name: csGeoSpin;
+  animation-duration: 24s;
+}
+.cs-geo-hex {
+  bottom: 16%;
+  left: 6%;
+  width: 58px;
+  height: 58px;
+  color: var(--sa-gold, #f5b942);
+  opacity: .22;
+  animation-name: csGeoSpinReverse;
+  animation-duration: 30s;
+}
+.cs-geo-triangle {
+  top: 44%;
+  right: 32%;
+  width: 32px;
+  height: 32px;
+  color: #1e9e63;
+  opacity: .18;
+  animation-name: csGeoSpin;
+  animation-duration: 19s;
+  animation-delay: 2s;
+}
+.cs-geo-circle {
+  top: 70%;
+  right: 8%;
+  width: 40px;
+  height: 40px;
+  color: #8b5cf6;
+  opacity: .18;
+  animation-name: csGeoSpinReverse;
+  animation-duration: 26s;
+  animation-delay: 1.2s;
+}
+.cs-geo-diamond {
+  top: 8%;
+  left: 30%;
+  width: 34px;
+  height: 34px;
+  color: var(--sa-sky-600, #0864e7);
+  opacity: .16;
+  animation-name: csGeoSpin;
+  animation-duration: 22s;
+  animation-delay: .6s;
+}
+.cs-geo-star {
+  bottom: 8%;
+  right: 40%;
+  width: 30px;
+  height: 30px;
+  color: var(--sa-gold, #f5b942);
+  opacity: .22;
+  animation-name: csGeoSpinReverse;
+  animation-duration: 16s;
+  animation-delay: 1.6s;
+}
+
+/* ===== Kabutar — contact/"bog'lanish" mavzusiga mos, xat yetkazuvchi
+   ramz sifatida bo'limning bo'sh haydan diagonal suzib o'tadi. Qanotlar
+   (.cs-dove-wing-*) parvoz yo'lidan mustaqil ravishda o'z markazidan
+   qoqiladi, shuning uchun ikkisi (yo'l + qanot) bir-biriga xalaqit
+   bermaydi. Ikkala kabutar ham turli tezlik/balandlik/kechikish bilan
+   yuradi, shu bois hech qachon bir xil holatda ko'rinmaydi. ===== */
+.cs-dove {
+  position: absolute;
+  left: -80px;
+  width: 68px;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.cs-dove-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.cs-dove-wing {
+  transform-box: fill-box;
+}
+.cs-dove-wing-left {
+  transform-origin: 100% 45%;
+  animation: csWingFlap .5s ease-in-out infinite alternate;
+}
+.cs-dove-wing-right {
+  transform-origin: 0% 45%;
+  animation: csWingFlap .5s ease-in-out infinite alternate reverse;
+}
+
+.cs-dove-a {
+  top: 64%;
+  width: 82px;
+  color: var(--sa-sky-600, #0864e7);
+  animation: csDoveFlyA 21s ease-in-out infinite;
+}
+.cs-dove-b {
+  top: 16%;
+  width: 52px;
+  color: var(--sa-gold, #f5b942);
+  animation: csDoveFlyB 27s ease-in-out infinite;
+  animation-delay: 8s;
+}
+.cs-dove-c {
+  top: 42%;
+  width: 36px;
+  color: #1e9e63;
+  animation: csDoveFlyC 33s ease-in-out infinite;
+  animation-delay: 4s;
 }
 
 /* Outer bordered frame holding the "get in touch" info panel and the
@@ -216,7 +399,7 @@
   padding: 32px 30px;
   border: 1.5px solid rgba(8, 100, 231, .2);
   border-radius: 18px;
-  background: none;
+  background: white;
   text-decoration: none;
   opacity: 0;
   transform: translateY(22px);
@@ -726,8 +909,13 @@
   .cs-quick-info { grid-template-columns: 1fr; }
   .cs-social-cta-label { display: none; }
   .cs-social-cta { gap: 0; }
-  .cs-shape-form-a, .cs-shape-form-b, .cs-shape-form-c { width: 200px; height: 200px; }
+  .cs-shape-form-a, .cs-shape-form-b, .cs-shape-form-c, .cs-shape-form-d, .cs-shape-form-e { width: 200px; height: 200px; }
   .cs-shape-map-a, .cs-shape-map-b, .cs-shape-map-c { width: 120px; height: 120px; }
+  .cs-geo-square, .cs-geo-hex, .cs-geo-circle { width: 38px; height: 38px; }
+  .cs-geo-triangle, .cs-geo-diamond, .cs-geo-star { width: 26px; height: 26px; }
+  .cs-dove-a { width: 56px; }
+  .cs-dove-b { width: 40px; }
+  .cs-dove-c { width: 28px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -745,6 +933,17 @@
   .cs-shape {
     animation: none !important;
   }
+  .cs-form-mesh {
+    animation: none !important;
+  }
+  // Aylanuvchi geometrik shakllar va uchib yuruvchi kabutarlar — ikkisi
+  // ham harakatga bog'liq bezak, shuning uchun bu holatda butunlay
+  // yashiriladi (shunchaki to'xtatilsa, kabutarlar opacity:0'da "muzlab"
+  // qoladi va hech qachon ko'rinmaydi).
+  .cs-geo,
+  .cs-dove {
+    display: none !important;
+  }
 }
 /* ===== Fon doiralari — keyframe ===== */
 
@@ -753,4 +952,68 @@
 @keyframes csShapeFloat {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   50% { transform: translate3d(18px, -22px, 0) scale(1.08); }
+}
+
+/* To'r (mesh) fonning sekin diagonal siljishi — ikkala chiziq qatlami
+   qarama-qarshi tomonga siljib, "cheksiz" romb to'ri tuyuladi. */
+@keyframes csMeshDrift {
+  to { background-position: 92px 0, -92px 0; }
+}
+
+/* Geometrik shakllarning sekin aylanishi, ozgina tepa-past suzish
+   bilan birga — shunchaki aylanadigan bo'lmasin, biroz "tirik" tuyulsin. */
+@keyframes csGeoSpin {
+  0%   { transform: rotate(0deg) translateY(0); }
+  50%  { transform: rotate(180deg) translateY(-10px); }
+  100% { transform: rotate(360deg) translateY(0); }
+}
+@keyframes csGeoSpinReverse {
+  0%   { transform: rotate(360deg) translateY(0); }
+  50%  { transform: rotate(180deg) translateY(10px); }
+  100% { transform: rotate(0deg) translateY(0); }
+}
+
+/* Qanot qoqishi — chap/o'ng qanot bir xil keyframe'ni ishlatadi, o'ng
+   tomon shunchaki teskari yo'nalishda (reverse) ishga tushiriladi, shu
+   bois ikkalasi bir vaqtda ochiladi-yopiladi. */
+@keyframes csWingFlap {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(22deg); }
+}
+
+/* Kabutar A — pastroqdan, chapdan o'ngga, to'lqinsimon baland-past
+   uchib, yo'l davomida marta-marta kattalashib-kichrayadi (go'yo goh
+   yaqinroqdan, goh uzoqroqdan uchayotgandek); chetlarda ko'rinmas,
+   o'rtada xira bo'lib suzadi. */
+@keyframes csDoveFlyA {
+  0%   { transform: translate3d(0, 10px, 0) scale(.75) rotate(-6deg); opacity: 0; }
+  8%   { opacity: .55; }
+  25%  { transform: translate3d(26vw, -54px, 0) scale(1.15) rotate(-3deg); }
+  50%  { transform: translate3d(54vw, -18px, 0) scale(.9) rotate(-7deg); opacity: .6; }
+  75%  { transform: translate3d(84vw, -92px, 0) scale(1.25) rotate(-2deg); }
+  92%  { opacity: .5; }
+  100% { transform: translate3d(116vw, -50px, 0) scale(.8) rotate(-8deg); opacity: 0; }
+}
+/* Kabutar B — yuqoriroqdan boshlanadi, A bilan hech qachon bir xil
+   chiziq yoki bir xil o'lchamda yurmaydi. */
+@keyframes csDoveFlyB {
+  0%   { transform: translate3d(0, -14px, 0) scale(.85) rotate(5deg); opacity: 0; }
+  10%  { opacity: .45; }
+  30%  { transform: translate3d(30vw, 44px, 0) scale(1.2) rotate(9deg); }
+  55%  { transform: translate3d(60vw, 6px, 0) scale(.78) rotate(4deg); opacity: .5; }
+  78%  { transform: translate3d(90vw, 66px, 0) scale(1.1) rotate(8deg); }
+  90%  { opacity: .4; }
+  100% { transform: translate3d(120vw, 18px, 0) scale(.85) rotate(3deg); opacity: 0; }
+}
+/* Kabutar C — eng kichigi, o'rta balandlikdan, boshqa ikkitasidan sekinroq
+   va boshqacha ritmda uchadi, shu bois uchtasi hech qachon bir xil
+   holatga tushmaydi. */
+@keyframes csDoveFlyC {
+  0%   { transform: translate3d(0, 0, 0) scale(.7) rotate(-4deg); opacity: 0; }
+  9%   { opacity: .4; }
+  35%  { transform: translate3d(38vw, -36px, 0) scale(1.05) rotate(2deg); }
+  60%  { transform: translate3d(66vw, 24px, 0) scale(.65) rotate(-5deg); opacity: .45; }
+  85%  { transform: translate3d(96vw, -20px, 0) scale(1) rotate(1deg); }
+  93%  { opacity: .35; }
+  100% { transform: translate3d(122vw, 6px, 0) scale(.7) rotate(-3deg); opacity: 0; }
 }

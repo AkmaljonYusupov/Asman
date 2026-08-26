@@ -127,6 +127,81 @@ const MapPinGlyph: IconFn = () => (
   </svg>
 )
 
+// ===== Decorative flying-dove icon for the form section's background.
+// A dove carrying a message fits the contact/"get in touch" theme, so it
+// reads as intentional rather than a random floating shape. Body/head
+// are static; the two wing paths pivot from the point where they meet
+// the body (set via CSS `transform-origin`, see .cs-dove-wing-* in
+// Contact.scss) so they can flap independently of the flight path. =====
+const DoveGlyph: IconFn = () => (
+  <svg className="cs-dove-svg" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path
+      className="cs-dove-wing cs-dove-wing-left"
+      d="M60 32c-14-18-38-26-56-18 14 8 32 14 56 18Z"
+      fill="currentColor"
+    />
+    <path
+      className="cs-dove-wing cs-dove-wing-right"
+      d="M60 32c14-18 38-26 56-18-14 8-32 14-56 18Z"
+      fill="currentColor"
+    />
+    <path
+      className="cs-dove-body"
+      d="M52 30c2-6 6-9 8-9s6 3 8 9c-1 8-4 14-8 18-4-4-7-10-8-18Z"
+      fill="currentColor"
+    />
+  </svg>
+)
+
+// Three plain outlined polygons (square/hexagon/triangle) that slowly
+// spin in the section's empty margin, alongside the blurred colour
+// blobs — same "never touches the cards" placement, just a crisper,
+// more geometric counterpoint to the soft circles. currentColor + a
+// wrapper colour class keeps each on-brand (sky blue / gold / green).
+const GeoSquareGlyph: IconFn = () => (
+  <svg className="cs-geo-svg" viewBox="0 0 60 60" aria-hidden="true">
+    <rect x="4" y="4" width="52" height="52" rx="12" fill="none" stroke="currentColor" strokeWidth="2.2" />
+  </svg>
+)
+
+const GeoHexGlyph: IconFn = () => (
+  <svg className="cs-geo-svg" viewBox="0 0 60 60" aria-hidden="true">
+    <polygon points="30,3 54,16 54,44 30,57 6,44 6,16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+  </svg>
+)
+
+const GeoTriangleGlyph: IconFn = () => (
+  <svg className="cs-geo-svg" viewBox="0 0 60 60" aria-hidden="true">
+    <polygon points="30,5 56,52 4,52" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+  </svg>
+)
+
+// Qo'shimcha shakllar — bir xil "faqat kontur, currentColor" tilida,
+// fonni sezilarli darajada boyitish uchun (doira, romb, yulduzcha).
+const GeoCircleGlyph: IconFn = () => (
+  <svg className="cs-geo-svg" viewBox="0 0 60 60" aria-hidden="true">
+    <circle cx="30" cy="30" r="26" fill="none" stroke="currentColor" strokeWidth="2.2" />
+  </svg>
+)
+
+const GeoDiamondGlyph: IconFn = () => (
+  <svg className="cs-geo-svg" viewBox="0 0 60 60" aria-hidden="true">
+    <polygon points="30,4 56,30 30,56 4,30" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+  </svg>
+)
+
+const GeoStarGlyph: IconFn = () => (
+  <svg className="cs-geo-svg" viewBox="0 0 60 60" aria-hidden="true">
+    <path
+      d="M30 4 36 24 56 30 36 36 30 56 24 36 4 30 24 24Z"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
+
 // Flips `true` (and stays true) once the section scrolls into view.
 function useInView<T extends HTMLElement>(threshold = 0.15) {
   const ref = useRef<T | null>(null)
@@ -316,18 +391,53 @@ function ContactInfoPanel() {
 type FormState = { fullName: string; phone: string; message: string }
 const EMPTY_FORM: FormState = { fullName: '', phone: '', message: '' }
 
-// ===== Form-section background — three soft, blurred circles that
-// simply float up/down and scale a little, each on its own timing so
-// they never feel synchronised. Only ever shows in the empty margin
-// around the white cards (z-index 0, cards sit above them). Plain CSS
-// keyframes — no per-frame JS — and stops entirely under
-// prefers-reduced-motion. =====
+// ===== Form-section background — a soft animated dot-grid, three
+// blurred circles that float up/down and scale a little (each on its
+// own timing so they never feel synchronised), a trio of slowly
+// spinning outlined polygons for a crisper geometric layer, and two
+// doves gliding across on independent flight paths/speeds/delays so
+// they never cross in lockstep. Only ever shows in the empty margin
+// around the white cards (z-index 0, cards sit above them, pointer-
+// events none throughout). Plain CSS keyframes — no per-frame JS — and
+// everything here stops entirely under prefers-reduced-motion. =====
 function FormSectionBackground() {
   return (
     <div className="cs-form-bg" aria-hidden="true">
+      <span className="cs-form-mesh" />
       <span className="cs-shape cs-shape-form-a" />
       <span className="cs-shape cs-shape-form-b" />
       <span className="cs-shape cs-shape-form-c" />
+      <span className="cs-shape cs-shape-form-d" />
+      <span className="cs-shape cs-shape-form-e" />
+
+      <span className="cs-geo cs-geo-square">
+        <GeoSquareGlyph />
+      </span>
+      <span className="cs-geo cs-geo-hex">
+        <GeoHexGlyph />
+      </span>
+      <span className="cs-geo cs-geo-triangle">
+        <GeoTriangleGlyph />
+      </span>
+      <span className="cs-geo cs-geo-circle">
+        <GeoCircleGlyph />
+      </span>
+      <span className="cs-geo cs-geo-diamond">
+        <GeoDiamondGlyph />
+      </span>
+      <span className="cs-geo cs-geo-star">
+        <GeoStarGlyph />
+      </span>
+
+      <span className="cs-dove cs-dove-a">
+        <DoveGlyph />
+      </span>
+      <span className="cs-dove cs-dove-b">
+        <DoveGlyph />
+      </span>
+      <span className="cs-dove cs-dove-c">
+        <DoveGlyph />
+      </span>
     </div>
   )
 }
