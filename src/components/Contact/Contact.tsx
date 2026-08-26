@@ -487,12 +487,45 @@ function FormSection() {
 const MAP_EMBED_SRC =
   'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3035.9633472934443!2d71.0216583!3d40.4539482!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38bafbcbdb3b5941%3A0xac338a24c1d7d98e!2zQVNNQU4u0KPQvdC40YLQsNGAINC60L7RgNGF0L7QvdCw0YHQuA!5e0!3m2!1sru!2s!4v1787710741551!5m2!1sru!2s'
 
+// ===== Map-section background — the one section that had no moving
+// shapes yet: a "radar" pulse behind the heading (rings expanding
+// outward from a pin, echoing the section's actual subject — a
+// location), two small drifting colour blobs, and a few slow dust
+// motes. This carries the moving-shapes language FormSectionBackground
+// established all the way to the bottom of the page instead of
+// stopping after the form. Purely decorative (aria-hidden), sits only
+// behind the heading — never over the live map iframe below it — and
+// stops entirely under prefers-reduced-motion. =====
+function MapSectionBackground() {
+  return (
+    <div className="cs-map-bg" aria-hidden="true">
+      <span className="cs-map-morph cs-map-morph-a" />
+      <span className="cs-map-morph cs-map-morph-b" />
+
+      <span className="cs-map-radar">
+        <span className="cs-map-radar-ring cs-map-radar-ring-a" />
+        <span className="cs-map-radar-ring cs-map-radar-ring-b" />
+        <span className="cs-map-radar-ring cs-map-radar-ring-c" />
+        <span className="cs-map-radar-pin">
+          <MapPinGlyph />
+        </span>
+      </span>
+
+      <span className="cs-map-dot cs-map-dot-a" />
+      <span className="cs-map-dot cs-map-dot-b" />
+      <span className="cs-map-dot cs-map-dot-c" />
+    </div>
+  )
+}
+
 function MapSection() {
   const { t } = useTranslation()
   const { ref, inView } = useInView<HTMLDivElement>()
 
   return (
     <section className="cs-map-section" ref={ref}>
+      <MapSectionBackground />
+
       <div className="cs-map-heading">
         <h2>
           <AnimatedWords text={t('contactMap.title')} active={inView} />

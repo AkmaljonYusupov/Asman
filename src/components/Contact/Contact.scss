@@ -652,12 +652,115 @@
 
 /* ===== Map ===== */
 .cs-map-section {
+  position: relative;
+  isolation: isolate;
   padding: 0 0 0;
   overflow-x: hidden;
   background: #fff;
 }
 
+/* =====================================================================
+   Map-section fon — bo'lim ekranga kirguncha ko'rinmaydigan sokin
+   harakatlanuvchi shakllar: sarlavha ortida joylashuvni anglatuvchi
+   "radar" pulsi (pin atrofida kengayib yo'qoluvchi uchta halqa), ikkita
+   mayda morflanuvchi rang bulutchasi va uch dona sekin suzuvchi
+   zarracha. Faqat sarlavha zonasida — pastdagi jonli xaritaning ustiga
+   hech qachon chiqmaydi — va prefers-reduced-motion'da butunlay
+   to'xtaydi. ===================================================================== */
+.cs-map-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: clamp(300px, 42vw, 460px);
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cs-map-morph {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  will-change: transform;
+}
+.cs-map-morph-a {
+  top: 6%;
+  left: 6%;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle at 40% 40%, var(--sa-sky-600, #0864e7), transparent 72%);
+  opacity: .14;
+  animation: csMapDrift 20s ease-in-out infinite;
+}
+.cs-map-morph-b {
+  top: 12%;
+  right: 8%;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle at 55% 45%, var(--sa-gold, #f5b942), transparent 72%);
+  opacity: .16;
+  animation: csMapDrift 17s ease-in-out 1s infinite reverse;
+}
+
+.cs-map-radar {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+.cs-map-radar-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sa-sky-600, #0864e7);
+  opacity: 0;
+  animation: csMapPing 3.6s ease-out infinite;
+}
+.cs-map-radar-ring-b { animation-delay: 1.2s; border-color: var(--sa-gold, #f5b942); }
+.cs-map-radar-ring-c { animation-delay: 2.4s; }
+.cs-map-radar-pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: var(--sa-sky-600, #0864e7);
+  font-size: 15px;
+  opacity: .55;
+}
+
+.cs-map-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sa-sky-600, #0864e7);
+  opacity: .3;
+  will-change: transform;
+}
+.cs-map-dot-a { top: 22%; left: 18%; animation: csMapDotFloat 7s ease-in-out infinite; }
+.cs-map-dot-b {
+  top: 30%;
+  right: 20%;
+  width: 5px;
+  height: 5px;
+  background: var(--sa-gold, #f5b942);
+  animation: csMapDotFloat 8.5s ease-in-out .5s infinite reverse;
+}
+.cs-map-dot-c { top: 12%; left: 42%; width: 4px; height: 4px; animation: csMapDotFloat 6.2s ease-in-out 1s infinite; }
+
 .cs-map-heading {
+  position: relative;
+  z-index: 1;
   max-width: 640px;
   margin: 0 auto 28px;
   padding: 96px clamp(20px, 4vw, 48px) 0;
@@ -698,6 +801,7 @@
 .cs-map-frame {
   width: 100vw;
   position: relative;
+  z-index: 1;
   left: 50%;
   right: 50%;
   margin-left: -50vw;
@@ -754,6 +858,8 @@
   .cs-form-chip { width: 30px; height: 30px; }
   .cs-form-chip-c { width: 26px; height: 26px; }
   .cs-form-chip-b { width: 24px; height: 24px; }
+  .cs-map-morph-a, .cs-map-morph-b { width: 130px; height: 130px; }
+  .cs-map-dot-c { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -772,6 +878,13 @@
     animation: none !important;
   }
   .cs-form-brush-path {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .cs-map-morph, .cs-map-dot {
+    animation: none !important;
+  }
+  .cs-map-radar-ring {
     animation: none !important;
     opacity: 0 !important;
   }
@@ -834,4 +947,28 @@
 @keyframes csFormChipFloat {
   0%, 100% { transform: translate3d(0, 0, 0) rotate(-4deg); }
   50% { transform: translate3d(10px, -18px, 0) rotate(6deg); }
+}
+
+/* ===== cs-map-section fon shakllari — keyframes ===== */
+
+/* Mayda rang bulutchalari — forma bo'limidagi morflanuvchi bulutlarga
+   qaraganda tinchroq, faqat sekin suzib yuradi. */
+@keyframes csMapDrift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(18px, 22px, 0) scale(1.08); }
+}
+
+/* Radar pulsi — pindan chiqib kengayib boruvchi va so'nib yo'qoluvchi
+   halqa, xuddi xaritadagi joylashuvni "belgilayotgandek". */
+@keyframes csMapPing {
+  0% { transform: scale(1); opacity: .55; }
+  70% { opacity: .08; }
+  100% { transform: scale(7.5); opacity: 0; }
+}
+
+/* Zarrachalar — sekin va yengil suzish, chipларdan farqli sodda aylanma
+   harakatsiz. */
+@keyframes csMapDotFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(8px, -14px, 0); }
 }
