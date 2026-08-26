@@ -10,28 +10,22 @@ import './HomeAbout.scss'
  * components/About/About.tsx with its own PageHero). This is a
  * condensed preview: eyebrow + heading + description + a 2×2 grid of
  * trust points on the left, two façade photos and a highlight card on
- * the right, all inside one white rounded frame — matching the
- * reference design 1:1.
+ * the right, all inside one white rounded frame.
+ *
+ * The two photos use the same "shatter-in" technique as Hero.tsx's
+ * ShatterImage: each is rendered as a grid of clipped duplicates of one
+ * <img>, scattered off to the side at rest, and flown into place once
+ * the section scrolls into view (see ShatterPhoto below).
  *
  * Copy comes from `homeAbout.*` in en/ru/uz.json, next to `hero` and
- * `pageHero`. Images are expected at /public/images/home/about-1.jpg
- * and about-2.jpg — drop your own façade photos there (see the two
- * <img> tags below).
+ * `pageHero`. Images are expected at /public/images/home/about-1.png
+ * and about-2.png — drop your own façade photos there (see the two
+ * <ShatterPhoto> usages below).
  */
 
 type IconFn = () => ReactElement
 
 // ===== Icons — same local, currentColor approach as Contact.tsx =====
-const SparkleIcon: IconFn = () => (
-  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
-    <path
-      d="M12 3.5c.6 3.4 2.1 5.7 5.5 6.5-3.4.8-4.9 3.1-5.5 6.5-.6-3.4-2.1-5.7-5.5-6.5 3.4-.8 4.9-3.1 5.5-6.5Z"
-      fill="currentColor"
-    />
-    <path d="M18.5 16.5c.3 1.7 1 2.8 2.5 3.2-1.5.4-2.2 1.5-2.5 3.2-.3-1.7-1-2.8-2.5-3.2 1.5-.4 2.2-1.5 2.5-3.2Z" fill="currentColor" />
-  </svg>
-)
-
 const ShieldCheckIcon: IconFn = () => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
     <path
@@ -99,6 +93,86 @@ const POINT_ICONS: Record<(typeof POINT_KEYS)[number], IconFn> = {
   modern: BuildingIcon,
   eco: LeafIcon,
   beauty: DiamondIcon,
+}
+
+// Deterministic 0..1 "random" from an integer seed (no Math.random, so
+// server-rendered and client-rendered markup can never disagree). Same
+// technique as Hero.tsx's pseudoRandom.
+const pseudoRandom = (seed: number) => {
+  const x = Math.sin(seed * 999.9) * 10000
+  return x - Math.floor(x)
+}
+
+// Renders one photo as a grid of clipped duplicates of the same <img>
+// (object-fit/aspect ratio always matches the real image — nothing is
+// pre-sliced in an image editor). At rest the pieces sit edge-to-edge and
+// read as the normal photo; once `active`, every piece flies in from a
+// scattered position/rotation and settles into place, staggered by
+// distance from the image's own center — the same shatter-in technique
+// as Hero.tsx's ShatterImage, just for a single static photo instead of
+// a swappable carousel slide. The whole grid carries one accessible
+// name (role="img" + aria-label) since the individual <img> pieces are
+// duplicates of one photo, not separate content.
+function ShatterPhoto({
+  src,
+  alt,
+  cols,
+  rows,
+  baseDelay,
+  active,
+}: {
+  src: string
+  alt: string
+  cols: number
+  rows: number
+  baseDelay: number
+  active: boolean
+}) {
+  const centerCol = (cols - 1) / 2 || 1
+  const centerRow = (rows - 1) / 2 || 1
+  const pieces = []
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const i = row * cols + col
+      const nx = (col - centerCol) / centerCol
+      const ny = (row - centerRow) / centerRow
+      const jitter = (seed: number, spread: number) => pseudoRandom(i + seed) * spread - spread / 2
+      const dx = nx * 130 + jitter(1, 55)
+      const dy = ny * 100 - 80 + jitter(2, 55)
+      const rot = nx * 100 + jitter(3, 80)
+      const skew = jitter(4, 14)
+      const delay = baseDelay + (Math.abs(nx) + Math.abs(ny)) * 0.16 + i * 0.012
+      pieces.push({ row, col, dx, dy, rot, skew, delay })
+    }
+  }
+
+  return (
+    <div className="ha-shatter" role="img" aria-label={alt}>
+      {pieces.map(({ row, col, dx, dy, rot, skew, delay }, i) => {
+        const left = (col / cols) * 100
+        const right = ((col + 1) / cols) * 100
+        const top = (row / rows) * 100
+        const bottom = ((row + 1) / rows) * 100
+        return (
+          <img
+            key={i}
+            src={src}
+            alt=""
+            className={active ? 'ha-shard active' : 'ha-shard'}
+            draggable={false}
+            style={{
+              clipPath: `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`,
+              ['--dx' as string]: `${dx}px`,
+              ['--dy' as string]: `${dy}px`,
+              ['--rot' as string]: `${rot}deg`,
+              ['--skew' as string]: `${skew}deg`,
+              ['--delay' as string]: `${delay}s`,
+            } as React.CSSProperties}
+          />
+        )
+      })}
+    </div>
+  )
 }
 
 // Splits the heading into words, each animating in on its own delay —
@@ -181,12 +255,7 @@ export default function HomeAbout() {
     <section className="ha-section" ref={ref}>
       <div className={`ha-frame${inView ? ' in-view' : ''}`}>
         <div className="ha-text">
-          <p className="ha-eyebrow">
-            <span className="ha-eyebrow-icon">
-              <SparkleIcon />
-            </span>
-            {t('homeAbout.eyebrow')}
-          </p>
+          <p className="ha-eyebrow">{t('homeAbout.eyebrow')}</p>
 
           <h2 className="ha-title">
             <AnimatedTitle text={title} active={inView} />
@@ -220,9 +289,23 @@ export default function HomeAbout() {
         <div className="ha-media">
           <div className="ha-media-grid">
             {/* O'z fasad suratlaringizni shu yerga qo'ying:
-                public/images/home/about-1.jpg va about-2.jpg */}
-            <img className="ha-media-image" src="/images/home/about-1.png" alt={t('homeAbout.imageAlt1')} loading="lazy" />
-            <img className="ha-media-image" src="/images/home/about-2.png" alt={t('homeAbout.imageAlt2')} loading="lazy" />
+                public/images/home/about-1.png va about-2.png */}
+            <ShatterPhoto
+              src="/images/home/about-1.png"
+              alt={t('homeAbout.imageAlt1')}
+              cols={4}
+              rows={5}
+              baseDelay={0}
+              active={inView}
+            />
+            <ShatterPhoto
+              src="/images/home/about-2.png"
+              alt={t('homeAbout.imageAlt2')}
+              cols={4}
+              rows={5}
+              baseDelay={0.22}
+              active={inView}
+            />
           </div>
 
           <div className="ha-highlight">

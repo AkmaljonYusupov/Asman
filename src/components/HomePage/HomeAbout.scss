@@ -54,26 +54,27 @@
   flex-direction: column;
 }
 
-/* Eyebrow — Hero.scss'dagi .eyebrow bilan bir xil: oq pill, ko'k matn,
-   ichida oltin rangli ikonka, badgePop bilan sakrab kiradi. */
+/* Eyebrow — "Biz haqimizda" bo'lim yorlig'i. .ha-frame o'zi oq bo'lgani
+   uchun oq pill unda umuman ko'rinmas edi (oq-ustida-oq) — endi och ko'k
+   (rgba) fon bilan aniq kontrast beradi, harflar katta + oraliqli, xuddi
+   bo'lim yorlig'iga o'xshab turadi. badgePop bilan sakrab kiradi. */
 .ha-eyebrow {
   display: inline-flex;
   align-items: center;
   align-self: flex-start;
   margin: 0 0 22px;
-  padding: 7px 16px 7px 12px;
+  padding: 9px 18px;
   border-radius: 999px;
-  background: #fff;
-  box-shadow: 0 6px 16px rgba(7, 20, 45, .08);
+  background: rgba(8, 100, 231, .09);
   color: #0864e7;
   font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
+  font-size: 12.5px;
   font-weight: 800;
-  letter-spacing: .01em;
+  letter-spacing: .09em;
+  text-transform: uppercase;
   opacity: 0;
 }
 .ha-frame.in-view .ha-eyebrow { animation: haBadgePop .7s .05s cubic-bezier(.34, 1.56, .64, 1) both; }
-.ha-eyebrow-icon { display: inline-flex; margin-right: 10px; font-size: 16px; color: #b8860f; }
 
 .ha-title {
   margin: 0 0 18px;
@@ -209,19 +210,36 @@
   gap: clamp(14px, 1.6vw, 20px);
 }
 
-.ha-media-image {
+/* Har bir rasm — o'zining aynan bir nusxasidan kesilgan bo'laklar
+   to'plami (ShatterPhoto). Konteyner rasmning yumaloq burchagini
+   (border-radius) va tashqi chegarasini belgilaydi; bo'laklar shu
+   chegaraning ICHIGA uchib kelib yig'iladi — shuning uchun "sochilgan"
+   holatda ham tashqariga chiqib ketmaydi, faqat konteyner ichida
+   parchalanganday ko'rinadi. */
+.ha-shatter {
+  position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
-  object-fit: cover;
+  overflow: hidden;
   border-radius: 20px;
-  background: #eff2f9; // rasm yuklanmaguncha joy egallaydi
-  opacity: 0;
-  transform: translateY(20px) scale(.97);
-  transition: opacity .6s cubic-bezier(.22, .8, .24, 1), transform .6s cubic-bezier(.22, .8, .24, 1);
+  background: #eff2f9; // bo'laklar hali uchib kelmagan zaminiy rang
 }
-.ha-frame.in-view .ha-media-image:nth-child(1) { transition-delay: .12s; }
-.ha-frame.in-view .ha-media-image:nth-child(2) { transition-delay: .22s; }
-.ha-frame.in-view .ha-media-image { opacity: 1; transform: translateY(0) scale(1); }
+
+.ha-shard {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) skew(var(--skew)) scale(.4);
+}
+/* will-change faqat animatsiya paytida yoqiladi — Hero.scss'dagi kabi,
+   o'rnashib bo'lgan bo'lakni doimiy GPU qatlamiga aylantirmaslik uchun. */
+.ha-shard.active {
+  animation: haShardIn .9s var(--delay) cubic-bezier(.13, 1.6, .28, 1) both;
+  will-change: transform, opacity;
+}
 
 .ha-highlight {
   display: flex;
@@ -302,6 +320,15 @@
   from { transform: translateY(0); }
   to { transform: translateY(-6px); }
 }
+/* Hero.scss'dagi shardIn bilan bir xil texnika: bo'lak sochilgan
+   holatdan (--dx/--dy/--rot/--skew, scale .4) parchalanib uchib kelib,
+   ozgina "ortiqcha kattalashib" (80%da scale 1.06) joyiga tushadi. */
+@keyframes haShardIn {
+  0% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) skew(var(--skew)) scale(.4); }
+  45% { opacity: 1; }
+  80% { transform: translate(0, 0) rotate(0deg) skew(0deg) scale(1.06); }
+  100% { opacity: 1; transform: translate(0, 0) rotate(0deg) skew(0deg) scale(1); }
+}
 
 /* ===== Responsive ladder ===== */
 @media (max-width: 980px) {
@@ -317,18 +344,25 @@
 
 @media (max-width: 420px) {
   .ha-media-grid { grid-template-columns: 1fr; }
-  .ha-media-image { aspect-ratio: 16 / 10; }
+  .ha-shatter { aspect-ratio: 16 / 10; }
   .ha-highlight { flex-direction: column; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ha-frame, .ha-point, .ha-media-image, .ha-highlight, .ha-eyebrow, .ha-description, .ha-cta, .ha-word {
+  .ha-frame, .ha-point, .ha-highlight, .ha-eyebrow, .ha-description, .ha-cta, .ha-word {
     animation: none;
     transition: none;
     opacity: 1;
     transform: none;
     filter: none;
     clip-path: none;
+  }
+  .ha-shard {
+    animation: none !important;
+    opacity: 1;
+    transform: none !important;
+    filter: none;
+    will-change: auto;
   }
   .ha-highlight-icon { animation: none; }
   .ha-point-icon { transition: none; }
