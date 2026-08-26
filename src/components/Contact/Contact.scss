@@ -6,8 +6,140 @@
 /* ===== Form ===== */
 .cs-form-section {
   position: relative;
+  overflow: clip; // fon shakllarini kesib turadi + har qanday qoldiq gorizontal overflow'ning oldini oladi
   padding: 88px clamp(20px, 5vw, 80px) 96px;
   background: var(--sa-mist, #f4f7fc);
+}
+
+/* =====================================================================
+   FON: "bo'yoq" mavzusini o'zi ishlatuvchi kreativ qatlam — generik
+   xira dog'lar o'rniga:
+   1) ikkita chinakam MORFLANUVCHI (border-radius o'zi keyframe bilan
+      shakldan-shaklga o'tadi) rang bulutlari — suyuq bo'yoq hissi;
+   2) ikkita cho'tka izi — bo'lim birinchi marta ekranga kirganda
+      o'z-o'zini "chizadi" (SVG stroke-dashoffset, pathLength={1} bilan
+      aniq, geometriyadan qat'i nazar), keyin juda sekin "nafas oladi";
+   3) to'rtta suzib yuruvchi "rang namunasi" (paint chip) — bo'yoq
+      brendi mijozga beradigan xuddi shu rang kartochkalari, har biri
+      o'z ritmida sekin aylanib-suzadi.
+   Barchasi faqat oq kartalar atrofidagi bo'sh joyda ko'rinadi (z-index
+   0), shuning uchun matn bilan hech qachon to'qnashmaydi va yorqinroq
+   bo'lishi mumkin. prefers-reduced-motion'da butunlay to'xtaydi. ===================================================================== */
+.cs-form-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ----- 1) Morflanuvchi rang bulutlari ----- */
+.cs-form-morph {
+  position: absolute;
+  filter: blur(70px);
+  will-change: transform, border-radius;
+}
+.cs-form-morph-a {
+  top: -160px;
+  left: -120px;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle at 35% 35%, var(--sa-sky-600, #0864e7), transparent 72%);
+  opacity: .22;
+  animation: csFormMorphA 24s ease-in-out infinite;
+}
+.cs-form-morph-b {
+  right: -150px;
+  bottom: -170px;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle at 60% 40%, var(--sa-gold, #f5b942), transparent 72%);
+  opacity: .24;
+  animation: csFormMorphB 28s ease-in-out infinite;
+}
+
+/* ----- 2) O'z-o'zini chizuvchi cho'tka izlari ----- */
+.cs-form-brush {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.cs-form-brush-path {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+}
+.cs-form-brush-path-a { stroke: var(--sa-sky-600, #0864e7); }
+.cs-form-brush-path-b { stroke: var(--sa-gold, #f5b942); }
+
+.cs-form-section.in-view .cs-form-brush-path-a {
+  animation:
+    csFormDraw 1.7s cubic-bezier(.65, 0, .35, 1) .1s forwards,
+    csFormBreathe 6.5s ease-in-out 1.8s infinite;
+}
+.cs-form-section.in-view .cs-form-brush-path-b {
+  animation:
+    csFormDraw 1.7s cubic-bezier(.65, 0, .35, 1) .35s forwards,
+    csFormBreathe 7.5s ease-in-out 2.05s infinite;
+}
+
+/* ----- 3) Suzib yuruvchi rang namunalari (paint chips) ----- */
+.cs-form-chip {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  box-shadow: 0 14px 26px -10px rgba(16, 32, 59, .28);
+  will-change: transform;
+}
+.cs-form-chip::after {
+  content: '';
+  position: absolute;
+  inset: 5px 5px auto 5px;
+  height: 30%;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .32);
+}
+.cs-form-chip-a {
+  top: 9%;
+  left: 5%;
+  background: var(--sa-sky-600, #0864e7);
+  animation: csFormChipFloat 8s ease-in-out infinite;
+}
+.cs-form-chip-b {
+  top: 16%;
+  right: 7%;
+  width: 36px;
+  height: 36px;
+  background: var(--sa-gold, #f5b942);
+  animation: csFormChipFloat 9.5s ease-in-out .6s infinite reverse;
+}
+.cs-form-chip-c {
+  bottom: 12%;
+  left: 8%;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--sa-sky-600, #0864e7), var(--sa-gold, #f5b942));
+  animation: csFormChipFloat 10.5s ease-in-out 1.1s infinite;
+}
+.cs-form-chip-d {
+  bottom: 6%;
+  right: 10%;
+  background: #1e9e63;
+  animation: csFormChipFloat 8.8s ease-in-out .3s infinite reverse;
+}
+
+.cs-form-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(16, 32, 59, .05) 1px, transparent 1px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 30%, #000 40%, transparent 90%);
+  mask-image: radial-gradient(ellipse 75% 60% at 50% 30%, #000 40%, transparent 90%);
 }
 
 /* Outer bordered frame holding the "get in touch" info panel and the
@@ -18,20 +150,34 @@
 .cs-contact-frame {
   position: relative;
   isolation: isolate;
+  z-index: 1;
   max-width: 1180px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.15fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   gap: clamp(20px, 3vw, 44px);
   padding: clamp(28px, 3.6vw, 48px);
   border: 1px solid rgba(16, 32, 59, .1);
   border-radius: 26px;
   background: #fff;
   opacity: 0;
-  transform: translateY(26px);
-  transition: opacity .7s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)), transform .7s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1));
+  transform: translateY(30px) scale(.97);
+  filter: blur(6px);
+  transition:
+    opacity .75s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)),
+    transform .75s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)),
+    filter .6s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1));
 }
-.cs-contact-frame.in-view { opacity: 1; transform: translateY(0); }
+.cs-contact-frame.in-view { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+
+/* Grid katakchalari o'z ichidagi uzun matn/nowrap tugmalar tufayli
+   torayolmay qolib, butun sahifani gorizontal siljitib yubormasligi
+   uchun — bu CSS Grid/Flexbox'ning eng keng tarqalgan "overflow"
+   xatosi (min-width:auto standart qiymati). */
+.cs-info-panel,
+.cs-form-card {
+  min-width: 0;
+}
 
 .cs-contact-frame::before {
   content: '';
@@ -100,6 +246,7 @@
 .cs-info-description {
   margin: 0 0 26px;
   max-width: 42ch;
+  overflow-wrap: anywhere;
   font-family: 'Inter', sans-serif;
   font-size: 14.5px;
   font-weight: 600;
@@ -116,10 +263,12 @@
    simply wraps onto more lines within its own cell rather than
    truncating or needing a wider spanning cell. */
 .cs-quick-info {
+  position: relative;
+  z-index: 1;
   max-width: 1180px;
   margin: 0 auto 28px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
 }
 
@@ -279,6 +428,8 @@
 
 .cs-social-name {
   flex: 1;
+  min-width: 0; // matn cta'ni sig'dirish uchun torayishi mumkin bo'lsin
+  overflow-wrap: anywhere;
   font-family: 'Inter', sans-serif;
   font-size: 14.5px;
   font-weight: 700;
@@ -287,6 +438,7 @@
 
 .cs-social-cta {
   display: inline-flex;
+  flex-shrink: 0; // qatorda joy tortishmasin — kerak bo'lsa faqat matni yashiriladi (pastga qarang)
   align-items: center;
   gap: 5px;
   font-family: 'Inter', sans-serif;
@@ -319,6 +471,7 @@
 }
 .cs-form-heading p {
   margin: 0;
+  overflow-wrap: anywhere;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 600;
@@ -587,6 +740,22 @@
   .cs-map-frame { height: 300px; }
 }
 
+/* Torroq telefon kengliklarida: quick-info pillari bir ustunga tushadi
+   (frame bilan bir xil qatordagi kabi), ijtimoiy tarmoq qatoridagi
+   "Kuzatish" matni esa butunlay yashiriladi — faqat strelka qoladi,
+   shunda qator hech qachon kartadan tashqariga chiqmaydi. Shakllar ham
+   shu kenglikda ancha kichrayadi, aks holda ular sezilarli darajada
+   kattaroq ko'rinadi. */
+@media (max-width: 480px) {
+  .cs-quick-info { grid-template-columns: 1fr; }
+  .cs-social-cta-label { display: none; }
+  .cs-social-cta { gap: 0; }
+  .cs-form-morph-a, .cs-form-morph-b { width: 220px; height: 220px; }
+  .cs-form-chip { width: 30px; height: 30px; }
+  .cs-form-chip-c { width: 26px; height: 26px; }
+  .cs-form-chip-b { width: 24px; height: 24px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cs-contact-frame, .cs-map-lead, .cs-map-frame, .cs-form-fields, .cs-status-panel,
   .cs-info-panel > *, .cs-info-contact-row {
@@ -599,4 +768,70 @@
   .cs-status-panel:not(.show) { display: none; }
   .cs-word { animation: none; opacity: 1; transform: none; filter: none; }
   .cs-status-spinner { animation: none; }
+  .cs-form-morph-a, .cs-form-morph-b, .cs-form-chip {
+    animation: none !important;
+  }
+  .cs-form-brush-path {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+/* ===== cs-form-section fon shakllari — keyframes ===== */
+
+/* Chinakam morflanuvchi bulutlar — border-radius o'zi shakldan-shaklga
+   o'tadi (statik shakl + scale/rotate emas), shuning uchun suyuq
+   bo'yoq oqimidek ko'rinadi. */
+@keyframes csFormMorphA {
+  0%, 100% {
+    border-radius: 42% 58% 63% 37% / 45% 40% 60% 55%;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    border-radius: 58% 42% 37% 63% / 55% 65% 35% 45%;
+    transform: translate3d(35px, 25px, 0) rotate(10deg);
+  }
+  50% {
+    border-radius: 50% 50% 68% 32% / 40% 62% 38% 60%;
+    transform: translate3d(15px, 55px, 0) rotate(-8deg);
+  }
+  75% {
+    border-radius: 65% 35% 45% 55% / 58% 42% 65% 35%;
+    transform: translate3d(-25px, 20px, 0) rotate(12deg);
+  }
+}
+@keyframes csFormMorphB {
+  0%, 100% {
+    border-radius: 55% 45% 40% 60% / 50% 55% 45% 50%;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  30% {
+    border-radius: 40% 60% 62% 38% / 60% 35% 65% 40%;
+    transform: translate3d(-40px, -30px, 0) rotate(-12deg);
+  }
+  60% {
+    border-radius: 62% 38% 48% 52% / 42% 60% 40% 58%;
+    transform: translate3d(-15px, -60px, 0) rotate(9deg);
+  }
+  85% {
+    border-radius: 45% 55% 58% 42% / 55% 45% 55% 45%;
+    transform: translate3d(20px, -20px, 0) rotate(-6deg);
+  }
+}
+
+/* Cho'tka izi — stroke-dashoffset 1 → 0, pathLength={1} tufayli
+   yo'lning haqiqiy uzunligidan qat'i nazar har doim aniq ishlaydi. */
+@keyframes csFormDraw {
+  0% { stroke-dashoffset: 1; opacity: 0; }
+  8% { opacity: .55; }
+  100% { stroke-dashoffset: 0; opacity: .55; }
+}
+@keyframes csFormBreathe {
+  0%, 100% { opacity: .38; }
+  50% { opacity: .6; }
+}
+
+/* Rang namunasi (paint chip) — yengil suzish + aylanish, sinxron emas. */
+@keyframes csFormChipFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-4deg); }
+  50% { transform: translate3d(10px, -18px, 0) rotate(6deg); }
 }
