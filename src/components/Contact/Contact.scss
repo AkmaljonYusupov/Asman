@@ -12,19 +12,11 @@
 }
 
 /* =====================================================================
-   FON: "bo'yoq" mavzusini o'zi ishlatuvchi kreativ qatlam — generik
-   xira dog'lar o'rniga:
-   1) ikkita chinakam MORFLANUVCHI (border-radius o'zi keyframe bilan
-      shakldan-shaklga o'tadi) rang bulutlari — suyuq bo'yoq hissi;
-   2) ikkita cho'tka izi — bo'lim birinchi marta ekranga kirganda
-      o'z-o'zini "chizadi" (SVG stroke-dashoffset, pathLength={1} bilan
-      aniq, geometriyadan qat'i nazar), keyin juda sekin "nafas oladi";
-   3) to'rtta suzib yuruvchi "rang namunasi" (paint chip) — bo'yoq
-      brendi mijozga beradigan xuddi shu rang kartochkalari, har biri
-      o'z ritmida sekin aylanib-suzadi.
-   Barchasi faqat oq kartalar atrofidagi bo'sh joyda ko'rinadi (z-index
-   0), shuning uchun matn bilan hech qachon to'qnashmaydi va yorqinroq
-   bo'lishi mumkin. prefers-reduced-motion'da butunlay to'xtaydi. ===================================================================== */
+   FON: oddiy, xira doiralar — yumshoq rangli bloblar sekin suzib va
+   biroz kattalashib-kichraydi, har biri o'z ritmida (sinxron emas).
+   Faqat oq kartalar atrofidagi bo'sh joyda ko'rinadi (z-index 0),
+   shuning uchun matn bilan hech qachon to'qnashmaydi.
+   prefers-reduced-motion'da butunlay to'xtaydi. ===================================================================== */
 .cs-form-bg {
   position: absolute;
   inset: 0;
@@ -33,113 +25,45 @@
   pointer-events: none;
 }
 
-/* ----- 1) Morflanuvchi rang bulutlari ----- */
-.cs-form-morph {
+.cs-shape {
   position: absolute;
-  filter: blur(70px);
-  will-change: transform, border-radius;
+  border-radius: 50%;
+  filter: blur(60px);
+  will-change: transform;
+  animation-name: csShapeFloat;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
-.cs-form-morph-a {
-  top: -160px;
-  left: -120px;
-  width: 380px;
-  height: 380px;
+
+.cs-shape-form-a {
+  top: -100px;
+  left: -80px;
+  width: 320px;
+  height: 320px;
   background: radial-gradient(circle at 35% 35%, var(--sa-sky-600, #0864e7), transparent 72%);
   opacity: .22;
-  animation: csFormMorphA 24s ease-in-out infinite;
+  animation-duration: 16s;
 }
-.cs-form-morph-b {
-  right: -150px;
-  bottom: -170px;
-  width: 420px;
-  height: 420px;
+.cs-shape-form-b {
+  top: 10%;
+  right: -70px;
+  width: 260px;
+  height: 260px;
   background: radial-gradient(circle at 60% 40%, var(--sa-gold, #f5b942), transparent 72%);
-  opacity: .24;
-  animation: csFormMorphB 28s ease-in-out infinite;
+  opacity: .2;
+  animation-duration: 13s;
+  animation-delay: .8s;
+  animation-direction: reverse;
 }
-
-/* ----- 2) O'z-o'zini chizuvchi cho'tka izlari ----- */
-.cs-form-brush {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.cs-form-brush-path {
-  fill: none;
-  stroke-width: 5;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  opacity: 0;
-}
-.cs-form-brush-path-a { stroke: var(--sa-sky-600, #0864e7); }
-.cs-form-brush-path-b { stroke: var(--sa-gold, #f5b942); }
-
-.cs-form-section.in-view .cs-form-brush-path-a {
-  animation:
-    csFormDraw 1.7s cubic-bezier(.65, 0, .35, 1) .1s forwards,
-    csFormBreathe 6.5s ease-in-out 1.8s infinite;
-}
-.cs-form-section.in-view .cs-form-brush-path-b {
-  animation:
-    csFormDraw 1.7s cubic-bezier(.65, 0, .35, 1) .35s forwards,
-    csFormBreathe 7.5s ease-in-out 2.05s infinite;
-}
-
-/* ----- 3) Suzib yuruvchi rang namunalari (paint chips) ----- */
-.cs-form-chip {
-  position: absolute;
-  width: 46px;
-  height: 46px;
-  border-radius: 13px;
-  box-shadow: 0 14px 26px -10px rgba(16, 32, 59, .28);
-  will-change: transform;
-}
-.cs-form-chip::after {
-  content: '';
-  position: absolute;
-  inset: 5px 5px auto 5px;
-  height: 30%;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, .32);
-}
-.cs-form-chip-a {
-  top: 9%;
-  left: 5%;
-  background: var(--sa-sky-600, #0864e7);
-  animation: csFormChipFloat 8s ease-in-out infinite;
-}
-.cs-form-chip-b {
-  top: 16%;
-  right: 7%;
-  width: 36px;
-  height: 36px;
-  background: var(--sa-gold, #f5b942);
-  animation: csFormChipFloat 9.5s ease-in-out .6s infinite reverse;
-}
-.cs-form-chip-c {
-  bottom: 12%;
-  left: 8%;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--sa-sky-600, #0864e7), var(--sa-gold, #f5b942));
-  animation: csFormChipFloat 10.5s ease-in-out 1.1s infinite;
-}
-.cs-form-chip-d {
-  bottom: 6%;
-  right: 10%;
-  background: #1e9e63;
-  animation: csFormChipFloat 8.8s ease-in-out .3s infinite reverse;
-}
-
-.cs-form-grid {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(16, 32, 59, .05) 1px, transparent 1px);
-  background-size: 26px 26px;
-  -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 30%, #000 40%, transparent 90%);
-  mask-image: radial-gradient(ellipse 75% 60% at 50% 30%, #000 40%, transparent 90%);
+.cs-shape-form-c {
+  bottom: -110px;
+  left: 22%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle at 50% 50%, #1e9e63, transparent 72%);
+  opacity: .16;
+  animation-duration: 18s;
+  animation-delay: 1.4s;
 }
 
 /* Outer bordered frame holding the "get in touch" info panel and the
@@ -660,12 +584,9 @@
 }
 
 /* =====================================================================
-   Map-section fon — bo'lim ekranga kirguncha ko'rinmaydigan sokin
-   harakatlanuvchi shakllar: sarlavha ortida joylashuvni anglatuvchi
-   "radar" pulsi (pin atrofida kengayib yo'qoluvchi uchta halqa), ikkita
-   mayda morflanuvchi rang bulutchasi va uch dona sekin suzuvchi
-   zarracha. Faqat sarlavha zonasida — pastdagi jonli xaritaning ustiga
-   hech qachon chiqmaydi — va prefers-reduced-motion'da butunlay
+   Map-section fon — forma bo'limi bilan bir xil oddiy suzuvchi doiralar,
+   faqat kichikroq. Faqat sarlavha zonasida — pastdagi jonli xaritaning
+   ustiga hech qachon chiqmaydi — va prefers-reduced-motion'da butunlay
    to'xtaydi. ===================================================================== */
 .cs-map-bg {
   position: absolute;
@@ -678,85 +599,36 @@
   pointer-events: none;
 }
 
-.cs-map-morph {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  will-change: transform;
-}
-.cs-map-morph-a {
-  top: 6%;
+.cs-shape-map-a {
+  top: 8%;
   left: 6%;
-  width: 220px;
-  height: 220px;
-  background: radial-gradient(circle at 40% 40%, var(--sa-sky-600, #0864e7), transparent 72%);
-  opacity: .14;
-  animation: csMapDrift 20s ease-in-out infinite;
-}
-.cs-map-morph-b {
-  top: 12%;
-  right: 8%;
   width: 180px;
   height: 180px;
-  background: radial-gradient(circle at 55% 45%, var(--sa-gold, #f5b942), transparent 72%);
+  background: radial-gradient(circle at 40% 40%, var(--sa-sky-600, #0864e7), transparent 72%);
   opacity: .16;
-  animation: csMapDrift 17s ease-in-out 1s infinite reverse;
+  animation-duration: 14s;
 }
-
-.cs-map-radar {
-  position: absolute;
-  top: 6px;
-  left: 50%;
-  width: 0;
-  height: 0;
+.cs-shape-map-b {
+  top: 10%;
+  right: 8%;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle at 55% 45%, var(--sa-gold, #f5b942), transparent 72%);
+  opacity: .18;
+  animation-duration: 12s;
+  animation-delay: .5s;
+  animation-direction: reverse;
 }
-.cs-map-radar-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 14px;
-  height: 14px;
-  margin: -7px 0 0 -7px;
-  border-radius: 50%;
-  border: 1.5px solid var(--sa-sky-600, #0864e7);
-  opacity: 0;
-  animation: csMapPing 3.6s ease-out infinite;
+.cs-shape-map-c {
+  top: 2%;
+  left: 45%;
+  width: 130px;
+  height: 130px;
+  background: radial-gradient(circle at 50% 50%, #1e9e63, transparent 72%);
+  opacity: .14;
+  animation-duration: 16s;
+  animation-delay: 1s;
 }
-.cs-map-radar-ring-b { animation-delay: 1.2s; border-color: var(--sa-gold, #f5b942); }
-.cs-map-radar-ring-c { animation-delay: 2.4s; }
-.cs-map-radar-pin {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  color: var(--sa-sky-600, #0864e7);
-  font-size: 15px;
-  opacity: .55;
-}
-
-.cs-map-dot {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--sa-sky-600, #0864e7);
-  opacity: .3;
-  will-change: transform;
-}
-.cs-map-dot-a { top: 22%; left: 18%; animation: csMapDotFloat 7s ease-in-out infinite; }
-.cs-map-dot-b {
-  top: 30%;
-  right: 20%;
-  width: 5px;
-  height: 5px;
-  background: var(--sa-gold, #f5b942);
-  animation: csMapDotFloat 8.5s ease-in-out .5s infinite reverse;
-}
-.cs-map-dot-c { top: 12%; left: 42%; width: 4px; height: 4px; animation: csMapDotFloat 6.2s ease-in-out 1s infinite; }
 
 .cs-map-heading {
   position: relative;
@@ -854,12 +726,8 @@
   .cs-quick-info { grid-template-columns: 1fr; }
   .cs-social-cta-label { display: none; }
   .cs-social-cta { gap: 0; }
-  .cs-form-morph-a, .cs-form-morph-b { width: 220px; height: 220px; }
-  .cs-form-chip { width: 30px; height: 30px; }
-  .cs-form-chip-c { width: 26px; height: 26px; }
-  .cs-form-chip-b { width: 24px; height: 24px; }
-  .cs-map-morph-a, .cs-map-morph-b { width: 130px; height: 130px; }
-  .cs-map-dot-c { display: none; }
+  .cs-shape-form-a, .cs-shape-form-b, .cs-shape-form-c { width: 200px; height: 200px; }
+  .cs-shape-map-a, .cs-shape-map-b, .cs-shape-map-c { width: 120px; height: 120px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -874,101 +742,15 @@
   .cs-status-panel:not(.show) { display: none; }
   .cs-word { animation: none; opacity: 1; transform: none; filter: none; }
   .cs-status-spinner { animation: none; }
-  .cs-form-morph-a, .cs-form-morph-b, .cs-form-chip {
+  .cs-shape {
     animation: none !important;
   }
-  .cs-form-brush-path {
-    animation: none !important;
-    opacity: 0 !important;
-  }
-  .cs-map-morph, .cs-map-dot {
-    animation: none !important;
-  }
-  .cs-map-radar-ring {
-    animation: none !important;
-    opacity: 0 !important;
-  }
 }
-/* ===== cs-form-section fon shakllari — keyframes ===== */
+/* ===== Fon doiralari — keyframe ===== */
 
-/* Chinakam morflanuvchi bulutlar — border-radius o'zi shakldan-shaklga
-   o'tadi (statik shakl + scale/rotate emas), shuning uchun suyuq
-   bo'yoq oqimidek ko'rinadi. */
-@keyframes csFormMorphA {
-  0%, 100% {
-    border-radius: 42% 58% 63% 37% / 45% 40% 60% 55%;
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-  25% {
-    border-radius: 58% 42% 37% 63% / 55% 65% 35% 45%;
-    transform: translate3d(35px, 25px, 0) rotate(10deg);
-  }
-  50% {
-    border-radius: 50% 50% 68% 32% / 40% 62% 38% 60%;
-    transform: translate3d(15px, 55px, 0) rotate(-8deg);
-  }
-  75% {
-    border-radius: 65% 35% 45% 55% / 58% 42% 65% 35%;
-    transform: translate3d(-25px, 20px, 0) rotate(12deg);
-  }
-}
-@keyframes csFormMorphB {
-  0%, 100% {
-    border-radius: 55% 45% 40% 60% / 50% 55% 45% 50%;
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-  30% {
-    border-radius: 40% 60% 62% 38% / 60% 35% 65% 40%;
-    transform: translate3d(-40px, -30px, 0) rotate(-12deg);
-  }
-  60% {
-    border-radius: 62% 38% 48% 52% / 42% 60% 40% 58%;
-    transform: translate3d(-15px, -60px, 0) rotate(9deg);
-  }
-  85% {
-    border-radius: 45% 55% 58% 42% / 55% 45% 55% 45%;
-    transform: translate3d(20px, -20px, 0) rotate(-6deg);
-  }
-}
-
-/* Cho'tka izi — stroke-dashoffset 1 → 0, pathLength={1} tufayli
-   yo'lning haqiqiy uzunligidan qat'i nazar har doim aniq ishlaydi. */
-@keyframes csFormDraw {
-  0% { stroke-dashoffset: 1; opacity: 0; }
-  8% { opacity: .55; }
-  100% { stroke-dashoffset: 0; opacity: .55; }
-}
-@keyframes csFormBreathe {
-  0%, 100% { opacity: .38; }
-  50% { opacity: .6; }
-}
-
-/* Rang namunasi (paint chip) — yengil suzish + aylanish, sinxron emas. */
-@keyframes csFormChipFloat {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(-4deg); }
-  50% { transform: translate3d(10px, -18px, 0) rotate(6deg); }
-}
-
-/* ===== cs-map-section fon shakllari — keyframes ===== */
-
-/* Mayda rang bulutchalari — forma bo'limidagi morflanuvchi bulutlarga
-   qaraganda tinchroq, faqat sekin suzib yuradi. */
-@keyframes csMapDrift {
+/* Oddiy suzish + biroz kattalashish — hech qanday border-radius
+   morflanish yoki chizish yo'q, faqat yumshoq harakat. */
+@keyframes csShapeFloat {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(18px, 22px, 0) scale(1.08); }
-}
-
-/* Radar pulsi — pindan chiqib kengayib boruvchi va so'nib yo'qoluvchi
-   halqa, xuddi xaritadagi joylashuvni "belgilayotgandek". */
-@keyframes csMapPing {
-  0% { transform: scale(1); opacity: .55; }
-  70% { opacity: .08; }
-  100% { transform: scale(7.5); opacity: 0; }
-}
-
-/* Zarrachalar — sekin va yengil suzish, chipларdan farqli sodda aylanma
-   harakatsiz. */
-@keyframes csMapDotFloat {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(8px, -14px, 0); }
+  50% { transform: translate3d(18px, -22px, 0) scale(1.08); }
 }

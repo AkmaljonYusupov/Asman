@@ -316,49 +316,18 @@ function ContactInfoPanel() {
 type FormState = { fullName: string; phone: string; message: string }
 const EMPTY_FORM: FormState = { fullName: '', phone: '', message: '' }
 
-// ===== Form-section background — leans into what Asman actually sells,
-// rather than a generic "aurora" wash:
-//   1) two colour glows, now genuinely MORPHING (border-radius itself is
-//      keyframed through several organic shapes, not just moved/scaled)
-//      for a slow, liquid-paint feel behind everything else;
-//   2) two brush-stroke paths that literally paint themselves across the
-//      section the first time it scrolls into view — SVG stroke-dashoffset
-//      animated from `pathLength={1}` to 0, so it's an exact one-time draw
-//      regardless of the path's real geometry, then settles into a very
-//      slow breathe once fully drawn;
-//   3) four small "paint chip" swatches — the actual colour-sample cards
-//      a paint brand hands a customer — drifting and turning gently, each
-//      on its own timing so they never feel synchronised.
-// Chips/strokes/glows only ever show in the empty margin around the white
-// cards (z-index 0, cards sit above them), so they can be genuinely vivid
-// without ever competing with readable text. All motion is plain CSS
+// ===== Form-section background — three soft, blurred circles that
+// simply float up/down and scale a little, each on its own timing so
+// they never feel synchronised. Only ever shows in the empty margin
+// around the white cards (z-index 0, cards sit above them). Plain CSS
 // keyframes — no per-frame JS — and stops entirely under
 // prefers-reduced-motion. =====
 function FormSectionBackground() {
   return (
     <div className="cs-form-bg" aria-hidden="true">
-      <span className="cs-form-morph cs-form-morph-a" />
-      <span className="cs-form-morph cs-form-morph-b" />
-
-      <svg className="cs-form-brush" viewBox="0 0 1000 600" preserveAspectRatio="none">
-        <path
-          className="cs-form-brush-path cs-form-brush-path-a"
-          d="M-40,130 C160,40 300,230 520,150 C700,85 800,210 1040,120"
-          pathLength={1}
-        />
-        <path
-          className="cs-form-brush-path cs-form-brush-path-b"
-          d="M-40,478 C170,560 300,395 520,468 C715,532 830,405 1040,468"
-          pathLength={1}
-        />
-      </svg>
-
-      <span className="cs-form-chip cs-form-chip-a" />
-      <span className="cs-form-chip cs-form-chip-b" />
-      <span className="cs-form-chip cs-form-chip-c" />
-      <span className="cs-form-chip cs-form-chip-d" />
-
-      <span className="cs-form-grid" />
+      <span className="cs-shape cs-shape-form-a" />
+      <span className="cs-shape cs-shape-form-b" />
+      <span className="cs-shape cs-shape-form-c" />
     </div>
   )
 }
@@ -487,33 +456,18 @@ function FormSection() {
 const MAP_EMBED_SRC =
   'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3035.9633472934443!2d71.0216583!3d40.4539482!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38bafbcbdb3b5941%3A0xac338a24c1d7d98e!2zQVNNQU4u0KPQvdC40YLQsNGAINC60L7RgNGF0L7QvdCw0YHQuA!5e0!3m2!1sru!2s!4v1787710741551!5m2!1sru!2s'
 
-// ===== Map-section background — the one section that had no moving
-// shapes yet: a "radar" pulse behind the heading (rings expanding
-// outward from a pin, echoing the section's actual subject — a
-// location), two small drifting colour blobs, and a few slow dust
-// motes. This carries the moving-shapes language FormSectionBackground
-// established all the way to the bottom of the page instead of
-// stopping after the form. Purely decorative (aria-hidden), sits only
-// behind the heading — never over the live map iframe below it — and
-// stops entirely under prefers-reduced-motion. =====
+// ===== Map-section background — the same simple floating-circle
+// language as FormSectionBackground, just smaller, carrying the
+// moving-shapes feel to the bottom of the page. Purely decorative
+// (aria-hidden), sits only behind the heading — never over the live
+// map iframe below it — and stops entirely under
+// prefers-reduced-motion. =====
 function MapSectionBackground() {
   return (
     <div className="cs-map-bg" aria-hidden="true">
-      <span className="cs-map-morph cs-map-morph-a" />
-      <span className="cs-map-morph cs-map-morph-b" />
-
-      <span className="cs-map-radar">
-        <span className="cs-map-radar-ring cs-map-radar-ring-a" />
-        <span className="cs-map-radar-ring cs-map-radar-ring-b" />
-        <span className="cs-map-radar-ring cs-map-radar-ring-c" />
-        <span className="cs-map-radar-pin">
-          <MapPinGlyph />
-        </span>
-      </span>
-
-      <span className="cs-map-dot cs-map-dot-a" />
-      <span className="cs-map-dot cs-map-dot-b" />
-      <span className="cs-map-dot cs-map-dot-c" />
+      <span className="cs-shape cs-shape-map-a" />
+      <span className="cs-shape cs-shape-map-b" />
+      <span className="cs-shape cs-shape-map-c" />
     </div>
   )
 }
