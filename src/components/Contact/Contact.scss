@@ -47,7 +47,7 @@
 }
 
 /* ----- Left: info panel ----- */
-.cs-info-panel { display: flex; flex-direction: column; }
+.cs-info-panel { display: flex; flex-direction: column; will-change: transform; }
 
 .cs-info-eyebrow {
   display: inline-flex;
@@ -111,6 +111,7 @@
 .cs-info-contact-parallax {
   display: flex;
   min-width: 0;
+  will-change: transform;
 }
 .cs-info-contact-parallax .cs-info-contact-row { flex: 1; }
 
@@ -491,6 +492,7 @@
   margin: 0 auto 28px;
   padding: 96px clamp(20px, 4vw, 48px) 0;
   text-align: center;
+  will-change: transform;
 }
 
 .cs-map-heading h2 {
@@ -524,6 +526,8 @@
    the browser's left/right edges, and sits with zero bottom margin so it
    meets the footer directly below — no shadow, no rounded corners, since
    an edge-to-edge strip reads cleaner flush than framed. */
+.cs-map-frame-parallax { will-change: transform; }
+
 .cs-map-frame {
   width: 100vw;
   position: relative;

@@ -156,19 +156,21 @@ function useInView<T extends HTMLElement>(threshold = 0.15) {
 }
 
 // Continuous scroll-linked parallax: as the page scrolls, the element
-// drifts vertically relative to how far its centre sits from the
-// viewport's centre, at `speed` (positive drifts down as it approaches
-// centre from above; negative drifts the opposite way — pairing a
-// positive and a negative speed on two nearby elements is what reads as
-// "depth"). The offset is lerped toward its target every frame instead
-// of snapping straight to it, so the motion stays smooth rather than
-// jittery. Sets `transform` directly on the DOM node (not via React
-// state) since this runs every animation frame. No-ops entirely when
-// the person has requested reduced motion.
-function useParallax<T extends HTMLElement>(speed: number) {
+// drifts relative to how far its centre sits from the viewport's
+// centre — vertically (`speedY`), and optionally horizontally
+// (`speedX`) and rotationally (`speedRotate`) too, for a stronger,
+// more dynamic drift than a plain up/down slide. Positive speeds drift
+// one way as the element approaches viewport-centre from above,
+// negative the opposite way — pairing opposite speeds on two nearby
+// elements is what reads as "depth". The offset is lerped toward its
+// target every frame (not snapped straight to it) so the motion stays
+// smooth even though it moves fast. Sets `transform` directly on the
+// DOM node (not via React state) since this runs every animation
+// frame. No-ops entirely when the person has requested reduced motion.
+function useParallax<T extends HTMLElement>(speedY: number, speedX = 0, speedRotate = 0) {
   const ref = useRef<T | null>(null)
-  const current = useRef(0)
-  const target = useRef(0)
+  const current = useRef({ x: 0, y: 0, r: 0 })
+  const target = useRef({ x: 0, y: 0, r: 0 })
 
   useEffect(() => {
     const el = ref.current
@@ -183,7 +185,13 @@ function useParallax<T extends HTMLElement>(speed: number) {
       const rect = el!.getBoundingClientRect()
       const viewportCenter = window.innerHeight / 2
       const elementCenter = rect.top + rect.height / 2
-      target.current = (viewportCenter - elementCenter) * speed
+      const distance = viewportCenter - elementCenter
+      const clamp = (v: number, max: number) => Math.max(-max, Math.min(max, v))
+      target.current = {
+        x: clamp(distance * speedX, 70),
+        y: clamp(distance * speedY, 220),
+        r: clamp(distance * speedRotate, 10),
+      }
       ticking = false
     }
     function onScroll() {
@@ -193,8 +201,12 @@ function useParallax<T extends HTMLElement>(speed: number) {
       }
     }
     function loop() {
-      current.current += (target.current - current.current) * 0.09
-      el!.style.transform = `translate3d(0, ${current.current.toFixed(2)}px, 0)`
+      const c = current.current
+      const t = target.current
+      c.x += (t.x - c.x) * 0.14
+      c.y += (t.y - c.y) * 0.14
+      c.r += (t.r - c.r) * 0.14
+      el!.style.transform = `translate3d(${c.x.toFixed(2)}px, ${c.y.toFixed(2)}px, 0) rotate(${c.r.toFixed(2)}deg)`
       frame = requestAnimationFrame(loop)
     }
 
@@ -207,7 +219,7 @@ function useParallax<T extends HTMLElement>(speed: number) {
       window.removeEventListener('resize', measure)
       cancelAnimationFrame(frame)
     }
-  }, [speed])
+  }, [speedY, speedX, speedRotate])
 
   return ref
 }
@@ -306,9 +318,9 @@ function ContactQuickInfo() {
   // permanently override that CSS transform. Splitting parallax (outer
   // wrapper) from hover (inner link) keeps both independent.
   const parallaxRefs = [
-    useParallax<HTMLDivElement>(0.05),
-    useParallax<HTMLDivElement>(0.09),
-    useParallax<HTMLDivElement>(0.14),
+    useParallax<HTMLDivElement>(0.16, 0.06, 1.2),
+    useParallax<HTMLDivElement>(0.32, -0.05, -1.8),
+    useParallax<HTMLDivElement>(0.5, 0.08, 2.2),
   ]
   return (
     <div className="cs-quick-info">
@@ -342,7 +354,7 @@ function ContactQuickInfo() {
 // the form card inside the same bordered outer frame. =====
 function ContactInfoPanel() {
   const { t } = useTranslation()
-  const parallaxRef = useParallax<HTMLDivElement>(-0.035)
+  const parallaxRef = useParallax<HTMLDivElement>(-0.12, -0.03)
   return (
     <div className="cs-info-panel" ref={parallaxRef}>
       <p className="cs-info-eyebrow">
@@ -381,7 +393,6 @@ const EMPTY_FORM: FormState = { fullName: '', phone: '', message: '' }
 function FormSection() {
   const { t } = useTranslation()
   const { ref, inView } = useInView<HTMLDivElement>()
-  const formCardParallaxRef = useParallax<HTMLDivElement>(0.035)
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
   const [status, setStatus] = useState<SendStatus>('idle')
   const [touched, setTouched] = useState<Partial<Record<keyof FormState, boolean>>>({})
@@ -433,7 +444,7 @@ function FormSection() {
       <div className={`cs-contact-frame${inView ? ' in-view' : ''}`}>
         <ContactInfoPanel />
 
-        <div className="cs-form-card" ref={formCardParallaxRef}>
+        <div className="cs-form-card">
           <div className="cs-form-heading">
             <h2>{t('contactForm.heading')}</h2>
             <p>{t('contactForm.description')}</p>
@@ -504,8 +515,8 @@ const MAP_EMBED_SRC =
 function MapSection() {
   const { t } = useTranslation()
   const { ref, inView } = useInView<HTMLDivElement>()
-  const headingParallaxRef = useParallax<HTMLDivElement>(0.06)
-  const frameParallaxRef = useParallax<HTMLDivElement>(-0.04)
+  const headingParallaxRef = useParallax<HTMLDivElement>(0.2, 0.04)
+  const frameParallaxRef = useParallax<HTMLDivElement>(-0.16, -0.04, -0.6)
 
   return (
     <section className="cs-map-section" ref={ref}>
@@ -516,7 +527,7 @@ function MapSection() {
         <p className={`cs-map-lead${inView ? ' in-view' : ''}`}>{t('contactMap.description')}</p>
       </div>
 
-      <div ref={frameParallaxRef}>
+      <div ref={frameParallaxRef} className="cs-map-frame-parallax">
         <div className={`cs-map-frame${inView ? ' in-view' : ''}`}>
           <iframe
             className="cs-map-iframe"
