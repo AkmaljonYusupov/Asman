@@ -1,4 +1,5 @@
-import { Outlet, Route, Routes } from 'react-router-dom'
+import { useLayoutEffect } from 'react'
+import { Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar/Navbar'
 import Hero from './components/Hero/Hero'
 import Footer from './components/Footer/Footer'
@@ -11,7 +12,33 @@ import News from './components/News/News'
 import Contact from './components/Contact/Contact'
 
 function Layout() {
-  return <><Navbar /><Outlet /><Footer /></>
+  const { pathname, hash } = useLocation()
+
+  // Har bir marshrut almashganda sahifani yuqoriga qaytaradi.
+  //
+  // useLayoutEffect ishlatilgan — u brauzer yangi kadrni chizishidan
+  // OLDIN, sinxron ishlaydi, shuning uchun eski scroll pozitsiyasi bir
+  // lahzaga ham "yalt" etib ko'rinmaydi.
+  //
+  // window.scrollTo() o'rniga documentElement.scrollTop ga to'g'ridan-
+  // to'g'ri qiymat berilmoqda: agar global CSS'da
+  // `html { scroll-behavior: smooth }` bo'lsa, window.scrollTo() o'sha
+  // qoidaga bo'ysunib, sekin animatsiya bilan yuqoriga ko'tariladi (yoki
+  // tez-tez navigatsiya qilinganda umuman yetib ulgurmay qoladi).
+  // scrollTop'ga bevosita yozish esa CSS'dan mustaqil — har doim oniy.
+  useLayoutEffect(() => {
+    if (hash) return // #bo'lim havolasi bo'lsa, o'sha yerga scroll qilinsin
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0 // eski Safari uchun zaxira
+  }, [pathname, hash])
+
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+      <Footer />
+    </>
+  )
 }
 
 function Home() {

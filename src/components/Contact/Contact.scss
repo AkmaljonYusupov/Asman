@@ -46,8 +46,27 @@
   pointer-events: none;
 }
 
-/* ----- Left: info panel ----- */
-.cs-info-panel { display: flex; flex-direction: column; will-change: transform; }
+/* ----- Left: info panel -----
+   One IntersectionObserver flip (.in-view, added once in Contact.tsx)
+   drives every direct child's own fade + rise, each a little later than
+   the one before it via :nth-child — eyebrow, then heading, then
+   description, then the divider, then the follow-label + social list —
+   so the panel reads as a small choreographed sequence rather than one
+   flat block appearing all at once. */
+.cs-info-panel { display: flex; flex-direction: column; }
+
+.cs-info-panel > * {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .55s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)), transform .55s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1));
+}
+.cs-info-panel.in-view > * { opacity: 1; transform: translateY(0); }
+.cs-info-panel.in-view > *:nth-child(1) { transition-delay: .04s; }
+.cs-info-panel.in-view > *:nth-child(2) { transition-delay: .11s; }
+.cs-info-panel.in-view > *:nth-child(3) { transition-delay: .18s; }
+.cs-info-panel.in-view > *:nth-child(4) { transition-delay: .25s; }
+.cs-info-panel.in-view > *:nth-child(5) { transition-delay: .31s; }
+.cs-info-panel.in-view > *:nth-child(6) { transition-delay: .37s; }
 
 .cs-info-eyebrow {
   display: inline-flex;
@@ -104,20 +123,15 @@
   gap: 12px;
 }
 
-/* Pure positioning layer for scroll parallax (JS sets `transform` on
-   this node every frame) — kept separate from .cs-info-contact-row so
-   the pill's own hover transform below is never fought over by two
-   different things writing to the same `transform` property. */
-.cs-info-contact-parallax {
-  display: flex;
-  min-width: 0;
-  will-change: transform;
-}
-.cs-info-contact-parallax .cs-info-contact-row { flex: 1; }
-
 /* Phone/email/address rows — solid-fill pills, each a plain block of
-   the same brand indigo with a white icon and value. */
-
+   the same brand indigo with a white icon and value.
+   Reveal: hidden + shifted down at rest; .cs-quick-info.in-view flips
+   them all to their resting position, each pill's own transition-delay
+   (set inline from Contact.tsx, `i * 0.1s`) staggering the arrival so
+   they rise into place one after another rather than all at once. This
+   is a *different* CSS property transition than the :hover rule below,
+   not the same value being fought over every frame, so the two never
+   conflict — hover simply takes over once the reveal has settled. */
 .cs-info-contact-row {
   position: relative;
   overflow: hidden;
@@ -131,8 +145,11 @@
   border-radius: 18px;
   background: none;
   text-decoration: none;
-  transition: border-color .25s ease, box-shadow .25s ease, transform .2s ease;
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .6s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)), transform .5s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)), border-color .25s ease, box-shadow .25s ease;
 }
+.cs-quick-info.in-view .cs-info-contact-row { opacity: 1; transform: translateY(0); }
 .cs-info-contact-row:hover {
   border-color: var(--sa-sky-600, #0864e7);
   box-shadow: 0 16px 32px rgba(8, 100, 231, .14);
@@ -492,7 +509,6 @@
   margin: 0 auto 28px;
   padding: 96px clamp(20px, 4vw, 48px) 0;
   text-align: center;
-  will-change: transform;
 }
 
 .cs-map-heading h2 {
@@ -526,8 +542,6 @@
    the browser's left/right edges, and sits with zero bottom margin so it
    meets the footer directly below — no shadow, no rounded corners, since
    an edge-to-edge strip reads cleaner flush than framed. */
-.cs-map-frame-parallax { will-change: transform; }
-
 .cs-map-frame {
   width: 100vw;
   position: relative;
@@ -574,7 +588,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cs-contact-frame, .cs-map-lead, .cs-map-frame, .cs-form-fields, .cs-status-panel {
+  .cs-contact-frame, .cs-map-lead, .cs-map-frame, .cs-form-fields, .cs-status-panel,
+  .cs-info-panel > *, .cs-info-contact-row {
     transition: none;
     opacity: 1;
     transform: none;

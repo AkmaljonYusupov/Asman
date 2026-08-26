@@ -155,78 +155,6 @@ function useInView<T extends HTMLElement>(threshold = 0.15) {
   return { ref, inView }
 }
 
-// Continuous scroll-linked motion that never moves the element's
-// position — no translate anywhere. Instead it scales and rotates the
-// element around its own centre (so its point in the layout never
-// shifts, and it can't drift into a neighbouring column or out of its
-// grid cell) and fades its opacity, all driven by how close the
-// element's centre is to the viewport's centre: strongest right at
-// centre, easing off toward 1/full-opacity near the edges. `strength`
-// scales the whole effect up or down. Lerped every frame for smooth
-// motion. Sets `transform`/`opacity` directly on the DOM node (not via
-// React state) since this runs every animation frame. No-ops entirely
-// when the person has requested reduced motion.
-function useScrollMotion<T extends HTMLElement>(strength = 1) {
-  const ref = useRef<T | null>(null)
-  const current = useRef({ scale: 1, rotate: 0, opacity: 1 })
-  const target = useRef({ scale: 1, rotate: 0, opacity: 1 })
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    if (typeof window === 'undefined') return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    let frame = 0
-    let ticking = false
-
-    function measure() {
-      const rect = el!.getBoundingClientRect()
-      const viewportH = window.innerHeight
-      const elementCenter = rect.top + rect.height / 2
-      // -1 (well above centre) .. 0 (dead centre) .. 1 (well below centre)
-      const norm = Math.max(-1, Math.min(1, (elementCenter - viewportH / 2) / (viewportH / 2)))
-      const dist = Math.abs(norm)
-      const scaleDrop = Math.min(0.15, dist * 0.18 * strength) // caps scale at a floor of .85
-      target.current = {
-        scale: 1 - scaleDrop,
-        rotate: norm * 5 * strength,
-        opacity: Math.max(0.55, 1 - dist * 0.45 * strength),
-      }
-      ticking = false
-    }
-    function onScroll() {
-      if (!ticking) {
-        ticking = true
-        requestAnimationFrame(measure)
-      }
-    }
-    function loop() {
-      const c = current.current
-      const t = target.current
-      c.scale += (t.scale - c.scale) * 0.14
-      c.rotate += (t.rotate - c.rotate) * 0.14
-      c.opacity += (t.opacity - c.opacity) * 0.14
-      el!.style.transform = `scale(${c.scale.toFixed(3)}) rotate(${c.rotate.toFixed(2)}deg)`
-      el!.style.opacity = c.opacity.toFixed(3)
-      frame = requestAnimationFrame(loop)
-    }
-
-    measure()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', measure)
-    frame = requestAnimationFrame(loop)
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', measure)
-      cancelAnimationFrame(frame)
-    }
-  }, [strength])
-
-  return ref
-}
-
-
 // same idea as PageHero.tsx's own AnimatedWords, kept as a local copy so
 // this component has no runtime dependency on PageHero's internals.
 function AnimatedWords({ text, active }: { text: string; active: boolean }) {
@@ -311,40 +239,35 @@ const CONTACT_ROWS: {
 // reads as a separate element from the "get in touch" card below it. =====
 function ContactQuickInfo() {
   const { t } = useTranslation()
-  // One hook call per row (fixed at 3 — CONTACT_ROWS never changes at
-  // runtime) rather than calling the hook inside .map, since hooks can't
-  // run a variable number of times per render. Each ref goes on a plain
-  // wrapper div, not the <a> itself — the <a> already has its own hover
-  // transform (the lift on :hover in Contact.scss), and setting an
-  // inline `transform` on the same element every animation frame would
-  // permanently override that CSS transform. Splitting parallax (outer
-  // wrapper) from hover (inner link) keeps both independent.
-  const parallaxRefs = [
-    useScrollMotion<HTMLDivElement>(0.8),
-    useScrollMotion<HTMLDivElement>(1.1),
-    useScrollMotion<HTMLDivElement>(1.4),
-  ]
+  // One IntersectionObserver for the whole strip — once it scrolls into
+  // view, each pill fades + rises with its own transition-delay (set via
+  // inline style below), so they arrive one after another instead of all
+  // at once. No per-row wrapper needed any more: the reveal's `transform`
+  // and the row's own `:hover` transform are different CSS states of the
+  // *same* rule, not two different things fighting over one property
+  // every frame — so they can safely live on .cs-info-contact-row itself.
+  const { ref, inView } = useInView<HTMLDivElement>(0.2)
   return (
-    <div className="cs-quick-info">
+    <div className={`cs-quick-info${inView ? ' in-view' : ''}`} ref={ref}>
       {CONTACT_ROWS.map(({ key, href, external, Icon }, i) => (
-        <div key={key} ref={parallaxRefs[i]} className="cs-info-contact-parallax">
-          <a
-            className="cs-info-contact-row"
-            href={href}
-            {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-          >
-            <span className="cs-info-contact-bg-icon" aria-hidden="true">
-              <Icon />
-            </span>
-            <span className="cs-info-contact-icon">
-              <Icon />
-            </span>
-            <span className="cs-info-contact-text">
-              <span className="cs-info-contact-label">{t(`contactForm.info.${key}Label`)}</span>
-              <span className="cs-info-contact-value">{t(`footer.${key}`)}</span>
-            </span>
-          </a>
-        </div>
+        <a
+          key={key}
+          className="cs-info-contact-row"
+          href={href}
+          style={inView ? { transitionDelay: `${i * 0.1}s` } : undefined}
+          {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        >
+          <span className="cs-info-contact-bg-icon" aria-hidden="true">
+            <Icon />
+          </span>
+          <span className="cs-info-contact-icon">
+            <Icon />
+          </span>
+          <span className="cs-info-contact-text">
+            <span className="cs-info-contact-label">{t(`contactForm.info.${key}Label`)}</span>
+            <span className="cs-info-contact-value">{t(`footer.${key}`)}</span>
+          </span>
+        </a>
       ))}
     </div>
   )
@@ -356,9 +279,9 @@ function ContactQuickInfo() {
 // the form card inside the same bordered outer frame. =====
 function ContactInfoPanel() {
   const { t } = useTranslation()
-  const parallaxRef = useScrollMotion<HTMLDivElement>(0.6)
+  const { ref, inView } = useInView<HTMLDivElement>(0.2)
   return (
-    <div className="cs-info-panel" ref={parallaxRef}>
+    <div className={`cs-info-panel${inView ? ' in-view' : ''}`} ref={ref}>
       <p className="cs-info-eyebrow">
         <span className="cs-info-eyebrow-dash" aria-hidden="true" />
         {t('contactForm.info.eyebrow')}
@@ -517,28 +440,24 @@ const MAP_EMBED_SRC =
 function MapSection() {
   const { t } = useTranslation()
   const { ref, inView } = useInView<HTMLDivElement>()
-  const headingParallaxRef = useScrollMotion<HTMLDivElement>(1)
-  const frameParallaxRef = useScrollMotion<HTMLDivElement>(0.9)
 
   return (
     <section className="cs-map-section" ref={ref}>
-      <div className="cs-map-heading" ref={headingParallaxRef}>
+      <div className="cs-map-heading">
         <h2>
           <AnimatedWords text={t('contactMap.title')} active={inView} />
         </h2>
         <p className={`cs-map-lead${inView ? ' in-view' : ''}`}>{t('contactMap.description')}</p>
       </div>
 
-      <div ref={frameParallaxRef} className="cs-map-frame-parallax">
-        <div className={`cs-map-frame${inView ? ' in-view' : ''}`}>
-          <iframe
-            className="cs-map-iframe"
-            title="Asman — xarita"
-            src={MAP_EMBED_SRC}
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
-        </div>
+      <div className={`cs-map-frame${inView ? ' in-view' : ''}`}>
+        <iframe
+          className="cs-map-iframe"
+          title="Asman — xarita"
+          src={MAP_EMBED_SRC}
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
       </div>
     </section>
   )
