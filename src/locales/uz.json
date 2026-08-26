@@ -43,6 +43,36 @@
       }
     ]
   },
+  "homeAbout": {
+    "eyebrow": "Biz haqimizda",
+    "title": "Sifatli materiallar bilan chiroyli va mustahkam kelajak sari",
+    "description": "Biz zamonaviy texnologiyalar va tabiiy materiallardan foydalangan holda, estetik va bardoshli fasad yechimlarini yaratamiz. Maqsadimiz – har bir bino uchun ishonchli, chiroyli va uzoq muddatli natijani ta'minlash.",
+    "cta": "Batafsil",
+    "points": {
+      "quality": {
+        "title": "Sifat va ishonch",
+        "description": "Yuqori sifatli xom ashyo va qat'iy nazorat"
+      },
+      "modern": {
+        "title": "Zamonaviy yechimlar",
+        "description": "Innovatsion texnologiyalar va samarali yondashuv"
+      },
+      "eco": {
+        "title": "Ekologik toza",
+        "description": "Atrof-muhitga zarar yetkazmaydigan materiallar"
+      },
+      "beauty": {
+        "title": "Chiroy va estetik",
+        "description": "Har bir loyihaga mos, zamonaviy dizayn"
+      }
+    },
+    "highlight": {
+      "title": "Uzoq muddatli himoya va mukammal ko'rinish",
+      "description": "Fasad materiallarimiz issiq, sovuq, yomg'ir va boshqa tashqi ta'sirlarga chidamli bo'lib, binolaringizga nafis va zamonaviy ko'rinish beradi."
+    },
+    "imageAlt1": "Zamonaviy bino fasadi",
+    "imageAlt2": "Fasad qoplamasi yaqindan"
+  },
   "aria": {
     "previous": "Oldingi slayd",
     "next": "Keyingi slayd",
@@ -137,9 +167,18 @@
       "followCta": "Kuzatish"
     },
     "fields": {
-      "fullName": { "label": "Ism va familiya", "placeholder": "Masalan: Aziz Karimov" },
-      "phone": { "label": "Telefon raqami", "placeholder": "+998 __ ___ __ __" },
-      "message": { "label": "Xabar matni", "placeholder": "Fikringizni shu yerga yozing..." }
+      "fullName": {
+        "label": "Ism va familiya",
+        "placeholder": "Masalan: Aziz Karimov"
+      },
+      "phone": {
+        "label": "Telefon raqami",
+        "placeholder": "+998 __ ___ __ __"
+      },
+      "message": {
+        "label": "Xabar matni",
+        "placeholder": "Fikringizni shu yerga yozing..."
+      }
     },
     "errors": {
       "fullName": "Ism va familiyangizni to'liq kiriting",
@@ -149,7 +188,7 @@
     "submit": "Xabarni yuborish",
     "close": "Yopish",
     "status": {
-      "sendingTitle": "Yuborilmoqda\u2026",
+      "sendingTitle": "Yuborilmoqda…",
       "sendingDescription": "Xabaringiz yuborilmoqda, iltimos biroz kuting.",
       "successTitle": "Rahmat!",
       "successDescription": "Xabaringiz qabul qilindi, tez orada sizga javob beramiz."

@@ -43,6 +43,36 @@
       }
     ]
   },
+  "homeAbout": {
+    "eyebrow": "About us",
+    "title": "Toward a beautiful, lasting future built on quality materials",
+    "description": "We craft elegant, durable façade solutions using modern technology and natural materials. Our goal is to give every building a reliable, beautiful, long-lasting result.",
+    "cta": "Learn more",
+    "points": {
+      "quality": {
+        "title": "Quality & trust",
+        "description": "Premium raw materials and strict quality control"
+      },
+      "modern": {
+        "title": "Modern solutions",
+        "description": "Innovative technology and an efficient approach"
+      },
+      "eco": {
+        "title": "Eco-friendly",
+        "description": "Materials that don't harm the environment"
+      },
+      "beauty": {
+        "title": "Beauty & aesthetics",
+        "description": "Modern design suited to every project"
+      }
+    },
+    "highlight": {
+      "title": "Long-lasting protection, flawless appearance",
+      "description": "Our façade materials resist heat, cold, rain, and other outdoor conditions, giving your buildings an elegant, modern look."
+    },
+    "imageAlt1": "Modern building façade",
+    "imageAlt2": "Close-up of façade coating"
+  },
   "aria": {
     "previous": "Previous slide",
     "next": "Next slide",
@@ -137,9 +167,18 @@
       "followCta": "Follow"
     },
     "fields": {
-      "fullName": { "label": "Full name", "placeholder": "e.g. John Smith" },
-      "phone": { "label": "Phone number", "placeholder": "+998 __ ___ __ __" },
-      "message": { "label": "Message", "placeholder": "Write your message here..." }
+      "fullName": {
+        "label": "Full name",
+        "placeholder": "e.g. John Smith"
+      },
+      "phone": {
+        "label": "Phone number",
+        "placeholder": "+998 __ ___ __ __"
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "Write your message here..."
+      }
     },
     "errors": {
       "fullName": "Please enter your full name",
@@ -149,7 +188,7 @@
     "submit": "Send message",
     "close": "Close",
     "status": {
-      "sendingTitle": "Sending\u2026",
+      "sendingTitle": "Sending…",
       "sendingDescription": "Your message is being sent, please wait a moment.",
       "successTitle": "Thank you!",
       "successDescription": "Your message has been received. We'll get back to you shortly."

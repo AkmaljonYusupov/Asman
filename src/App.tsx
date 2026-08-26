@@ -2,6 +2,7 @@ import { useLayoutEffect } from 'react'
 import { Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar/Navbar'
 import Hero from './components/Hero/Hero'
+import HomeAbout from './components/HomePage/HomeAbout'
 import Footer from './components/Footer/Footer'
 import SEO from './components/shared/SEO'
 import { menuKeys } from './components/shared/navigation'
@@ -46,6 +47,7 @@ function Home() {
     <main>
       <SEO pageKey="home" />
       <Hero />
+      <HomeAbout />
     </main>
   )
 }
