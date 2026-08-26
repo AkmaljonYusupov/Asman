@@ -155,22 +155,21 @@ function useInView<T extends HTMLElement>(threshold = 0.15) {
   return { ref, inView }
 }
 
-// Continuous scroll-linked parallax: as the page scrolls, the element
-// drifts relative to how far its centre sits from the viewport's
-// centre — vertically (`speedY`), and optionally horizontally
-// (`speedX`) and rotationally (`speedRotate`) too, for a stronger,
-// more dynamic drift than a plain up/down slide. Positive speeds drift
-// one way as the element approaches viewport-centre from above,
-// negative the opposite way — pairing opposite speeds on two nearby
-// elements is what reads as "depth". The offset is lerped toward its
-// target every frame (not snapped straight to it) so the motion stays
-// smooth even though it moves fast. Sets `transform` directly on the
-// DOM node (not via React state) since this runs every animation
-// frame. No-ops entirely when the person has requested reduced motion.
-function useParallax<T extends HTMLElement>(speedY: number, speedX = 0, speedRotate = 0) {
+// Continuous scroll-linked motion that never moves the element's
+// position — no translate anywhere. Instead it scales and rotates the
+// element around its own centre (so its point in the layout never
+// shifts, and it can't drift into a neighbouring column or out of its
+// grid cell) and fades its opacity, all driven by how close the
+// element's centre is to the viewport's centre: strongest right at
+// centre, easing off toward 1/full-opacity near the edges. `strength`
+// scales the whole effect up or down. Lerped every frame for smooth
+// motion. Sets `transform`/`opacity` directly on the DOM node (not via
+// React state) since this runs every animation frame. No-ops entirely
+// when the person has requested reduced motion.
+function useScrollMotion<T extends HTMLElement>(strength = 1) {
   const ref = useRef<T | null>(null)
-  const current = useRef({ x: 0, y: 0, r: 0 })
-  const target = useRef({ x: 0, y: 0, r: 0 })
+  const current = useRef({ scale: 1, rotate: 0, opacity: 1 })
+  const target = useRef({ scale: 1, rotate: 0, opacity: 1 })
 
   useEffect(() => {
     const el = ref.current
@@ -183,14 +182,16 @@ function useParallax<T extends HTMLElement>(speedY: number, speedX = 0, speedRot
 
     function measure() {
       const rect = el!.getBoundingClientRect()
-      const viewportCenter = window.innerHeight / 2
+      const viewportH = window.innerHeight
       const elementCenter = rect.top + rect.height / 2
-      const distance = viewportCenter - elementCenter
-      const clamp = (v: number, max: number) => Math.max(-max, Math.min(max, v))
+      // -1 (well above centre) .. 0 (dead centre) .. 1 (well below centre)
+      const norm = Math.max(-1, Math.min(1, (elementCenter - viewportH / 2) / (viewportH / 2)))
+      const dist = Math.abs(norm)
+      const scaleDrop = Math.min(0.15, dist * 0.18 * strength) // caps scale at a floor of .85
       target.current = {
-        x: clamp(distance * speedX, 70),
-        y: clamp(distance * speedY, 220),
-        r: clamp(distance * speedRotate, 10),
+        scale: 1 - scaleDrop,
+        rotate: norm * 5 * strength,
+        opacity: Math.max(0.55, 1 - dist * 0.45 * strength),
       }
       ticking = false
     }
@@ -203,10 +204,11 @@ function useParallax<T extends HTMLElement>(speedY: number, speedX = 0, speedRot
     function loop() {
       const c = current.current
       const t = target.current
-      c.x += (t.x - c.x) * 0.14
-      c.y += (t.y - c.y) * 0.14
-      c.r += (t.r - c.r) * 0.14
-      el!.style.transform = `translate3d(${c.x.toFixed(2)}px, ${c.y.toFixed(2)}px, 0) rotate(${c.r.toFixed(2)}deg)`
+      c.scale += (t.scale - c.scale) * 0.14
+      c.rotate += (t.rotate - c.rotate) * 0.14
+      c.opacity += (t.opacity - c.opacity) * 0.14
+      el!.style.transform = `scale(${c.scale.toFixed(3)}) rotate(${c.rotate.toFixed(2)}deg)`
+      el!.style.opacity = c.opacity.toFixed(3)
       frame = requestAnimationFrame(loop)
     }
 
@@ -219,7 +221,7 @@ function useParallax<T extends HTMLElement>(speedY: number, speedX = 0, speedRot
       window.removeEventListener('resize', measure)
       cancelAnimationFrame(frame)
     }
-  }, [speedY, speedX, speedRotate])
+  }, [strength])
 
   return ref
 }
@@ -318,9 +320,9 @@ function ContactQuickInfo() {
   // permanently override that CSS transform. Splitting parallax (outer
   // wrapper) from hover (inner link) keeps both independent.
   const parallaxRefs = [
-    useParallax<HTMLDivElement>(0.16, 0.06, 1.2),
-    useParallax<HTMLDivElement>(0.32, -0.05, -1.8),
-    useParallax<HTMLDivElement>(0.5, 0.08, 2.2),
+    useScrollMotion<HTMLDivElement>(0.8),
+    useScrollMotion<HTMLDivElement>(1.1),
+    useScrollMotion<HTMLDivElement>(1.4),
   ]
   return (
     <div className="cs-quick-info">
@@ -354,7 +356,7 @@ function ContactQuickInfo() {
 // the form card inside the same bordered outer frame. =====
 function ContactInfoPanel() {
   const { t } = useTranslation()
-  const parallaxRef = useParallax<HTMLDivElement>(-0.12, -0.03)
+  const parallaxRef = useScrollMotion<HTMLDivElement>(0.6)
   return (
     <div className="cs-info-panel" ref={parallaxRef}>
       <p className="cs-info-eyebrow">
@@ -515,8 +517,8 @@ const MAP_EMBED_SRC =
 function MapSection() {
   const { t } = useTranslation()
   const { ref, inView } = useInView<HTMLDivElement>()
-  const headingParallaxRef = useParallax<HTMLDivElement>(0.2, 0.04)
-  const frameParallaxRef = useParallax<HTMLDivElement>(-0.16, -0.04, -0.6)
+  const headingParallaxRef = useScrollMotion<HTMLDivElement>(1)
+  const frameParallaxRef = useScrollMotion<HTMLDivElement>(0.9)
 
   return (
     <section className="cs-map-section" ref={ref}>
