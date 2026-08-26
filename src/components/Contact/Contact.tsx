@@ -93,22 +93,25 @@ const TelegramGlyph: IconFn = () => (
 )
 
 // Phone/email/address glyphs for the left panel's contact rows — same
-// flat, currentColor approach as the other icons in this file (not a
-// white-on-badge social glyph: these rows share one plain brand-colour
-// tile rather than a per-platform colour).
+// flat, currentColor approach as the other icons in this file. Unlike
+// the social glyphs (always white-on-colour-badge), these use
+// currentColor: each contact row renders the icon twice — small and
+// brand-blue in the badge, and large and faint as a background
+// watermark — so the colour needs to follow the CSS `color` set on
+// whichever wrapper is rendering it.
 const PhoneGlyph: IconFn = () => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
     <path
       d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.9 21 3 13.1 3 3.9c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.3 0 .7-.2 1L6.6 10.8Z"
-      fill="white"
+      fill="currentColor"
     />
   </svg>
 )
 
 const EmailGlyph: IconFn = () => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
-    <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" stroke="white" strokeWidth="1.7" />
-    <path d="m4.5 7 7.5 6 7.5-6" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+    <path d="m4.5 7 7.5 6 7.5-6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )
 
@@ -116,11 +119,11 @@ const MapPinGlyph: IconFn = () => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
     <path
       d="M12 21.5c4.2-4.6 7-8.3 7-12A7 7 0 0 0 5 9.5c0 3.7 2.8 7.4 7 12Z"
-      stroke="white"
+      stroke="currentColor"
       strokeWidth="1.7"
       strokeLinejoin="round"
     />
-    <circle cx="12" cy="9.5" r="2.4" stroke="white" strokeWidth="1.7" />
+    <circle cx="12" cy="9.5" r="2.4" stroke="currentColor" strokeWidth="1.7" />
   </svg>
 )
 
@@ -152,7 +155,64 @@ function useInView<T extends HTMLElement>(threshold = 0.15) {
   return { ref, inView }
 }
 
-// Splits a translated phrase into words that stagger in left-to-right —
+// Continuous scroll-linked parallax: as the page scrolls, the element
+// drifts vertically relative to how far its centre sits from the
+// viewport's centre, at `speed` (positive drifts down as it approaches
+// centre from above; negative drifts the opposite way — pairing a
+// positive and a negative speed on two nearby elements is what reads as
+// "depth"). The offset is lerped toward its target every frame instead
+// of snapping straight to it, so the motion stays smooth rather than
+// jittery. Sets `transform` directly on the DOM node (not via React
+// state) since this runs every animation frame. No-ops entirely when
+// the person has requested reduced motion.
+function useParallax<T extends HTMLElement>(speed: number) {
+  const ref = useRef<T | null>(null)
+  const current = useRef(0)
+  const target = useRef(0)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (typeof window === 'undefined') return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let frame = 0
+    let ticking = false
+
+    function measure() {
+      const rect = el!.getBoundingClientRect()
+      const viewportCenter = window.innerHeight / 2
+      const elementCenter = rect.top + rect.height / 2
+      target.current = (viewportCenter - elementCenter) * speed
+      ticking = false
+    }
+    function onScroll() {
+      if (!ticking) {
+        ticking = true
+        requestAnimationFrame(measure)
+      }
+    }
+    function loop() {
+      current.current += (target.current - current.current) * 0.09
+      el!.style.transform = `translate3d(0, ${current.current.toFixed(2)}px, 0)`
+      frame = requestAnimationFrame(loop)
+    }
+
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', measure)
+    frame = requestAnimationFrame(loop)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', measure)
+      cancelAnimationFrame(frame)
+    }
+  }, [speed])
+
+  return ref
+}
+
+
 // same idea as PageHero.tsx's own AnimatedWords, kept as a local copy so
 // this component has no runtime dependency on PageHero's internals.
 function AnimatedWords({ text, active }: { text: string; active: boolean }) {
@@ -237,23 +297,40 @@ const CONTACT_ROWS: {
 // reads as a separate element from the "get in touch" card below it. =====
 function ContactQuickInfo() {
   const { t } = useTranslation()
+  // One hook call per row (fixed at 3 — CONTACT_ROWS never changes at
+  // runtime) rather than calling the hook inside .map, since hooks can't
+  // run a variable number of times per render. Each ref goes on a plain
+  // wrapper div, not the <a> itself — the <a> already has its own hover
+  // transform (the lift on :hover in Contact.scss), and setting an
+  // inline `transform` on the same element every animation frame would
+  // permanently override that CSS transform. Splitting parallax (outer
+  // wrapper) from hover (inner link) keeps both independent.
+  const parallaxRefs = [
+    useParallax<HTMLDivElement>(0.05),
+    useParallax<HTMLDivElement>(0.09),
+    useParallax<HTMLDivElement>(0.14),
+  ]
   return (
     <div className="cs-quick-info">
-      {CONTACT_ROWS.map(({ key, href, external, Icon }) => (
-        <a
-          key={key}
-          className="cs-info-contact-row"
-          href={href}
-          {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        >
-          <span className="cs-info-contact-icon">
-            <Icon />
-          </span>
-          <span className="cs-info-contact-text">
-            <span className="cs-info-contact-label">{t(`contactForm.info.${key}Label`)}</span>
-            <span className="cs-info-contact-value">{t(`footer.${key}`)}</span>
-          </span>
-        </a>
+      {CONTACT_ROWS.map(({ key, href, external, Icon }, i) => (
+        <div key={key} ref={parallaxRefs[i]} className="cs-info-contact-parallax">
+          <a
+            className="cs-info-contact-row"
+            href={href}
+            {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          >
+            <span className="cs-info-contact-bg-icon" aria-hidden="true">
+              <Icon />
+            </span>
+            <span className="cs-info-contact-icon">
+              <Icon />
+            </span>
+            <span className="cs-info-contact-text">
+              <span className="cs-info-contact-label">{t(`contactForm.info.${key}Label`)}</span>
+              <span className="cs-info-contact-value">{t(`footer.${key}`)}</span>
+            </span>
+          </a>
+        </div>
       ))}
     </div>
   )
@@ -265,8 +342,9 @@ function ContactQuickInfo() {
 // the form card inside the same bordered outer frame. =====
 function ContactInfoPanel() {
   const { t } = useTranslation()
+  const parallaxRef = useParallax<HTMLDivElement>(-0.035)
   return (
-    <div className="cs-info-panel">
+    <div className="cs-info-panel" ref={parallaxRef}>
       <p className="cs-info-eyebrow">
         <span className="cs-info-eyebrow-dash" aria-hidden="true" />
         {t('contactForm.info.eyebrow')}
@@ -303,6 +381,7 @@ const EMPTY_FORM: FormState = { fullName: '', phone: '', message: '' }
 function FormSection() {
   const { t } = useTranslation()
   const { ref, inView } = useInView<HTMLDivElement>()
+  const formCardParallaxRef = useParallax<HTMLDivElement>(0.035)
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
   const [status, setStatus] = useState<SendStatus>('idle')
   const [touched, setTouched] = useState<Partial<Record<keyof FormState, boolean>>>({})
@@ -354,7 +433,7 @@ function FormSection() {
       <div className={`cs-contact-frame${inView ? ' in-view' : ''}`}>
         <ContactInfoPanel />
 
-        <div className="cs-form-card">
+        <div className="cs-form-card" ref={formCardParallaxRef}>
           <div className="cs-form-heading">
             <h2>{t('contactForm.heading')}</h2>
             <p>{t('contactForm.description')}</p>
@@ -420,29 +499,33 @@ function FormSection() {
 
 // ===== Map =====
 const MAP_EMBED_SRC =
-  'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3035.9633472934443!2d71.0216583!3d40.4539482!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38bafbcbdb3b5941%3A0xac338a24c1d7d98e!2zQVNNQU4u0KPQvdC40YLQsNGAINC60L7RgNGF0L7QvdCw0YHQuA!5e0!3m2!1sru!2s!4v1787681943374!5m2!1sru!2s'
+  'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3035.9633472934443!2d71.0216583!3d40.4539482!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38bafbcbdb3b5941%3A0xac338a24c1d7d98e!2zQVNNQU4u0KPQvdC40YLQsNGAINC60L7RgNGF0L7QvdCw0YHQuA!5e0!3m2!1sru!2s!4v1787710741551!5m2!1sru!2s'
 
 function MapSection() {
   const { t } = useTranslation()
   const { ref, inView } = useInView<HTMLDivElement>()
+  const headingParallaxRef = useParallax<HTMLDivElement>(0.06)
+  const frameParallaxRef = useParallax<HTMLDivElement>(-0.04)
 
   return (
     <section className="cs-map-section" ref={ref}>
-      <div className="cs-map-heading">
+      <div className="cs-map-heading" ref={headingParallaxRef}>
         <h2>
           <AnimatedWords text={t('contactMap.title')} active={inView} />
         </h2>
         <p className={`cs-map-lead${inView ? ' in-view' : ''}`}>{t('contactMap.description')}</p>
       </div>
 
-      <div className={`cs-map-frame${inView ? ' in-view' : ''}`}>
-        <iframe
-          className="cs-map-iframe"
-          title="Asman — xarita"
-          src={MAP_EMBED_SRC}
-          loading="lazy"
-          referrerPolicy="strict-origin-when-cross-origin"
-        />
+      <div ref={frameParallaxRef}>
+        <div className={`cs-map-frame${inView ? ' in-view' : ''}`}>
+          <iframe
+            className="cs-map-iframe"
+            title="Asman — xarita"
+            src={MAP_EMBED_SRC}
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
       </div>
     </section>
   )

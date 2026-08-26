@@ -104,35 +104,80 @@
   gap: 12px;
 }
 
+/* Pure positioning layer for scroll parallax (JS sets `transform` on
+   this node every frame) — kept separate from .cs-info-contact-row so
+   the pill's own hover transform below is never fought over by two
+   different things writing to the same `transform` property. */
+.cs-info-contact-parallax {
+  display: flex;
+  min-width: 0;
+}
+.cs-info-contact-parallax .cs-info-contact-row { flex: 1; }
+
 /* Phone/email/address rows — solid-fill pills, each a plain block of
    the same brand indigo with a white icon and value. */
 
 .cs-info-contact-row {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
   min-width: 0;
-  padding: 24px 26px;
+  padding: 32px 30px;
+  border: 1.5px solid rgba(8, 100, 231, .2);
   border-radius: 18px;
-  background: var(--sa-sky-600, #0864e7);
+  background: none;
   text-decoration: none;
-  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  transition: border-color .25s ease, box-shadow .25s ease, transform .2s ease;
 }
 .cs-info-contact-row:hover {
-  background: #0554c4;
-  box-shadow: 0 14px 28px rgba(8, 100, 231, .28);
+  border-color: var(--sa-sky-600, #0864e7);
+  box-shadow: 0 16px 32px rgba(8, 100, 231, .14);
   transform: translateY(-2px);
 }
+
+/* Second icon — hidden entirely at rest, only fades in as a large
+   watermark bled off the corner once the box is hovered. */
+.cs-info-contact-bg-icon {
+  position: absolute;
+  z-index: 0;
+  right: -18px;
+  bottom: -22px;
+  font-size: 108px;
+  line-height: 1;
+  color: var(--sa-sky-600, #0864e7);
+  opacity: 0;
+  transform: rotate(-6deg) scale(.92);
+  transition: opacity .3s ease, transform .3s ease;
+  pointer-events: none;
+}
+.cs-info-contact-row:hover .cs-info-contact-bg-icon {
+  opacity: .16;
+  transform: rotate(-2deg) scale(1);
+}
+
+/* First icon — small, on the left, coloured, always visible. */
 .cs-info-contact-icon {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
-  font-size: 23px;
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: rgba(8, 100, 231, .1);
+  color: var(--sa-sky-600, #0864e7);
+  font-size: 22px;
+  transition: background .25s ease, color .25s ease;
+}
+.cs-info-contact-row:hover .cs-info-contact-icon {
+  background: var(--sa-sky-600, #0864e7);
   color: #fff;
 }
-.cs-info-contact-text { display: flex; flex-direction: column; min-width: 0; }
+.cs-info-contact-text { position: relative; z-index: 1; display: flex; flex-direction: column; min-width: 0; }
 /* Visually hidden — kept in the DOM so screen readers still announce
    "Call us" / "Email us" / "Our location" before the value, matching
    the reference design which shows only the value itself on screen. */
@@ -149,10 +194,10 @@
 }
 .cs-info-contact-value {
   font-family: 'Inter', sans-serif;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
   line-height: 1.45;
-  color: #fff;
+  color: var(--sa-ink, #10203b);
 }
 
 .cs-info-divider {
