@@ -1,14 +1,26 @@
 /* =====================================================================
-   HomeAbout — "who we are" teaser under Hero on the home page.
-   Reuses the same design tokens as the rest of the site
-   (--sa-sky-600, --sa-gold, --sa-ink, --sa-ink-soft, --sa-mist,
-   --sa-ease-reveal, --sa-ease-pop) so it sits visually consistent with
-   Contact/PageHero without redefining the palette locally.
+   HomeAbout — "who we are" teaser directly under Hero on the home page.
+   Colors, border-radius, and animation techniques are pulled straight
+   from Hero.scss so the two sections read as one continuous piece
+   rather than two differently-styled blocks stacked on top of each
+   other:
+     bg #eff2f9        — identical page background, Hero → HomeAbout
+                          has no visible seam
+     #0864e7 / #0554c4 — primary blue + its hover shade (Hero's .primary)
+     #10203b           — heading ink (Hero's h1)
+     #354154           — body text (Hero's .description)
+     #b8860f           — gold icon accent (Hero's .eyebrow span)
+     13px               — button radius (Hero's .button)
+     999px              — pill radius (Hero's .eyebrow / .dots button)
+   Keyframes are local copies of Hero's badgePop/wordIn/textReveal/
+   buttonPop/bucketFloat — prefixed ha* so they can never collide with
+   Hero's own global @keyframes of the same shape, since both
+   stylesheets load on the same page.
    ===================================================================== */
 
 .ha-section {
   padding: clamp(28px, 5vw, 56px) clamp(20px, 5vw, 80px) clamp(56px, 8vw, 96px);
-  background: var(--sa-mist, #f4f7fc);
+  background: #eff2f9;
 }
 
 .ha-frame {
@@ -23,17 +35,15 @@
   border: 1px solid rgba(16, 32, 59, .08);
   border-radius: 32px;
   background: #fff;
-  box-shadow: 0 30px 70px -40px rgba(16, 32, 59, .18);
+  box-shadow: 0 30px 70px -40px rgba(7, 20, 45, .22);
 
-  /* Bo'lim birinchi marta ekranga kirganda: fade + rise + yengil blur —
-     xuddi Contact.scss'dagi .cs-contact-frame bilan bir xil uslub. */
+  /* Fade + rise + yengil blur — Hero'dagi .product-pair.active bilan bir
+     xil mantiq (opacity/transform o'tishi), faqat bu yerda scroll orqali
+     ishga tushadi (useInView), Hero'dagi kabi mount bo'lishi bilan emas. */
   opacity: 0;
   transform: translateY(28px) scale(.98);
   filter: blur(5px);
-  transition:
-    opacity .75s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)),
-    transform .75s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)),
-    filter .6s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1));
+  transition: opacity .75s cubic-bezier(.22, .8, .24, 1), transform .75s cubic-bezier(.22, .8, .24, 1), filter .6s cubic-bezier(.22, .8, .24, 1);
 }
 .ha-frame.in-view { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 
@@ -44,35 +54,44 @@
   flex-direction: column;
 }
 
+/* Eyebrow — Hero.scss'dagi .eyebrow bilan bir xil: oq pill, ko'k matn,
+   ichida oltin rangli ikonka, badgePop bilan sakrab kiradi. */
 .ha-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin: 0 0 18px;
+  align-self: flex-start;
+  margin: 0 0 22px;
+  padding: 7px 16px 7px 12px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(7, 20, 45, .08);
+  color: #0864e7;
   font-family: 'Inter', sans-serif;
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 800;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--sa-sky-600, #0864e7);
+  letter-spacing: .01em;
+  opacity: 0;
 }
-.ha-eyebrow-dash {
-  display: inline-block;
-  width: 26px;
-  height: 2.5px;
-  border-radius: 2px;
-  background: var(--sa-sky-600, #0864e7);
-  opacity: .55;
-}
+.ha-frame.in-view .ha-eyebrow { animation: haBadgePop .7s .05s cubic-bezier(.34, 1.56, .64, 1) both; }
+.ha-eyebrow-icon { display: inline-flex; margin-right: 10px; font-size: 16px; color: #b8860f; }
 
 .ha-title {
   margin: 0 0 18px;
+  max-width: 480px;
   font-family: 'Space Grotesk', sans-serif;
   font-size: clamp(28px, 3vw, 38px);
   font-weight: 700;
-  line-height: 1.18;
+  line-height: 1.2;
   letter-spacing: -.9px;
-  color: var(--sa-ink, #10203b);
+  color: #10203b;
+}
+/* So'z-so'z ochilish — Hero.tsx'dagi AnimatedWords/.word bilan bir xil
+   texnika: har bir so'z o'zining kechikishi bilan pastdan, aylanib,
+   xira holatdan aniqlashib chiqadi. */
+.ha-word {
+  display: inline-block;
+  opacity: 0;
+  animation: haWordIn .8s cubic-bezier(.19, 1, .22, 1) both;
 }
 
 .ha-description {
@@ -81,9 +100,14 @@
   font-family: 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 500;
-  line-height: 1.7;
-  color: var(--sa-ink-soft, rgba(16, 32, 59, .64));
+  line-height: 1.75;
+  color: #354154;
+  opacity: 0;
 }
+/* Hero.scss'dagi .description / textReveal bilan bir xil: chapdan
+   ochiladigan clip-path + xiralikdan aniqlashish, so'zlar tugagandan
+   keyin boshlanadi. */
+.ha-frame.in-view .ha-description { animation: haTextReveal .8s .5s cubic-bezier(.22, .8, .24, 1) both; }
 
 .ha-points {
   display: grid;
@@ -100,10 +124,8 @@
   gap: 14px;
   min-width: 0;
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity .55s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)), transform .55s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1));
 }
-.ha-frame.in-view .ha-point { opacity: 1; transform: translateY(0); }
+.ha-frame.in-view .ha-point { animation: haRise .6s cubic-bezier(.22, .8, .24, 1) both; }
 
 .ha-point-icon {
   flex-shrink: 0;
@@ -114,8 +136,8 @@
   border-radius: 13px;
   font-size: 21px;
   background: rgba(8, 100, 231, .08);
-  color: var(--sa-sky-600, #0864e7);
-  transition: transform .35s var(--sa-ease-pop, cubic-bezier(.34, 1.56, .64, 1)), background .25s ease;
+  color: #0864e7;
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), background .25s ease;
 }
 .ha-point:hover .ha-point-icon {
   transform: scale(1.08) rotate(-4deg);
@@ -133,40 +155,45 @@
   font-family: 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 700;
-  color: var(--sa-ink, #10203b);
+  color: #10203b;
 }
 .ha-point-text span {
   font-family: 'Inter', sans-serif;
   font-size: 13.5px;
   font-weight: 500;
   line-height: 1.5;
-  color: var(--sa-ink-soft, rgba(16, 32, 59, .58));
+  color: rgba(53, 65, 84, .82);
 }
 
+/* CTA — Hero.scss'dagi .button/.primary bilan piksel-piksel bir xil:
+   54px balandlik, 13px radius, xuddi shu ko'k/hover/active/focus
+   holatlari, buttonPop bilan sakrab kiradi. */
 .ha-cta {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  justify-content: center;
+  gap: 12px;
   align-self: flex-start;
-  padding: 15px 24px;
+  min-height: 54px;
+  padding: 0 22px;
   border: none;
   border-radius: 13px;
-  background: var(--sa-sky-600, #0864e7);
+  background: #0864e7;
   color: #fff;
   text-decoration: none;
   font-family: 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 800;
   letter-spacing: .01em;
-  transition: transform .2s var(--sa-ease-pop, cubic-bezier(.34, 1.56, .64, 1)), box-shadow .2s ease;
+  opacity: 0;
+  transition: background .2s ease, transform .2s ease;
 }
-.ha-cta svg { transition: transform .25s ease; }
-.ha-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 28px rgba(8, 100, 231, .28);
-}
+.ha-frame.in-view .ha-cta { animation: haButtonPop .6s cubic-bezier(.34, 1.56, .64, 1) both; }
+.ha-cta svg { transition: transform .2s ease; }
+.ha-cta:hover { background: #0554c4; }
 .ha-cta:hover svg { transform: translateX(3px); }
-.ha-cta:active { transform: translateY(0); }
+.ha-cta:active { transform: scale(.97); }
+.ha-cta:focus-visible { outline: 2px solid #0864e7; outline-offset: 3px; }
 
 /* ----- Right: photos + highlight card ----- */
 .ha-media {
@@ -187,10 +214,10 @@
   aspect-ratio: 3 / 4;
   object-fit: cover;
   border-radius: 20px;
-  background: var(--sa-mist, #f4f7fc); // rasm yuklanmagunча joy egallaydi
+  background: #eff2f9; // rasm yuklanmaguncha joy egallaydi
   opacity: 0;
   transform: translateY(20px) scale(.97);
-  transition: opacity .6s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)), transform .6s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1));
+  transition: opacity .6s cubic-bezier(.22, .8, .24, 1), transform .6s cubic-bezier(.22, .8, .24, 1);
 }
 .ha-frame.in-view .ha-media-image:nth-child(1) { transition-delay: .12s; }
 .ha-frame.in-view .ha-media-image:nth-child(2) { transition-delay: .22s; }
@@ -205,7 +232,7 @@
   background: linear-gradient(135deg, rgba(8, 100, 231, .07), rgba(8, 100, 231, .1));
   opacity: 0;
   transform: translateY(18px);
-  transition: opacity .6s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)) .32s, transform .6s var(--sa-ease-reveal, cubic-bezier(.22, .8, .24, 1)) .32s;
+  transition: opacity .6s cubic-bezier(.22, .8, .24, 1) .32s, transform .6s cubic-bezier(.22, .8, .24, 1) .32s;
 }
 .ha-frame.in-view .ha-highlight { opacity: 1; transform: translateY(0); }
 
@@ -217,9 +244,12 @@
   height: 54px;
   border-radius: 15px;
   font-size: 24px;
-  background: var(--sa-sky-600, #0864e7);
+  background: #0864e7;
   color: #fff;
 }
+/* Hero.scss'dagi bucketFloat — o'rnashib bo'lgach, ikonka bir maromda
+   yengil suzib turadi (kartochka joyidan qo'zg'almaydi, faqat ikonka). */
+.ha-frame.in-view .ha-highlight-icon { animation: haFloat 4.2s ease-in-out 1.3s infinite alternate; }
 
 .ha-highlight-text {
   display: flex;
@@ -232,14 +262,45 @@
   font-family: 'Inter', sans-serif;
   font-size: 15.5px;
   font-weight: 700;
-  color: var(--sa-ink, #10203b);
+  color: #10203b;
 }
 .ha-highlight-text span {
   font-family: 'Inter', sans-serif;
   font-size: 13.5px;
   font-weight: 500;
   line-height: 1.6;
-  color: var(--sa-ink-soft, rgba(16, 32, 59, .6));
+  color: rgba(53, 65, 84, .82);
+}
+
+/* ===== Keyframes — local ha-prefixed copies of Hero.scss's techniques ===== */
+@keyframes haBadgePop {
+  0% { opacity: 0; transform: translateY(-14px) scale(.5) rotate(-8deg); filter: blur(4px); }
+  65% { opacity: 1; transform: translateY(2px) scale(1.09) rotate(2deg); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+}
+@keyframes haWordIn {
+  0% { opacity: 0; transform: translateY(38px) scale(.8) rotate(-5deg); filter: blur(7px); }
+  55% { opacity: 1; filter: blur(0); }
+  78% { transform: translateY(-4px) scale(1.05) rotate(1deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0); }
+}
+@keyframes haTextReveal {
+  0% { opacity: 0; transform: translateX(-24px); clip-path: inset(0 100% 0 0); filter: blur(3px); }
+  55% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0); clip-path: inset(0 0 0 0); }
+}
+@keyframes haButtonPop {
+  0% { opacity: 0; transform: translateY(18px) scale(.7); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.06); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes haRise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes haFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
 }
 
 /* ===== Responsive ladder ===== */
@@ -251,7 +312,7 @@
 @media (max-width: 620px) {
   .ha-frame { padding: 22px; border-radius: 24px; }
   .ha-points { grid-template-columns: 1fr; gap: 20px; }
-  .ha-cta { width: 100%; justify-content: center; }
+  .ha-cta { width: 100%; }
 }
 
 @media (max-width: 420px) {
@@ -261,11 +322,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ha-frame, .ha-point, .ha-media-image, .ha-highlight {
+  .ha-frame, .ha-point, .ha-media-image, .ha-highlight, .ha-eyebrow, .ha-description, .ha-cta, .ha-word {
+    animation: none;
     transition: none;
     opacity: 1;
     transform: none;
     filter: none;
+    clip-path: none;
   }
+  .ha-highlight-icon { animation: none; }
   .ha-point-icon { transition: none; }
 }

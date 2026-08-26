@@ -22,6 +22,16 @@ import './HomeAbout.scss'
 type IconFn = () => ReactElement
 
 // ===== Icons — same local, currentColor approach as Contact.tsx =====
+const SparkleIcon: IconFn = () => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
+    <path
+      d="M12 3.5c.6 3.4 2.1 5.7 5.5 6.5-3.4.8-4.9 3.1-5.5 6.5-.6-3.4-2.1-5.7-5.5-6.5 3.4-.8 4.9-3.1 5.5-6.5Z"
+      fill="currentColor"
+    />
+    <path d="M18.5 16.5c.3 1.7 1 2.8 2.5 3.2-1.5.4-2.2 1.5-2.5 3.2-.3-1.7-1-2.8-2.5-3.2 1.5-.4 2.2-1.5 2.5-3.2Z" fill="currentColor" />
+  </svg>
+)
+
 const ShieldCheckIcon: IconFn = () => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
     <path
@@ -91,6 +101,27 @@ const POINT_ICONS: Record<(typeof POINT_KEYS)[number], IconFn> = {
   beauty: DiamondIcon,
 }
 
+// Splits the heading into words, each animating in on its own delay —
+// same technique as Hero.tsx's AnimatedWords/.word (wordIn keyframe),
+// just triggered by scroll-into-view here instead of running on mount.
+function AnimatedTitle({ text, active }: { text: string; active: boolean }) {
+  const words = text.split(' ')
+  return (
+    <>
+      {words.map((word, i) => (
+        <span
+          key={i}
+          className="ha-word"
+          style={active ? { animationDelay: `${0.08 + i * 0.06}s` } : { opacity: 0 }}
+        >
+          {word}
+          {i < words.length - 1 ? '\u00A0' : ''}
+        </span>
+      ))}
+    </>
+  )
+}
+
 // Flips `true` (and stays true) once the section scrolls into view.
 // Same local hook as Contact.tsx — kept per-file rather than shared, so
 // each component stays self-contained.
@@ -121,20 +152,45 @@ function useInView<T extends HTMLElement>(threshold = 0.15) {
   return { ref, inView }
 }
 
+// Mirrors Hero.tsx's actionsDelay approach: title length varies by
+// translation, so a fixed CSS delay for the points/CTA isn't safe — a
+// long title would still be mid-word when they popped in. These
+// constants match .ha-word's own timing above (delay base/step,
+// animation duration) and .ha-description's (delay, duration).
+const WORD_DELAY_BASE = 0.08
+const WORD_DELAY_STEP = 0.06
+const WORD_ANIM_DURATION = 0.8
+const DESCRIPTION_DELAY = 0.5
+const DESCRIPTION_DURATION = 0.8
+const POINTS_BUFFER = 0.1
+const POINTS_STAGGER = 0.09
+const CTA_BUFFER = 0.15
+
 export default function HomeAbout() {
   const { t } = useTranslation()
   const { ref, inView } = useInView<HTMLElement>(0.15)
+
+  const title = t('homeAbout.title')
+  const titleWordCount = title.split(' ').length
+  const titleFinish = WORD_DELAY_BASE + (titleWordCount - 1) * WORD_DELAY_STEP + WORD_ANIM_DURATION
+  const descriptionFinish = DESCRIPTION_DELAY + DESCRIPTION_DURATION
+  const pointsDelay = Math.max(titleFinish, descriptionFinish) + POINTS_BUFFER
+  const ctaDelay = pointsDelay + POINT_KEYS.length * POINTS_STAGGER + CTA_BUFFER
 
   return (
     <section className="ha-section" ref={ref}>
       <div className={`ha-frame${inView ? ' in-view' : ''}`}>
         <div className="ha-text">
           <p className="ha-eyebrow">
+            <span className="ha-eyebrow-icon">
+              <SparkleIcon />
+            </span>
             {t('homeAbout.eyebrow')}
-            <span className="ha-eyebrow-dash" aria-hidden="true" />
           </p>
 
-          <h2 className="ha-title">{t('homeAbout.title')}</h2>
+          <h2 className="ha-title">
+            <AnimatedTitle text={title} active={inView} />
+          </h2>
 
           <p className="ha-description">{t('homeAbout.description')}</p>
 
@@ -142,7 +198,7 @@ export default function HomeAbout() {
             {POINT_KEYS.map((key, i) => {
               const Icon = POINT_ICONS[key]
               return (
-                <li className="ha-point" key={key} style={inView ? { transitionDelay: `${0.15 + i * 0.08}s` } : undefined}>
+                <li className="ha-point" key={key} style={inView ? { animationDelay: `${pointsDelay + i * POINTS_STAGGER}s` } : { opacity: 0 }}>
                   <span className="ha-point-icon">
                     <Icon />
                   </span>
@@ -155,7 +211,7 @@ export default function HomeAbout() {
             })}
           </ul>
 
-          <Link className="ha-cta" to="/about">
+          <Link className="ha-cta" to="/about" style={inView ? { animationDelay: `${ctaDelay}s` } : { opacity: 0 }}>
             {t('homeAbout.cta')}
             <ArrowRightIcon />
           </Link>
