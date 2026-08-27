@@ -75,7 +75,8 @@
   },
   "certificates": {
     "eyebrow": "Certificates",
-    "title": "Our guarantee of quality and trust",
+    "titleStart": "Quality and ",
+    "titleAccent": "guaranteed trust",
     "description": "Our products fully meet international and national standards.",
     "imageAlt": "Certificate",
     "viewLabel": "Open certificate full-size",

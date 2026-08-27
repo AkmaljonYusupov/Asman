@@ -42,24 +42,11 @@
   align-items: center;
 }
 
-.crt-eyebrow {
-  display: inline-flex;
-  margin: 0 0 18px;
-  padding: 9px 18px;
-  border-radius: 999px;
-  background: rgba(8, 100, 231, .09);
-  color: #0864e7;
-  font-family: 'Inter', sans-serif;
-  font-size: 12.5px;
-  font-weight: 800;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-  opacity: 0;
-}
-.crt-frame.in-view .crt-eyebrow { animation: crtBadgePop .7s .05s cubic-bezier(.34, 1.56, .64, 1) both; }
-
+/* Sarlavha endi WhyChooseUs.scss'dagi .wcu-title bilan bir xil uslubda:
+   qora matn + bitta bo'lak ko'k accent (<em>), pastida chiziq–nuqta–
+   chiziq ajratkich — pill/eyebrow badge endi yo'q. */
 .crt-title {
-  margin: 0 0 16px;
+  margin: 0;
   font-family: 'Space Grotesk', sans-serif;
   font-size: clamp(26px, 2.8vw, 34px);
   font-weight: 700;
@@ -67,10 +54,39 @@
   letter-spacing: -.8px;
   color: #10203b;
 }
+.crt-title em {
+  font-style: normal;
+  color: #0864e7;
+}
 .crt-word {
   display: inline-block;
   opacity: 0;
   animation: crtWordIn .8s cubic-bezier(.19, 1, .22, 1) both;
+}
+
+/* Chiziq – nuqta – chiziq ajratkich, sarlavha ostida markazda — xuddi
+   WhyChooseUs.scss'dagi .wcu-divider kabi, faqat crt-prefiksi bilan. */
+.crt-divider {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 20px;
+  opacity: 0;
+  animation: crtDividerIn .6s cubic-bezier(.22, .8, .24, 1) both;
+}
+.crt-divider i {
+  display: block;
+  width: 34px;
+  height: 2px;
+  background: #0864e7;
+  border-radius: 2px;
+}
+.crt-divider b {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0864e7;
 }
 
 .crt-description {
@@ -82,8 +98,8 @@
   line-height: 1.75;
   color: #354154;
   opacity: 0;
+  animation: crtTextReveal .8s cubic-bezier(.22, .8, .24, 1) both;
 }
-.crt-frame.in-view .crt-description { animation: crtTextReveal .8s .5s cubic-bezier(.22, .8, .24, 1) both; }
 
 /* ----- Certificate grid ----- */
 .crt-grid {
@@ -155,16 +171,15 @@
 .crt-thumb:focus-visible .crt-thumb-zoom { transform: scale(1); }
 
 /* ===== Keyframes — local crt-prefixed copies of the site's reveal techniques ===== */
-@keyframes crtBadgePop {
-  0% { opacity: 0; transform: translateY(-14px) scale(.5) rotate(-8deg); filter: blur(4px); }
-  65% { opacity: 1; transform: translateY(2px) scale(1.09) rotate(2deg); filter: blur(0); }
-  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
-}
 @keyframes crtWordIn {
   0% { opacity: 0; transform: translateY(34px) scale(.82) rotate(-4deg); filter: blur(6px); }
   55% { opacity: 1; filter: blur(0); }
   78% { transform: translateY(-3px) scale(1.04) rotate(1deg); }
   100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0); }
+}
+@keyframes crtDividerIn {
+  from { opacity: 0; transform: scaleX(.3); }
+  to { opacity: 1; transform: scaleX(1); }
 }
 @keyframes crtTextReveal {
   0% { opacity: 0; transform: translateY(14px); filter: blur(3px); }
@@ -370,7 +385,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .crt-frame, .crt-item, .crt-eyebrow, .crt-description, .crt-word {
+  .crt-frame, .crt-item, .crt-divider, .crt-description, .crt-word {
     animation: none;
     transition: none;
     opacity: 1;

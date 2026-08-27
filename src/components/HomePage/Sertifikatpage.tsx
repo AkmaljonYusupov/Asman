@@ -118,12 +118,16 @@ function useInView<T extends HTMLElement>(threshold = 0.15) {
 }
 
 // Same timing-sync approach as Hero.tsx's actionsDelay / HomeAbout.tsx's
-// pointsDelay: title length varies by translation, so the grid's own
-// entrance waits for however long the title actually takes to finish.
+// pointsDelay: title length varies by translation, so everything below
+// it (divider → description → grid) waits for however long the title
+// actually takes to finish, then cascades in in order — same staged
+// reveal as WhyChooseUs.tsx's title → divider → grid sequence.
 const WORD_DELAY_BASE = 0.08
 const WORD_DELAY_STEP = 0.06
 const WORD_ANIM_DURATION = 0.8
-const DESCRIPTION_DELAY = 0.5
+const DIVIDER_BUFFER = 0.1
+const DIVIDER_DURATION = 0.6
+const DESCRIPTION_BUFFER = 0.15
 const DESCRIPTION_DURATION = 0.8
 const GRID_BUFFER = 0.15
 const GRID_STAGGER = 0.07
@@ -135,11 +139,18 @@ export default function Sertifikatpage() {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null)
   const lastTriggerRef = useRef<HTMLButtonElement | null>(null)
 
-  const title = t('certificates.title')
-  const titleWordCount = title.split(' ').length
-  const titleFinish = WORD_DELAY_BASE + (titleWordCount - 1) * WORD_DELAY_STEP + WORD_ANIM_DURATION
-  const descriptionFinish = DESCRIPTION_DELAY + DESCRIPTION_DURATION
-  const gridDelay = Math.max(titleFinish, descriptionFinish) + GRID_BUFFER
+  // Title is split into two translated parts — same pattern as
+  // WhyChooseUs.tsx's titleStart/titleAccent — so the second part can
+  // be rendered in <em> (accent blue) exactly like "Tanlashadi?" there.
+  const titleStart = t('certificates.titleStart')
+  const titleAccent = t('certificates.titleAccent')
+  const startWordCount = titleStart.split(' ').length
+  const totalWordCount = startWordCount + titleAccent.split(' ').length
+  const titleFinish = WORD_DELAY_BASE + (totalWordCount - 1) * WORD_DELAY_STEP + WORD_ANIM_DURATION
+  const dividerDelay = titleFinish + DIVIDER_BUFFER
+  const descriptionDelay = dividerDelay + DIVIDER_DURATION + DESCRIPTION_BUFFER
+  const descriptionFinish = descriptionDelay + DESCRIPTION_DURATION
+  const gridDelay = descriptionFinish + GRID_BUFFER
 
   const open = useCallback((index: number, trigger: HTMLButtonElement) => {
     lastTriggerRef.current = trigger
@@ -185,11 +196,29 @@ export default function Sertifikatpage() {
     <section className="crt-section" ref={ref}>
       <div className={`crt-frame${inView ? ' in-view' : ''}`}>
         <header className="crt-head">
-          <p className="crt-eyebrow">{t('certificates.eyebrow')}</p>
           <h2 className="crt-title">
-            <AnimatedTitle text={title} active={inView} />
+            <AnimatedTitle text={titleStart} active={inView} />{' '}
+            <em>
+              <AnimatedTitle text={titleAccent} active={inView} />
+            </em>
           </h2>
-          <p className="crt-description">{t('certificates.description')}</p>
+
+          <span
+            className="crt-divider"
+            style={inView ? { animationDelay: `${dividerDelay}s` } : { opacity: 0 }}
+            aria-hidden="true"
+          >
+            <i />
+            <b />
+            <i />
+          </span>
+
+          <p
+            className="crt-description"
+            style={inView ? { animationDelay: `${descriptionDelay}s` } : { opacity: 0 }}
+          >
+            {t('certificates.description')}
+          </p>
         </header>
 
         <ul className="crt-grid">

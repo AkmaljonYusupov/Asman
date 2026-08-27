@@ -75,7 +75,8 @@
   },
   "certificates": {
     "eyebrow": "Sertifikatlar",
-    "title": "Sifat va ishonch kafolati",
+    "titleStart": "Sifat va ",
+    "titleAccent": "ishonch kafolati",
     "description": "Mahsulotlarimiz xalqaro va milliy standartlarga to'liq javob beradi.",
     "imageAlt": "Sertifikat",
     "viewLabel": "Sertifikatni katta ko'rishda ochish",
