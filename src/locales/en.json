@@ -73,6 +73,17 @@
     "imageAlt1": "Modern building façade",
     "imageAlt2": "Close-up of façade coating"
   },
+  "certificates": {
+    "eyebrow": "Certificates",
+    "title": "Our guarantee of quality and trust",
+    "description": "Our products fully meet international and national standards.",
+    "imageAlt": "Certificate",
+    "viewLabel": "Open certificate full-size",
+    "lightboxLabel": "Certificate viewer",
+    "prev": "Previous certificate",
+    "next": "Next certificate",
+    "close": "Close"
+  },
   "aria": {
     "previous": "Previous slide",
     "next": "Next slide",

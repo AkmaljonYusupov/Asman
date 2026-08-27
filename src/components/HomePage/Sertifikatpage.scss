@@ -1,0 +1,354 @@
+/* =====================================================================
+   Sertifikatpage — certificates showcase, same visual language as
+   HomeAbout.scss/Hero.scss:
+     bg #eff2f9, card #fff, radius 32/20/13/999px,
+     #0864e7 / #0554c4 primary, #10203b heading ink, #354154 body text.
+   Keyframes are local `crt`-prefixed copies of the badgePop/wordIn/
+   textReveal/rise techniques already used in Hero.scss/HomeAbout.scss —
+   prefixed so they can't collide with those files' identically-shaped
+   global @keyframes, since all three load on the same page.
+   ===================================================================== */
+
+.crt-section {
+  padding: 0 clamp(20px, 5vw, 80px) clamp(56px, 8vw, 96px);
+  background: #eff2f9;
+}
+
+/* Karta emas — sahifaning o'zi bilan bir xil fon (#eff2f9), soyasiz va
+   chegarasiz: bo'lim "suzib turgan quti" emas, sahifaning uzluksiz
+   davomi sifatida o'qiladi. Faqat kirish animatsiyasi (fade+rise) uchun
+   wrapper sifatida qoladi. */
+.crt-frame {
+  position: relative;
+  isolation: isolate;
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 32px) 0 0;
+  background: #eff2f9;
+
+  opacity: 0;
+  transform: translateY(28px) scale(.98);
+  filter: blur(5px);
+  transition: opacity .75s cubic-bezier(.22, .8, .24, 1), transform .75s cubic-bezier(.22, .8, .24, 1), filter .6s cubic-bezier(.22, .8, .24, 1);
+}
+.crt-frame.in-view { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+
+/* ----- Heading ----- */
+.crt-head {
+  max-width: 640px;
+  margin: 0 auto 36px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.crt-eyebrow {
+  display: inline-flex;
+  margin: 0 0 18px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(8, 100, 231, .09);
+  color: #0864e7;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  opacity: 0;
+}
+.crt-frame.in-view .crt-eyebrow { animation: crtBadgePop .7s .05s cubic-bezier(.34, 1.56, .64, 1) both; }
+
+.crt-title {
+  margin: 0 0 16px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(26px, 2.8vw, 34px);
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -.8px;
+  color: #10203b;
+}
+.crt-word {
+  display: inline-block;
+  opacity: 0;
+  animation: crtWordIn .8s cubic-bezier(.19, 1, .22, 1) both;
+}
+
+.crt-description {
+  margin: 0;
+  max-width: 52ch;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.75;
+  color: #354154;
+  opacity: 0;
+}
+.crt-frame.in-view .crt-description { animation: crtTextReveal .8s .5s cubic-bezier(.22, .8, .24, 1) both; }
+
+/* ----- Certificate grid ----- */
+.crt-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(14px, 1.8vw, 22px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crt-item { opacity: 0; }
+.crt-frame.in-view .crt-item { animation: crtRise .6s cubic-bezier(.22, .8, .24, 1) both; }
+
+.crt-thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border: 1px solid rgba(16, 32, 59, .1);
+  border-radius: 16px;
+  background: #eff2f9;
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), box-shadow .3s ease, border-color .3s ease;
+}
+.crt-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s cubic-bezier(.22, .8, .24, 1);
+}
+.crt-thumb:hover,
+.crt-thumb:focus-visible {
+  transform: translateY(-4px);
+  border-color: rgba(8, 100, 231, .35);
+  box-shadow: 0 18px 34px -18px rgba(7, 20, 45, .35);
+}
+.crt-thumb:hover img { transform: scale(1.06); }
+.crt-thumb:focus-visible { outline: 2px solid #0864e7; outline-offset: 3px; }
+
+/* Sichqoncha ustidan o'tganda paydo bo'ladigan xiralashgan
+   "kattalashtirish" ishorasi — bosilganda lightbox ochilishini
+   oldindan bildiradi. */
+.crt-thumb-veil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(8, 22, 48, 0) 45%, rgba(8, 22, 48, .55) 100%);
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.crt-thumb:hover .crt-thumb-veil,
+.crt-thumb:focus-visible .crt-thumb-veil { opacity: 1; }
+
+.crt-thumb-zoom {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fff;
+  color: #0864e7;
+  font-size: 19px;
+  transform: scale(.7);
+  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+.crt-thumb:hover .crt-thumb-zoom,
+.crt-thumb:focus-visible .crt-thumb-zoom { transform: scale(1); }
+
+/* ===== Keyframes — local crt-prefixed copies of the site's reveal techniques ===== */
+@keyframes crtBadgePop {
+  0% { opacity: 0; transform: translateY(-14px) scale(.5) rotate(-8deg); filter: blur(4px); }
+  65% { opacity: 1; transform: translateY(2px) scale(1.09) rotate(2deg); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+}
+@keyframes crtWordIn {
+  0% { opacity: 0; transform: translateY(34px) scale(.82) rotate(-4deg); filter: blur(6px); }
+  55% { opacity: 1; filter: blur(0); }
+  78% { transform: translateY(-3px) scale(1.04) rotate(1deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0); }
+}
+@keyframes crtTextReveal {
+  0% { opacity: 0; transform: translateY(14px); filter: blur(3px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes crtRise {
+  from { opacity: 0; transform: translateY(20px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* =====================================================================
+   LIGHTBOX — oq "hujjat ko'ruvchi" panel (gallereya uslubidagi qorong'i
+   fon + suzuvchi shisha tugmalar EMAS): sarlavha qatori (hisoblagich +
+   yopish), o'rtada neytral fondagi sertifikat rasmi, pastda "Oldingi/
+   Keyingi" nomli pastki panel — saytning o'z tugma/karta tilida.
+   Portal orqali document.body'ga to'g'ridan-to'g'ri render qilinadi,
+   shuning uchun Navbar/boshqa bo'limlarning stacking context'idan
+   mustaqil: har doim eng ustida turadi.
+   ===================================================================== */
+.crt-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 4vw, 48px);
+}
+
+.crt-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: none;
+  background: rgba(16, 32, 59, .5);
+  backdrop-filter: blur(6px);
+  animation: crtFadeIn .3s ease both;
+}
+
+.crt-lightbox-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(720px, 100%);
+  max-height: min(90vh, 880px);
+  overflow: hidden;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 40px 90px -30px rgba(7, 20, 45, .45);
+  animation: crtPanelIn .4s cubic-bezier(.22, .8, .24, 1) both;
+}
+
+.crt-lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding: 14px 16px 14px 20px;
+  border-bottom: 1px solid rgba(16, 32, 59, .08);
+}
+
+.crt-lightbox-counter {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #0864e7;
+}
+
+.crt-lightbox-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(16, 32, 59, .06);
+  color: #10203b;
+  font-size: 15px;
+  transition: background .2s ease, color .2s ease, transform .25s cubic-bezier(.34, 1.56, .64, 1);
+}
+.crt-lightbox-close:hover { background: #0864e7; color: #fff; transform: rotate(90deg); }
+.crt-lightbox-close:focus-visible { outline: 2px solid #0864e7; outline-offset: 2px; }
+
+.crt-lightbox-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 3vw, 28px);
+  background: #eff2f9;
+  overflow: auto;
+}
+
+/* Sertifikat rasmi kesilmasdan to'liq ko'rinishi kerak — bu hujjat,
+   chetlari qirqilib qolmasin (object-fit: contain). Navigatsiya
+   qilinganda (key={activeIndex} orqali qayta mount bo'ladi) engil
+   krossfeyd bilan almashadi. */
+.crt-lightbox-image {
+  display: block;
+  max-width: 100%;
+  max-height: min(58vh, 600px);
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 14px 34px -14px rgba(7, 20, 45, .3);
+  object-fit: contain;
+  animation: crtImageIn .35s cubic-bezier(.22, .8, .24, 1) both;
+}
+
+.crt-lightbox-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 12px;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(16, 32, 59, .08);
+}
+
+.crt-lightbox-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  background: rgba(8, 100, 231, .08);
+  color: #0864e7;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 800;
+  transition: background .2s ease, color .2s ease, transform .2s cubic-bezier(.34, 1.56, .64, 1);
+}
+.crt-lightbox-nav:hover { background: #0864e7; color: #fff; }
+.crt-lightbox-nav:active { transform: scale(.96); }
+.crt-lightbox-nav:focus-visible { outline: 2px solid #0864e7; outline-offset: 2px; }
+.crt-lightbox-nav svg { transition: transform .2s ease; }
+.crt-lightbox-nav--prev:hover svg { transform: translateX(-3px); }
+.crt-lightbox-nav--next:hover svg { transform: translateX(3px); }
+
+@keyframes crtFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes crtPanelIn {
+  0% { opacity: 0; transform: scale(.92) translateY(18px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes crtImageIn {
+  0% { opacity: 0; transform: scale(.96); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ===== Responsive ladder ===== */
+@media (max-width: 900px) {
+  .crt-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 620px) {
+  .crt-frame { padding: 16px 0 0; }
+  .crt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+}
+
+/* Juda tor ekranda "Oldingi"/"Keyingi" matni yashiriladi — faqat
+   strelka qoladi, shunda pastki panel hech qachon torlik qilmaydi. */
+@media (max-width: 420px) {
+  .crt-lightbox-card { border-radius: 22px; }
+  .crt-lightbox-nav { padding: 11px 16px; }
+  .crt-lightbox-nav-label { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crt-frame, .crt-item, .crt-eyebrow, .crt-description, .crt-word {
+    animation: none;
+    transition: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .crt-thumb, .crt-thumb img, .crt-thumb-veil, .crt-thumb-zoom { transition: none; }
+  .crt-lightbox-backdrop, .crt-lightbox-card, .crt-lightbox-image {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .crt-lightbox-close, .crt-lightbox-nav { transition: none; }
+}

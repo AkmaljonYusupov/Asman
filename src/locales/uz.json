@@ -73,6 +73,17 @@
     "imageAlt1": "Zamonaviy bino fasadi",
     "imageAlt2": "Fasad qoplamasi yaqindan"
   },
+  "certificates": {
+    "eyebrow": "Sertifikatlar",
+    "title": "Sifat va ishonch kafolati",
+    "description": "Mahsulotlarimiz xalqaro va milliy standartlarga to'liq javob beradi.",
+    "imageAlt": "Sertifikat",
+    "viewLabel": "Sertifikatni katta ko'rishda ochish",
+    "lightboxLabel": "Sertifikatni ko'rish oynasi",
+    "prev": "Oldingi sertifikat",
+    "next": "Keyingi sertifikat",
+    "close": "Yopish"
+  },
   "aria": {
     "previous": "Oldingi slayd",
     "next": "Keyingi slayd",
