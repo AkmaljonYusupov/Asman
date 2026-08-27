@@ -10,16 +10,15 @@
    ===================================================================== */
 
 .crt-section {
+  position: relative;
+  overflow: clip; // har qanday qoldiq gorizontal overflow'ning oldini oladi
   padding: 0 clamp(20px, 5vw, 80px) clamp(56px, 8vw, 96px);
   background: #eff2f9;
 }
 
-/* Karta emas — sahifaning o'zi bilan bir xil fon (#eff2f9), soyasiz va
-   chegarasiz: bo'lim "suzib turgan quti" emas, sahifaning uzluksiz
-   davomi sifatida o'qiladi. Faqat kirish animatsiyasi (fade+rise) uchun
-   wrapper sifatida qoladi. */
 .crt-frame {
   position: relative;
+  z-index: 1;
   isolation: isolate;
   max-width: 1220px;
   margin: 0 auto;

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { ReactElement } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import './Sertifikatpage.scss'
@@ -29,7 +30,7 @@ import './Sertifikatpage.scss'
  * actually have).
  */
 
-type IconFn = () => JSX.Element
+type IconFn = () => ReactElement
 
 const ArrowLeftIcon: IconFn = () => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" aria-hidden="true">
