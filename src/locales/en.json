@@ -84,6 +84,37 @@
     "next": "Next certificate",
     "close": "Close"
   },
+  "whyUs": {
+    "titleStart": "Why do people",
+    "titleAccent": "choose us?",
+    "yearsUnit": "years",
+    "reasons": {
+      "experience": {
+        "title": "We have a 16-year history",
+        "description": "Lean production without wasted spending keeps the final cost down."
+      },
+      "quality": {
+        "title": "High-tech, quality products",
+        "description": "We keep upgrading our technology — at least 30% better and 30% more affordable than the rest."
+      },
+      "application": {
+        "title": "Application technology",
+        "description": "Our special application technique cuts material use and extends coating lifespan."
+      },
+      "range": {
+        "title": "A wide range",
+        "description": "15+ product types made with natural pigments — a tailored approach for every one."
+      },
+      "price": {
+        "title": "Fair pricing",
+        "description": "A dedicated application technology lowers product consumption and keeps pricing fair."
+      },
+      "approach": {
+        "title": "A personal approach",
+        "description": "We build our offer around what matters to you, for the best possible terms."
+      }
+    }
+  },
   "aria": {
     "previous": "Previous slide",
     "next": "Next slide",

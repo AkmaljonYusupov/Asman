@@ -84,6 +84,37 @@
     "next": "Keyingi sertifikat",
     "close": "Yopish"
   },
+  "whyUs": {
+    "titleStart": "Nima uchun bizni",
+    "titleAccent": "Tanlashadi?",
+    "yearsUnit": "yil",
+    "reasons": {
+      "experience": {
+        "title": "Bizning 16 yillik tariximiz bor",
+        "description": "Ortiqcha xarajatlarsiz ishlab chiqarish mahsulot tannarxini pasaytiradi."
+      },
+      "quality": {
+        "title": "Yuqori texnologiyali sifatli mahsulot",
+        "description": "Texnologiyani doimiy yangilab, bozordagilardan kamida 30% yaxshiroq va 30% arzonroq mahsulot yaratamiz."
+      },
+      "application": {
+        "title": "Tatbiq etish texnologiyasi",
+        "description": "Maxsus qo'llash texnologiyamiz sarfni tejaydi va qoplama xizmat muddatini uzaytiradi."
+      },
+      "range": {
+        "title": "Keng diapazon",
+        "description": "15 dan ortiq mahsulot turi, tabiiy bo'yoqlar asosida — har biriga individual yondashuv."
+      },
+      "price": {
+        "title": "O'rtacha narx",
+        "description": "Maxsus qo'llash texnologiyasi mahsulot sarfini kamaytirib, narxni maqbul qiladi."
+      },
+      "approach": {
+        "title": "Individual yondashuv",
+        "description": "Sizning ehtiyojlaringizdan kelib chiqib, hamkorlik uchun maksimal imtiyozlarni taklif qilamiz."
+      }
+    }
+  },
   "aria": {
     "previous": "Oldingi slayd",
     "next": "Keyingi slayd",

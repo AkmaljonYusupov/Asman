@@ -4,6 +4,7 @@ import Navbar from './components/Navbar/Navbar'
 import Hero from './components/Hero/Hero'
 import HomeAbout from './components/HomePage/HomeAbout'
 import Sertifikatpage from './components/HomePage/Sertifikatpage'
+import WhyChooseUs from './components/HomePage/WhyChooseUs'
 import Footer from './components/Footer/Footer'
 import SEO from './components/shared/SEO'
 import { menuKeys } from './components/shared/navigation'
@@ -49,6 +50,7 @@ function Home() {
       <SEO pageKey="home" />
       <Hero />
       <HomeAbout />
+      <WhyChooseUs />
       <Sertifikatpage />
     </main>
   )
