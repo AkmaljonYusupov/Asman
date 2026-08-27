@@ -221,17 +221,16 @@ export default function Sertifikatpage() {
           <div className="crt-lightbox" role="dialog" aria-modal="true" aria-label={t('certificates.lightboxLabel')}>
             <button type="button" className="crt-lightbox-backdrop" onClick={close} aria-label={t('certificates.close')} />
 
-            <div className="crt-lightbox-card">
-              <div className="crt-lightbox-header">
-                <span className="crt-lightbox-counter">
-                  {activeIndex + 1} / {CERTIFICATES.length}
-                </span>
-                <button ref={closeButtonRef} type="button" className="crt-lightbox-close" onClick={close} aria-label={t('certificates.close')}>
-                  <CloseIcon />
-                </button>
-              </div>
+            <div className="crt-lightbox-stage">
+              <button ref={closeButtonRef} type="button" className="crt-lightbox-close" onClick={close} aria-label={t('certificates.close')}>
+                <CloseIcon />
+              </button>
 
-              <div className="crt-lightbox-body">
+              <button type="button" className="crt-lightbox-nav crt-lightbox-nav--prev" onClick={showPrev} aria-label={t('certificates.prev')}>
+                <ArrowLeftIcon />
+              </button>
+
+              <div className="crt-lightbox-frame">
                 <img
                   key={activeIndex}
                   className="crt-lightbox-image"
@@ -240,16 +239,13 @@ export default function Sertifikatpage() {
                 />
               </div>
 
-              <div className="crt-lightbox-footer">
-                <button type="button" className="crt-lightbox-nav crt-lightbox-nav--prev" onClick={showPrev} aria-label={t('certificates.prev')}>
-                  <ArrowLeftIcon />
-                  <span className="crt-lightbox-nav-label">{t('certificates.prev')}</span>
-                </button>
-                <button type="button" className="crt-lightbox-nav crt-lightbox-nav--next" onClick={showNext} aria-label={t('certificates.next')}>
-                  <span className="crt-lightbox-nav-label">{t('certificates.next')}</span>
-                  <ArrowRightIcon />
-                </button>
-              </div>
+              <button type="button" className="crt-lightbox-nav crt-lightbox-nav--next" onClick={showNext} aria-label={t('certificates.next')}>
+                <ArrowRightIcon />
+              </button>
+
+              <span className="crt-lightbox-counter">
+                {activeIndex + 1} / {CERTIFICATES.length}
+              </span>
             </div>
           </div>,
           document.body,

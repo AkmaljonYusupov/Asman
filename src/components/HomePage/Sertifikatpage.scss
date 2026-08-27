@@ -177,10 +177,10 @@
 }
 
 /* =====================================================================
-   LIGHTBOX — oq "hujjat ko'ruvchi" panel (gallereya uslubidagi qorong'i
-   fon + suzuvchi shisha tugmalar EMAS): sarlavha qatori (hisoblagich +
-   yopish), o'rtada neytral fondagi sertifikat rasmi, pastda "Oldingi/
-   Keyingi" nomli pastki panel — saytning o'z tugma/karta tilida.
+   LIGHTBOX — rasm oq "romka"da suzib turadi (bootstrap-uslubidagi
+   sarlavha/pastki panel chiziqlari YO'Q); yopish, oldingi va keyingi —
+   uchalasi ham sof ikonka-doiralar, romkaning chetlariga yarim chiqib
+   turadi, har biri o'z pop-animatsiyasi bilan ketma-ket paydo bo'ladi.
    Portal orqali document.body'ga to'g'ridan-to'g'ri render qilinadi,
    shuning uchun Navbar/boshqa bo'limlarning stacking context'idan
    mustaqil: har doim eng ustida turadi.
@@ -191,7 +191,7 @@
   z-index: 1000;
   display: grid;
   place-items: center;
-  padding: clamp(16px, 4vw, 48px);
+  padding: clamp(56px, 9vw, 100px) clamp(28px, 7vw, 90px);
 }
 
 .crt-lightbox-backdrop {
@@ -199,64 +199,27 @@
   inset: 0;
   width: 100%;
   border: none;
-  background: rgba(16, 32, 59, .5);
-  backdrop-filter: blur(6px);
+  background: rgba(16, 32, 59, .6);
+  backdrop-filter: blur(8px);
   animation: crtFadeIn .3s ease both;
 }
 
-.crt-lightbox-card {
+.crt-lightbox-stage {
   position: relative;
   z-index: 1;
   display: flex;
-  flex-direction: column;
-  width: min(720px, 100%);
-  max-height: min(90vh, 880px);
-  overflow: hidden;
-  border-radius: 28px;
-  background: #fff;
-  box-shadow: 0 40px 90px -30px rgba(7, 20, 45, .45);
-  animation: crtPanelIn .4s cubic-bezier(.22, .8, .24, 1) both;
-}
-
-.crt-lightbox-header {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  padding: 14px 16px 14px 20px;
-  border-bottom: 1px solid rgba(16, 32, 59, .08);
+  justify-content: center;
+  max-width: 100%;
+  max-height: 100%;
 }
 
-.crt-lightbox-counter {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .04em;
-  color: #0864e7;
-}
-
-.crt-lightbox-close {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(16, 32, 59, .06);
-  color: #10203b;
-  font-size: 15px;
-  transition: background .2s ease, color .2s ease, transform .25s cubic-bezier(.34, 1.56, .64, 1);
-}
-.crt-lightbox-close:hover { background: #0864e7; color: #fff; transform: rotate(90deg); }
-.crt-lightbox-close:focus-visible { outline: 2px solid #0864e7; outline-offset: 2px; }
-
-.crt-lightbox-body {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  place-items: center;
-  padding: clamp(16px, 3vw, 28px);
-  background: #eff2f9;
-  overflow: auto;
+.crt-lightbox-frame {
+  padding: clamp(10px, 1.6vw, 18px);
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: 0 40px 90px -30px rgba(7, 20, 45, .5);
+  animation: crtPanelIn .4s cubic-bezier(.22, .8, .24, 1) both;
 }
 
 /* Sertifikat rasmi kesilmasdan to'liq ko'rinishi kerak — bu hujjat,
@@ -265,57 +228,126 @@
    krossfeyd bilan almashadi. */
 .crt-lightbox-image {
   display: block;
-  max-width: 100%;
-  max-height: min(58vh, 600px);
+  max-width: min(70vw, 620px);
+  max-height: min(74vh, 740px);
   width: auto;
   height: auto;
-  border-radius: 12px;
-  box-shadow: 0 14px 34px -14px rgba(7, 20, 45, .3);
+  border-radius: 16px;
   object-fit: contain;
   animation: crtImageIn .35s cubic-bezier(.22, .8, .24, 1) both;
 }
 
-.crt-lightbox-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  gap: 12px;
-  padding: 14px 16px;
-  border-top: 1px solid rgba(16, 32, 59, .08);
+.crt-lightbox-close {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fff;
+  color: #10203b;
+  font-size: 15px;
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, .35);
+  opacity: 0;
+  animation: crtControlIn .45s .16s cubic-bezier(.34, 1.56, .64, 1) both;
+  transition: background .2s ease, color .2s ease, transform .25s cubic-bezier(.34, 1.56, .64, 1);
+}
+.crt-lightbox-close:hover { background: #0864e7; color: #fff; transform: rotate(90deg); }
+.crt-lightbox-close:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* Oldingi/Keyingi — sof ikonka-doira, matnsiz. Romkaning chap/o'ng
+   chetiga yarim chiqib turadi, tik markazda. */
+.crt-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff;
+  color: #0864e7;
+  font-size: 22px;
+  box-shadow: 0 14px 30px -10px rgba(7, 20, 45, .4);
+  opacity: 0;
+  transform: translateY(-50%) scale(.7);
+  animation: crtNavIn .5s .24s cubic-bezier(.34, 1.56, .64, 1) both;
+  transition: background .25s ease, color .25s ease, transform .25s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
+}
+.crt-lightbox-nav:hover {
+  background: #0864e7;
+  color: #fff;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 16px 34px -10px rgba(8, 100, 231, .55);
+}
+.crt-lightbox-nav:active { transform: translateY(-50%) scale(.95); }
+.crt-lightbox-nav:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.crt-lightbox-nav--prev {
+  left: clamp(-10px, -3vw, 10px);
+  animation-name: crtNavInLeft;
+}
+.crt-lightbox-nav--next {
+  right: clamp(-10px, -3vw, 10px);
+  animation-name: crtNavInRight;
 }
 
-.crt-lightbox-nav {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 20px;
+.crt-lightbox-counter {
+  position: absolute;
+  left: 50%;
+  bottom: -40px;
+  padding: 7px 16px;
   border-radius: 999px;
-  background: rgba(8, 100, 231, .08);
-  color: #0864e7;
+  background: rgba(255, 255, 255, .16);
+  backdrop-filter: blur(8px);
+  color: #fff;
   font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
-  font-weight: 800;
-  transition: background .2s ease, color .2s ease, transform .2s cubic-bezier(.34, 1.56, .64, 1);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-50%);
+  animation: crtCounterIn .45s .32s cubic-bezier(.34, 1.56, .64, 1) both;
 }
-.crt-lightbox-nav:hover { background: #0864e7; color: #fff; }
-.crt-lightbox-nav:active { transform: scale(.96); }
-.crt-lightbox-nav:focus-visible { outline: 2px solid #0864e7; outline-offset: 2px; }
-.crt-lightbox-nav svg { transition: transform .2s ease; }
-.crt-lightbox-nav--prev:hover svg { transform: translateX(-3px); }
-.crt-lightbox-nav--next:hover svg { transform: translateX(3px); }
 
 @keyframes crtFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 @keyframes crtPanelIn {
-  0% { opacity: 0; transform: scale(.92) translateY(18px); }
+  0% { opacity: 0; transform: scale(.9) translateY(18px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 @keyframes crtImageIn {
   0% { opacity: 0; transform: scale(.96); }
   100% { opacity: 1; transform: scale(1); }
+}
+@keyframes crtControlIn {
+  0% { opacity: 0; transform: scale(.5) rotate(-20deg); }
+  65% { opacity: 1; transform: scale(1.12) rotate(4deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+/* translateY(-50%) — tik markazlashtirish uchun doimiy saqlanadi,
+   faqat scale/rotate pop qismi animatsiyalanadi (chapdan ozgina
+   siljib kirib keladi, o'ngdan — teskarisi). */
+@keyframes crtNavInLeft {
+  0% { opacity: 0; transform: translateY(-50%) translateX(-10px) scale(.5) rotate(-16deg); }
+  65% { opacity: 1; transform: translateY(-50%) translateX(0) scale(1.14) rotate(4deg); }
+  100% { opacity: 1; transform: translateY(-50%) translateX(0) scale(1) rotate(0deg); }
+}
+@keyframes crtNavInRight {
+  0% { opacity: 0; transform: translateY(-50%) translateX(10px) scale(.5) rotate(16deg); }
+  65% { opacity: 1; transform: translateY(-50%) translateX(0) scale(1.14) rotate(-4deg); }
+  100% { opacity: 1; transform: translateY(-50%) translateX(0) scale(1) rotate(0deg); }
+}
+/* translateX(-50%) — gorizontal markazlashtirish uchun doimiy saqlanadi. */
+@keyframes crtCounterIn {
+  0% { opacity: 0; transform: translateX(-50%) translateY(6px) scale(.8); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
 /* ===== Responsive ladder ===== */
@@ -328,12 +360,14 @@
   .crt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 }
 
-/* Juda tor ekranda "Oldingi"/"Keyingi" matni yashiriladi — faqat
-   strelka qoladi, shunda pastki panel hech qachon torlik qilmaydi. */
-@media (max-width: 420px) {
-  .crt-lightbox-card { border-radius: 22px; }
-  .crt-lightbox-nav { padding: 11px 16px; }
-  .crt-lightbox-nav-label { display: none; }
+/* Juda tor ekranda tugmalar kichrayadi va romka chetidan unchalik
+   uzoq chiqmaydi — aks holda ekran chetidan kesilib qolishi mumkin. */
+@media (max-width: 480px) {
+  .crt-lightbox { padding: 48px 14px; }
+  .crt-lightbox-nav { width: 42px; height: 42px; font-size: 18px; }
+  .crt-lightbox-nav--prev { left: -6px; }
+  .crt-lightbox-nav--next { right: -6px; }
+  .crt-lightbox-close { top: -12px; right: -12px; width: 36px; height: 36px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -345,10 +379,16 @@
     filter: none;
   }
   .crt-thumb, .crt-thumb img, .crt-thumb-veil, .crt-thumb-zoom { transition: none; }
-  .crt-lightbox-backdrop, .crt-lightbox-card, .crt-lightbox-image {
+
+  .crt-lightbox-backdrop, .crt-lightbox-frame, .crt-lightbox-image, .crt-lightbox-close {
     animation: none;
     opacity: 1;
     transform: none;
   }
+  /* Bu ikkitasining tinch holatidagi transform'i markazlashtirish
+     uchun zarur (translateY/translateX -50%) — animatsiyani o'chirib,
+     shu qiymatlarni saqlab qolamiz, aks holda tugma "yo'qolib" qoladi. */
+  .crt-lightbox-nav { animation: none; opacity: 1; transform: translateY(-50%); }
+  .crt-lightbox-counter { animation: none; opacity: 1; transform: translateX(-50%); }
   .crt-lightbox-close, .crt-lightbox-nav { transition: none; }
 }
