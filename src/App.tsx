@@ -53,7 +53,7 @@ function Home() {
       <HomeAbout />
       <WhyChooseUs />
       <Sertifikatpage />
-      <CtaBanner/>
+      <CtaBanner />
     </main>
   )
 }
