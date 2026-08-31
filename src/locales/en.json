@@ -116,6 +116,21 @@
       }
     }
   },
+  "homeCta": {
+    "titleStart": "Let's bring your",
+    "titleAccent": "project to life",
+    "titleEnd": "together!",
+    "description": "Quality products, professional service, and a partnership you can rely on.",
+    "badges": {
+      "quality": "Quality guarantee",
+      "trust": "Reliable partnership",
+      "delivery": "On-time delivery"
+    },
+    "contact": {
+      "title": "Get in touch",
+      "subtitle": "Fast, easy contact"
+    }
+  },
   "aria": {
     "previous": "Previous slide",
     "next": "Next slide",

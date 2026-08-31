@@ -1,0 +1,310 @@
+/* =====================================================================
+   CtaBanner — "Loyihangizni biz bilan amalga oshiring!" bannerining
+   chuqur ko'k gradient kartasi. Rang/radius palitrasi boshqa HomePage
+   bo'limlari bilan bir xil brend rangidan (#0864e7) o'sadi, lekin bu
+   safar u FON emas, aksincha — matn OQ, urg'u esa och osmon-ko'k.
+   Keyframes `ctb`-prefiksi bilan — Hero/HomeAbout/WhyChooseUs/
+   Sertifikatpage'ning bir xil nomli @keyframes'lari bilan
+   to'qnashmasin (barchasi bitta sahifada birga yuklanadi).
+   ===================================================================== */
+
+.ctb-section {
+  padding: clamp(20px, 3vw, 36px) clamp(20px, 5vw, 80px) clamp(36px, 5.5vw, 64px);
+  background: #eff2f9;
+}
+
+.ctb-banner {
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 3vw, 40px);
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: clamp(30px, 3.4vw, 46px) clamp(32px, 4.5vw, 64px);
+  border-radius: 30px;
+
+  opacity: 0;
+  transform: translateY(28px) scale(.98);
+  filter: blur(5px);
+  transition: opacity .75s cubic-bezier(.22, .8, .24, 1), transform .75s cubic-bezier(.22, .8, .24, 1), filter .6s cubic-bezier(.22, .8, .24, 1);
+}
+.ctb-banner.in-view { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+
+/* Fon qatlamlarining o'zi klipsalanadi (rounded corners). */
+.ctb-bg-mask {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* Fon surati — statik, harakatsiz turadi. */
+.ctb-bg-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Brend ko'k rangidagi shaffof parda — surat ustida matn har doim
+   o'qiladigan bo'lib qolishi uchun, lekin surat sezilarli darajada
+   ko'rinib turadi. */
+.ctb-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 85% at 36% 50%, rgba(6, 18, 56, .22) 0%, rgba(6, 18, 56, .08) 55%, transparent 75%),
+    linear-gradient(115deg, rgba(7, 20, 62, .1) 0%, rgba(10, 42, 124, .06) 46%, rgba(24, 96, 200, .02) 100%);
+}
+
+/* Nozik nuqtali to'r — o'ng pastki burchakda, chuqurlik uchun. */
+.ctb-dotgrid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, .16) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 55% 75% at 88% 78%, #000 30%, transparent 85%);
+  mask-image: radial-gradient(ellipse 55% 75% at 88% 78%, #000 30%, transparent 85%);
+}
+
+/* Chapdagi matn/o'ngdagi tugmalar orasiga chuqurlik beruvchi diagonal
+   parda — .ctb-actions shu qorong'iroq mintaqa ustiga tushadi, shuning
+   uchun ikkala karta endi suratning ustida "muallaq" emas, o'z tekisligida
+   turgandek ko'rinadi. */
+.ctb-diagonal {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 54%, rgba(6, 18, 56, .34) 68%, rgba(6, 18, 56, .58) 100%);
+  clip-path: polygon(58% 0, 100% 0, 100% 100%, 46% 100%);
+}
+@media (max-width: 900px) {
+  .ctb-diagonal { display: none; } // torroq kenglikda .ctb-actions to'liq qatorga o'tadi, diagonal endi mos kelmaydi
+}
+
+.ctb-content {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ctb-title {
+  margin: 0 0 12px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(25px, 2.9vw, 38px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.7px;
+  color: #fff;
+}
+.ctb-title em {
+  font-style: normal;
+  color: #5ec8ff;
+}
+.ctb-word {
+  display: inline-block;
+  opacity: 0;
+  animation: ctbWordIn .75s cubic-bezier(.19, 1, .22, 1) both;
+}
+
+.ctb-description {
+  margin: 0 0 16px;
+  max-width: 46ch;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .82);
+}
+
+.ctb-badges {
+  display: flex;
+  flex-wrap: nowrap; // reference keeps all three side by side in one row
+  gap: 16px 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ctb-badge {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1);
+  opacity: 0;
+}
+.ctb-banner.in-view .ctb-badge { animation: ctbBadgeIn .55s cubic-bezier(.34, 1.56, .64, 1) both; }
+
+.ctb-badge-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .14);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .3);
+  color: #fff;
+  font-size: 17px;
+}
+
+.ctb-badge-label {
+  max-width: 13ch;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.28;
+  color: #fff;
+}
+
+/* Faqat keng ekranda ko'rinadi — matn/tugmalar orasidagi ajratkich. */
+.ctb-divider {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 1px;
+  margin-block: 4px;
+  background: rgba(255, 255, 255, .22);
+}
+
+.ctb-actions {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  width: clamp(230px, 20vw, 290px);
+}
+
+.ctb-action {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 20px;
+  border-radius: 17px;
+  text-decoration: none;
+  opacity: 0;
+  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .3s ease;
+}
+.ctb-banner.in-view .ctb-action { animation: ctbActionIn .6s cubic-bezier(.34, 1.56, .64, 1) both; }
+.ctb-action:hover { transform: translateY(-3px); }
+
+.ctb-action-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 19px;
+  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+.ctb-action:hover .ctb-action-icon { transform: scale(1.08) rotate(4deg); }
+
+.ctb-action-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-family: 'Inter', sans-serif;
+}
+.ctb-action-text strong { font-size: 14.5px; font-weight: 800; }
+.ctb-action-text span { font-size: 12px; font-weight: 500; }
+.ctb-action-text--phone {
+  font-size: 18.5px;
+  font-weight: 800;
+  letter-spacing: -.3px;
+  white-space: nowrap;
+}
+
+/* Asosiy karta — "Biz bilan bog'lanish". Bitta to'ldirilgan brend-ko'k
+   karta butun bannerdagi yagona aksentli CTA bo'lib, ko'z birinchi shu
+   yerga tushadi. */
+.ctb-action--primary {
+  background: #0864e7;
+  box-shadow: 0 18px 34px -16px rgba(8, 100, 231, .6);
+}
+.ctb-action--primary:hover { box-shadow: 0 24px 42px -14px rgba(8, 100, 231, .7); }
+.ctb-action--primary .ctb-action-icon { background: #fff; color: #0864e7; }
+.ctb-action--primary .ctb-action-text strong { color: #fff; }
+.ctb-action--primary .ctb-action-text span { color: rgba(255, 255, 255, .78); }
+
+/* Ikkinchi darajali karta — telefon raqami. Shaffof, faqat nozik
+   chegara bilan — u alohida CTA emas, balki muqobil aloqa usuli
+   ekanini bildiradi. */
+.ctb-action--secondary {
+  background: rgba(255, 255, 255, .1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28);
+}
+.ctb-action--secondary:hover { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .42); }
+.ctb-action--secondary .ctb-action-icon { background: rgba(255, 255, 255, .16); color: #fff; }
+.ctb-action--secondary .ctb-action-text--phone { color: #fff; }
+
+/* ===== Keyframes ===== */
+@keyframes ctbWordIn {
+  0% { opacity: 0; transform: translateY(28px) scale(.85) rotate(-3deg); filter: blur(5px); }
+  55% { opacity: 1; filter: blur(0); }
+  78% { transform: translateY(-3px) scale(1.03) rotate(1deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0); }
+}
+@keyframes ctbBadgeIn {
+  from { opacity: 0; transform: translateY(14px) scale(.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes ctbActionIn {
+  0% { opacity: 0; transform: translateX(20px) scale(.9); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* ===== Responsive ladder ===== */
+@media (max-width: 1080px) {
+  .ctb-badge-label { max-width: 14ch; }
+}
+
+@media (max-width: 900px) {
+  .ctb-banner { flex-wrap: wrap; }
+  .ctb-divider { display: none; }
+  .ctb-content { flex: 1 1 100%; }
+  .ctb-actions {
+    flex: 1 1 100%;
+    flex-direction: row;
+    width: 100%;
+  }
+  .ctb-action { flex: 1 1 0; }
+}
+
+@media (max-width: 620px) {
+  .ctb-banner { padding: 26px 22px; border-radius: 24px; }
+  .ctb-badges { gap: 14px 20px; }
+  .ctb-actions { flex-direction: column; }
+}
+
+@media (max-width: 480px) {
+  .ctb-badges { flex-wrap: wrap; }
+}
+
+@media (max-width: 420px) {
+  .ctb-action-text--phone { font-size: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ctb-banner, .ctb-word, .ctb-badge, .ctb-action {
+    animation: none;
+    transition: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .ctb-action-icon { transition: none; }
+}

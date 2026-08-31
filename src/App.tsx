@@ -13,6 +13,7 @@ import Products from './components/Products/Products'
 import Projects from './components/Projects/Projects'
 import News from './components/News/News'
 import Contact from './components/Contact/Contact'
+import CtaBanner from './components/HomePage/CtaBanner'
 
 function Layout() {
   const { pathname, hash } = useLocation()
@@ -52,6 +53,7 @@ function Home() {
       <HomeAbout />
       <WhyChooseUs />
       <Sertifikatpage />
+      <CtaBanner/>
     </main>
   )
 }

@@ -116,6 +116,21 @@
       }
     }
   },
+  "homeCta": {
+    "titleStart": "Loyihangizni",
+    "titleAccent": "biz bilan",
+    "titleEnd": "amalga oshiring!",
+    "description": "Sifatli mahsulotlar, professional xizmat va ishonchli hamkorlik.",
+    "badges": {
+      "quality": "Sifat kafolati",
+      "trust": "Ishonchli hamkorlik",
+      "delivery": "O'z vaqtida yetkazib berish"
+    },
+    "contact": {
+      "title": "Biz bilan bog'lanish",
+      "subtitle": "Tez va oson aloqa"
+    }
+  },
   "aria": {
     "previous": "Oldingi slayd",
     "next": "Keyingi slayd",
