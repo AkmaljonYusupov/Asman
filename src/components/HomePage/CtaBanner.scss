@@ -86,6 +86,110 @@
   .ctb-diagonal { display: none; } // torroq kenglikda .ctb-actions to'liq qatorga o'tadi, diagonal endi mos kelmaydi
 }
 
+/* Fonda sekin suzib yuruvchi dekorativ shakllar — chuqurlik va
+   harakat hissi qo'shadi, lekin matnga xalaqit bermasin deb juda
+   xira va diagonal pardaning orqasida (z-index jihatidan bir xil
+   qatlamda, lekin blur/shaffoflik pastroq) turadi. */
+.ctb-shape {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Katta yumshoq nur — sekin nafas oladi (scale + drift). */
+.ctb-shape--1 {
+  top: 4%;
+  right: 20%;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(94, 200, 255, .3), rgba(94, 200, 255, 0) 70%);
+  filter: blur(3px);
+  animation: ctbShapeGlow 7s ease-in-out infinite;
+}
+
+/* Punktir halqa — o'z o'qi atrofida sekin aylanadi va bir vaqtda suzadi. */
+.ctb-shape--2 {
+  top: 52%;
+  right: 6%;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255, 255, 255, .34);
+  animation: ctbShapeSpinDrift 16s linear infinite;
+}
+
+/* Romb (aylantirilgan kvadrat) — chayqalib turadi. */
+.ctb-shape--3 {
+  top: 16%;
+  right: 3%;
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2);
+  animation: ctbShapeWobble 8s ease-in-out infinite;
+}
+
+/* Uchburchak (clip-path) — yumshoq suzib yuradi. */
+.ctb-shape--4 {
+  bottom: 10%;
+  right: 32%;
+  width: 46px;
+  height: 40px;
+  background: rgba(94, 200, 255, .16);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  animation: ctbShapeFloatD 10s ease-in-out infinite 1.2s;
+}
+
+/* Ikkinchi, kattaroq xira nur — teskari fazada nafas oladi. */
+.ctb-shape--5 {
+  top: 10%;
+  left: 44%;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, .12), rgba(255, 255, 255, 0) 70%);
+  animation: ctbShapeGlow 9.5s ease-in-out infinite 1.6s;
+}
+
+/* Plyus belgisi — sekin aylanib-suzadi. */
+.ctb-shape--6 {
+  bottom: 20%;
+  right: 14%;
+  width: 26px;
+  height: 26px;
+  animation: ctbShapeSpinDrift 13s linear infinite reverse;
+}
+.ctb-shape--6::before,
+.ctb-shape--6::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  background: rgba(255, 255, 255, .28);
+  border-radius: 2px;
+}
+.ctb-shape--6::before { width: 100%; height: 3px; }
+.ctb-shape--6::after { width: 3px; height: 100%; }
+
+/* Kichik nuqta — beshburchak orbita bo'ylab aylanadi. */
+.ctb-shape--7 {
+  top: 34%;
+  right: 16%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(94, 200, 255, .55);
+  box-shadow: 0 0 12px 2px rgba(94, 200, 255, .4);
+  animation: ctbShapeOrbit 14s linear infinite;
+}
+
+@media (max-width: 900px) {
+  .ctb-shape--3, .ctb-shape--4, .ctb-shape--5, .ctb-shape--6, .ctb-shape--7 { display: none; } // torroq kenglikda kamroq shakl — tozaroq ko'rinish
+}
+
 .ctb-content {
   position: relative;
   z-index: 1;
@@ -266,6 +370,30 @@
   60% { opacity: 1; }
   100% { opacity: 1; transform: translateX(0) scale(1); }
 }
+@keyframes ctbShapeGlow {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: .75; }
+  50% { transform: translate(-14px, 16px) scale(1.15); opacity: 1; }
+}
+@keyframes ctbShapeSpinDrift {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-8px, 10px) rotate(180deg); }
+  100% { transform: translate(0, 0) rotate(360deg); }
+}
+@keyframes ctbShapeWobble {
+  0%, 100% { transform: rotate(20deg) translateY(0) scale(1); }
+  50% { transform: rotate(38deg) translateY(-10px) scale(1.06); }
+}
+@keyframes ctbShapeFloatD {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-10px, -14px) rotate(-10deg); }
+}
+@keyframes ctbShapeOrbit {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(18px, -22px); }
+  50% { transform: translate(0, -36px); }
+  75% { transform: translate(-18px, -22px); }
+  100% { transform: translate(0, 0); }
+}
 
 /* ===== Responsive ladder ===== */
 @media (max-width: 1080px) {
@@ -307,4 +435,5 @@
     filter: none;
   }
   .ctb-action-icon { transition: none; }
+  .ctb-shape { animation: none; }
 }

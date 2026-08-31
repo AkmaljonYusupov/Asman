@@ -164,6 +164,13 @@ export default function CtaBanner() {
           <span className="ctb-overlay" aria-hidden="true" />
           <span className="ctb-dotgrid" aria-hidden="true" />
           <span className="ctb-diagonal" aria-hidden="true" />
+          <span className="ctb-shape ctb-shape--1" aria-hidden="true" />
+          <span className="ctb-shape ctb-shape--2" aria-hidden="true" />
+          <span className="ctb-shape ctb-shape--3" aria-hidden="true" />
+          <span className="ctb-shape ctb-shape--4" aria-hidden="true" />
+          <span className="ctb-shape ctb-shape--5" aria-hidden="true" />
+          <span className="ctb-shape ctb-shape--6" aria-hidden="true" />
+          <span className="ctb-shape ctb-shape--7" aria-hidden="true" />
         </div>
         <div className="ctb-content">
           <h2 className="ctb-title">
