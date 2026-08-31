@@ -3,6 +3,7 @@ import PageHero from '../PageHero/PageHero'
 import './About.scss'
 import HomeAbout from '../HomePage/HomeAbout'
 import Sertifikatpage from '../HomePage/Sertifikatpage'
+import CtaBanner from '../HomePage/CtaBanner'
 
 export default function About() {
   return (
@@ -11,6 +12,7 @@ export default function About() {
       <PageHero pageKey="about" />
       <HomeAbout/>
       <Sertifikatpage/>
+      <CtaBanner/>
     </>
   )
 }
